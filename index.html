@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TruckTraffic.in – India's Truck Load Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0A2463;
+      --orange: #FF6B35;
+      --green: #248232;
+      --bg: #F0F2F7;
+      --surface: #FFFFFF;
+      --text: #1A1A2E;
+      --muted: #6C757D;
+      --subtle: #ADB5BD;
+      --border: #DEE2E6;
+      --danger: #DC3545;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: var(--navy);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(10,36,99,0.3);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--orange);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .logo-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text span {
+      color: var(--orange);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      padding: 6px 12px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .download-btn {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover { background: #e85a25; }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a8f 50%, #0d1f5c 100%);
+      padding: 60px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,107,53,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+    .hero h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span { color: var(--orange); }
+
+    .hero p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--orange);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ===== FILTERS ===== */
+    .filters-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 64px;
+      z-index: 90;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .filters-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus { border-color: var(--navy); }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      outline: none;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .refresh-btn {
+      padding: 10px 18px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .refresh-btn:hover { background: #0d2f7a; }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* ===== GRID ===== */
+    .loads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(10,36,99,0.12);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--navy), #1a3a8f);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .truck-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 100px;
+      padding: 4px 10px;
+    }
+
+    .truck-badge span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .date-badge {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+
+    .card-route {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .route-point { flex: 1; }
+
+    .route-pin {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .route-city {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .route-state {
+      font-size: 11px;
+      color: var(--subtle);
+    }
+
+    .route-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .arrow-line {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--navy), var(--orange));
+      border-radius: 2px;
+    }
+
+    .arrow-icon {
+      font-size: 18px;
+      color: var(--orange);
+      margin-top: -14px;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 20px;
+    }
+
+    .card-specs {
+      padding: 16px 20px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .spec {
+      flex: 1;
+      text-align: center;
+    }
+
+    .spec-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .spec-label {
+      font-size: 10px;
+      color: var(--subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .card-footer {
+      padding: 14px 20px;
+      background: #F8F9FA;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .poster-info { flex: 1; }
+
+    .poster-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .poster-company {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .poster-phone {
+      font-size: 11px;
+      color: var(--subtle);
+      margin-top: 2px;
+    }
+
+    .call-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .call-btn:hover { background: #1a6124; }
+
+    .placement-chip {
+      display: inline-block;
+      background: #FFF4EE;
+      color: var(--orange);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 0 20px 12px;
+    }
+
+    /* ===== LOADING ===== */
+    .loading {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ===== EMPTY ===== */
+    .empty {
+      text-align: center;
+      padding: 80px 24px;
+      grid-column: 1 / -1;
+    }
+
+    .empty-icon { font-size: 64px; margin-bottom: 16px; }
+    .empty h3 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .empty p { color: var(--muted); font-size: 14px; }
+
+    /* ===== ERROR ===== */
+    .error-banner {
+      background: #FFF5F5;
+      border: 1px solid #FED7D7;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 24px;
+      margin-top: 60px;
+      font-size: 13px;
+    }
+
+    footer a { color: var(--orange); text-decoration: none; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px; }
+      .hero-stats { gap: 24px; }
+      .loads-grid { grid-template-columns: 1fr; }
+      .filters-inner { flex-direction: column; align-items: stretch; }
+      .search-box { min-width: unset; }
+      .header-right .download-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-icon">🚛</div>
+      <span class="logo-text">Truck<span>Traffic</span>.in</span>
+    </a>
+    <div class="header-right">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        Live Market
+      </div>
+      <a href="#" class="download-btn">📱 Download App</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>India's <span>Truck Load</span> Marketplace</h1>
+    <p>Find available truck space across India. Connect directly with transporters — no middlemen, no commission.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value" id="stat-loads">—</span>
+        <span class="stat-label">Active Loads</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-routes">—</span>
+        <span class="stat-label">Routes</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-weight">—</span>
+        <span class="stat-label">Total Tons</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters-bar">
+  <div class="filters-inner">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search by city, pincode, or route..." oninput="filterLoads()"/>
+    </div>
+    <select class="filter-select" id="truck-filter" onchange="filterLoads()">
+      <option value="">All Truck Types</option>
+      <option value="Open">Open</option>
+      <option value="Container">Container</option>
+      <option value="Trailer">Trailer</option>
+    </select>
+    <button class="refresh-btn" onclick="fetchLoads()">
+      🔄 Refresh
+    </button>
+    <span class="results-count" id="results-count">Loading...</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div id="error-container"></div>
+  <div id="loads-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading live truck loads...</p>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 TruckTraffic.in · Powered by <a href="#">LoadLink</a> · All loads are posted by verified transporters</p>
+</footer>
+
+<script>
+  const API = 'https://ptl-market.onrender.com/api';
+  let allLoads = [];
+
+  async function fetchLoads() {
+    const container = document.getElementById('loads-container');
+    const errorContainer = document.getElementById('error-container');
+    errorContainer.innerHTML = '';
+
+    container.innerHTML = `
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading live truck loads...</p>
+      </div>
+    `;
+
+    try {
+      const res = await fetch(`${API}/loads`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      allLoads = await res.json();
+      updateStats();
+      filterLoads();
+    } catch (err) {
+      errorContainer.innerHTML = `
+        <div class="error-banner">
+          ⚠️ Unable to load data. Please try refreshing in a moment.
+        </div>
+      `;
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📡</div>
+          <h3>Connection Error</h3>
+          <p>Could not connect to the server. Please try again.</p>
+        </div>
+      `;
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('stat-loads').textContent = allLoads.length;
+    const routes = new Set(allLoads.map(l => `${l.origin_pincode}-${l.destination_pincode}`)).size;
+    document.getElementById('stat-routes').textContent = routes;
+    const totalWeight = allLoads.reduce((s, l) => s + (l.weight_tons || 0), 0).toFixed(0);
+    document.getElementById('stat-weight').textContent = totalWeight + 'T';
+  }
+
+  function filterLoads() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const truckFilter = document.getElementById('truck-filter').value;
+
+    const filtered = allLoads.filter(load => {
+      const matchSearch = !search ||
+        (load.origin_city || '').toLowerCase().includes(search) ||
+        (load.destination_city || '').toLowerCase().includes(search) ||
+        (load.origin_pincode || '').includes(search) ||
+        (load.destination_pincode || '').includes(search) ||
+        (load.origin_state || '').toLowerCase().includes(search) ||
+        (load.destination_state || '').toLowerCase().includes(search);
+
+      const matchTruck = !truckFilter || load.truck_type === truckFilter;
+
+      return matchSearch && matchTruck;
+    });
+
+    document.getElementById('results-count').textContent =
+      `${filtered.length} truck${filtered.length !== 1 ? 's' : ''} found`;
+
+    renderLoads(filtered);
+  }
+
+  function renderLoads(loads) {
+    const container = document.getElementById('loads-container');
+
+    if (loads.length === 0) {
+      container.innerHTML = `
+        <div class="loads-grid">
+          <div class="empty">
+            <div class="empty-icon">🚛</div>
+            <h3>No loads found</h3>
+            <p>Try adjusting your search or check back later for new listings.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `<div class="loads-grid">${loads.map((load, i) => renderCard(load, i)).join('')}</div>`;
+  }
+
+  function renderCard(load, index) {
+    const date = formatDate(load.loading_date);
+    const originCity = load.origin_city || load.origin_pincode;
+    const destCity = load.destination_city || load.destination_pincode;
+
+    return `
+      <div class="card" style="animation-delay: ${index * 0.05}s">
+        <div class="card-header">
+          <div class="truck-badge">
+            <span>🚛 ${load.truck_type || 'Truck'}</span>
+          </div>
+          <span class="date-badge">📅 ${date}</span>
+        </div>
+
+        <div class="card-route">
+          <div class="route-point">
+            <div class="route-pin">${load.origin_pincode}</div>
+            <div class="route-city">${originCity}</div>
+            <div class="route-state">${load.origin_state || ''}</div>
+          </div>
+          <div class="route-arrow">
+            <div class="arrow-line"></div>
+            <div class="arrow-icon">➤</div>
+          </div>
+          <div class="route-point" style="text-align:right">
+            <div class="route-pin">${load.destination_pincode}</div>
+            <div class="route-city">${destCity}</div>
+            <div class="route-state">${load.destination_state || ''}</div>
+          </div>
+        </div>
+
+        ${load.cargo_placement ? `<div class="placement-chip">${load.cargo_placement}</div>` : ''}
+
+        <div class="card-divider"></div>
+
+        <div class="card-specs">
+          <div class="spec">
+            <div class="spec-value">${load.weight_tons}T</div>
+            <div class="spec-label">Weight</div>
+          </div>
+          <div class="spec">
+            <div class="spec-value">${load.space_cuft ? load.space_cuft + ' ft³' : '—'}</div>
+            <div class="spec-label">Space</div>
+          </div>
+          <div class="spec">
+            <div class="spec-value">${load.image_count || 0}</div>
+            <div class="spec-label">Photos</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="poster-info">
+            <div class="poster-name">${load.poster_name}</div>
+            ${load.poster_company ? `<div class="poster-company">${load.poster_company}</div>` : ''}
+            <div class="poster-phone">+91 ${load.poster_phone}</div>
+          </div>
+          <a href="tel:${load.poster_phone}" class="call-btn">
+            📞 Call
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+    } catch { return dateStr; }
+  }
+
+  // Auto refresh every 2 minutes
+  fetchLoads();
+  setInterval(fetchLoads, 120000);
+</script>
+</body>
+</html>
