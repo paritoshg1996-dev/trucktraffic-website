@@ -560,6 +560,134 @@
       justify-content: center;
     }
 
+    /* ===== FIND SPACE PANEL ===== */
+    .find-space-bar {
+      background: linear-gradient(135deg, #0d2f7a, var(--navy));
+      padding: 20px 24px;
+      border-bottom: 3px solid var(--orange);
+    }
+
+    .find-space-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .find-space-title {
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .find-space-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .find-space-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .find-space-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .find-space-field input {
+      padding: 10px 14px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      outline: none;
+      width: 140px;
+      transition: border-color 0.2s;
+    }
+
+    .find-space-field input::placeholder { color: rgba(255,255,255,0.4); }
+    .find-space-field input:focus { border-color: var(--orange); }
+
+    .find-space-btn {
+      padding: 10px 20px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      height: 42px;
+      white-space: nowrap;
+    }
+
+    .find-space-btn:hover { background: #e85a25; }
+    .find-space-btn:disabled { background: #666; cursor: not-allowed; }
+
+    .clear-filter-btn {
+      padding: 10px 16px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      height: 42px;
+      transition: all 0.2s;
+    }
+
+    .clear-filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    .find-space-error {
+      color: #FF6B6B;
+      font-size: 12px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .find-space-status {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .distance-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .distance-chip {
+      background: #E8F5EA;
+      color: var(--green);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .off-route-chip {
+      background: #FFF4EE;
+      color: var(--orange);
+    }
+
     /* ===== LOADING ===== */
     .loading {
       text-align: center;
@@ -672,6 +800,35 @@
   </div>
 </div>
 
+<!-- FIND SPACE PANEL -->
+<div class="find-space-bar">
+  <div class="find-space-inner">
+    <div class="find-space-title">🔍 Find Space on a Truck Route</div>
+    <div class="find-space-form">
+      <div class="find-space-field">
+        <label>My Origin Pincode</label>
+        <input type="text" id="fs-origin" placeholder="e.g. 400069" maxlength="6" oninput="this.value=this.value.replace(/\D/g,'')"/>
+      </div>
+      <div class="find-space-field">
+        <label>My Destination Pincode</label>
+        <input type="text" id="fs-dest" placeholder="e.g. 110001" maxlength="6" oninput="this.value=this.value.replace(/\D/g,'')"/>
+      </div>
+      <div class="find-space-field">
+        <label>My Cargo Weight (kg)</label>
+        <input type="number" id="fs-weight" placeholder="e.g. 500" min="1"/>
+      </div>
+      <div class="find-space-field">
+        <label>Volume (cu ft) — optional</label>
+        <input type="number" id="fs-volume" placeholder="Optional" min="1"/>
+      </div>
+      <button class="find-space-btn" id="fs-btn" onclick="findSpace()">🚛 Find Matching Trucks</button>
+      <button class="clear-filter-btn" id="fs-clear" onclick="clearFindSpace()" style="display:none">✕ Clear</button>
+    </div>
+    <div id="fs-error" class="find-space-error"></div>
+    <div id="fs-status" class="find-space-status"></div>
+  </div>
+</div>
+
 <!-- FILTERS -->
 <div class="filters-bar">
   <div class="filters-inner">
@@ -717,7 +874,156 @@
 <script>
   const API = 'https://ptl-market.onrender.com/api';
   let allLoads = [];
+  let activeFilter = null;
+  let distanceMap = {};
+  const geoCache = {};
 
+  // ===== GEO MATH (ported from index.tsx) =====
+  function toRad(d) { return d * Math.PI / 180; }
+
+  function haversineKm(a, b) {
+    const R = 6371;
+    const dLat = toRad(b.lat - a.lat);
+    const dLon = toRad(b.lon - a.lon);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const x = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+
+  function bearingRad(a, b) {
+    const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
+    const dLon = toRad(b.lon - a.lon);
+    const y = Math.sin(dLon) * Math.cos(lat2);
+    const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+    return Math.atan2(y, x);
+  }
+
+  function trackDistancesKm(start, end, p) {
+    const R = 6371;
+    const d13 = haversineKm(start, p) / R;
+    const t13 = bearingRad(start, p);
+    const t12 = bearingRad(start, end);
+    const xt = Math.asin(Math.sin(d13) * Math.sin(t13 - t12)) * R;
+    const at = Math.acos(Math.cos(d13) / Math.cos(xt / R)) * R;
+    return { cross: Math.abs(xt), along: at };
+  }
+
+  async function geocodePin(pin) {
+    if (geoCache[pin]) return geoCache[pin];
+    try {
+      const r = await fetch(`${API}/geocode/${pin}`);
+      const j = await r.json();
+      const out = { lat: j.lat || 0, lon: j.lon || 0, found: !!j.found };
+      if (out.found) geoCache[pin] = out;
+      return out;
+    } catch {
+      return { lat: 0, lon: 0, found: false };
+    }
+  }
+
+  // ===== FIND SPACE =====
+  async function findSpace() {
+    const origin = document.getElementById('fs-origin').value.trim();
+    const dest = document.getElementById('fs-dest').value.trim();
+    const weightKg = parseFloat(document.getElementById('fs-weight').value);
+    const volumeCuft = document.getElementById('fs-volume').value.trim()
+      ? parseFloat(document.getElementById('fs-volume').value)
+      : null;
+
+    const errorEl = document.getElementById('fs-error');
+    const statusEl = document.getElementById('fs-status');
+    errorEl.textContent = '';
+    statusEl.textContent = '';
+
+    if (!/^\d{6}$/.test(origin)) { errorEl.textContent = '⚠️ Enter a valid 6-digit origin pincode'; return; }
+    if (!/^\d{6}$/.test(dest))   { errorEl.textContent = '⚠️ Enter a valid 6-digit destination pincode'; return; }
+    if (!weightKg || weightKg <= 0) { errorEl.textContent = '⚠️ Enter your cargo weight in kg'; return; }
+
+    const btn = document.getElementById('fs-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Searching...';
+    statusEl.textContent = 'Geocoding your route...';
+
+    try {
+      const [oc, dc] = await Promise.all([geocodePin(origin), geocodePin(dest)]);
+      if (!oc.found) { errorEl.textContent = '⚠️ Origin pincode not found'; btn.disabled = false; btn.textContent = '🚛 Find Matching Trucks'; statusEl.textContent=''; return; }
+      if (!dc.found) { errorEl.textContent = '⚠️ Destination pincode not found'; btn.disabled = false; btn.textContent = '🚛 Find Matching Trucks'; statusEl.textContent=''; return; }
+
+      statusEl.textContent = `Checking ${allLoads.length} trucks against your route...`;
+
+      const survivors = [];
+      distanceMap = {};
+
+      for (const load of allLoads) {
+        // Weight check (truck tons → kg)
+        if (load.weight_tons * 1000 < weightKg) continue;
+        // Volume check
+        if (volumeCuft != null && load.space_cuft != null && load.space_cuft < volumeCuft) continue;
+
+        const lo = await geocodePin(load.origin_pincode);
+        if (!lo.found) continue;
+        const ld = await geocodePin(load.destination_pincode);
+        if (!ld.found) continue;
+
+        // Path A: endpoint match ≤ 15 km on both ends
+        const dOrigin = haversineKm(oc, lo);
+        const dDest = haversineKm(dc, ld);
+        if (dOrigin <= 15 && dDest <= 15) {
+          distanceMap[load.id] = { origin: dOrigin, dest: dDest, offRoute: false };
+          survivors.push({ load, total: dOrigin + dDest });
+          continue;
+        }
+
+        // Path B: route deviation ≤ 15 km for long-haul trucks (> 400 km)
+        const routeLen = haversineKm(lo, ld);
+        if (routeLen > 400) {
+          const oTrack = trackDistancesKm(lo, ld, oc);
+          const dTrack = trackDistancesKm(lo, ld, dc);
+          const inSeg = at => at >= 0 && at <= routeLen;
+          if (
+            oTrack.cross <= 15 &&
+            dTrack.cross <= 15 &&
+            inSeg(oTrack.along) &&
+            inSeg(dTrack.along) &&
+            oTrack.along <= dTrack.along
+          ) {
+            distanceMap[load.id] = { origin: oTrack.cross, dest: dTrack.cross, offRoute: true };
+            survivors.push({ load, total: oTrack.cross + dTrack.cross });
+            continue;
+          }
+        }
+      }
+
+      survivors.sort((a, b) => a.total - b.total);
+      activeFilter = { origin, dest, weightKg, volumeCuft, oc, dc };
+
+      document.getElementById('fs-clear').style.display = 'block';
+      statusEl.textContent = `✅ Found ${survivors.length} matching truck${survivors.length !== 1 ? 's' : ''} within 15 km of your route`;
+
+      document.getElementById('results-count').textContent =
+        `${survivors.length} truck${survivors.length !== 1 ? 's' : ''} matched`;
+
+      renderLoads(survivors.map(s => s.load), true);
+
+    } catch (e) {
+      errorEl.textContent = '⚠️ Something went wrong. Please try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🚛 Find Matching Trucks';
+    }
+  }
+
+  function clearFindSpace() {
+    activeFilter = null;
+    distanceMap = {};
+    document.getElementById('fs-clear').style.display = 'none';
+    document.getElementById('fs-error').textContent = '';
+    document.getElementById('fs-status').textContent = '';
+    filterLoads();
+  }
+
+  // ===== FETCH & FILTER =====
   async function fetchLoads() {
     const container = document.getElementById('loads-container');
     const errorContainer = document.getElementById('error-container');
@@ -781,10 +1087,10 @@
     document.getElementById('results-count').textContent =
       `${filtered.length} truck${filtered.length !== 1 ? 's' : ''} found`;
 
-    renderLoads(filtered);
+    renderLoads(filtered, false);
   }
 
-  function renderLoads(loads) {
+  function renderLoads(loads, isFiltered = false) {
     const container = document.getElementById('loads-container');
 
     if (loads.length === 0) {
@@ -792,15 +1098,18 @@
         <div class="loads-grid">
           <div class="empty">
             <div class="empty-icon">🚛</div>
-            <h3>No loads found</h3>
-            <p>Try adjusting your search or check back later for new listings.</p>
+            <h3>${isFiltered ? 'No matching trucks found' : 'No loads found'}</h3>
+            <p>${isFiltered ? 'Try adjusting your cargo details or expand your route.' : 'Try adjusting your search or check back later.'}</p>
           </div>
         </div>
       `;
       return;
     }
 
-    container.innerHTML = `<div class="loads-grid">${loads.map((load, i) => renderCard(load, i)).join('')}</div>`;
+    container.innerHTML = `
+      <div class="loads-grid">${loads.map((load, i) => renderCard(load, i)).join('')}</div>
+      ${isFiltered ? '<p style="text-align:center;color:var(--subtle);font-size:12px;margin-top:16px">* Distances are approximate (straight-line)</p>' : ''}
+    `;
   }
 
   function renderCard(load, index) {
@@ -808,6 +1117,7 @@
     const originCity = load.origin_city || load.origin_pincode;
     const destCity = load.destination_city || load.destination_pincode;
     const imageCount = load.image_count || 0;
+    const dist = distanceMap[load.id];
 
     return `
       <div class="card" style="animation-delay: ${index * 0.05}s">
@@ -834,6 +1144,17 @@
             <div class="route-state">${load.destination_state || ''}</div>
           </div>
         </div>
+
+        ${dist ? `
+          <div class="distance-chips" style="padding: 0 20px 12px">
+            <span class="distance-chip ${dist.offRoute ? 'off-route-chip' : ''}">
+              📍 Origin: ${dist.origin.toFixed(1)} km ${dist.offRoute ? 'off-route' : 'away'}
+            </span>
+            <span class="distance-chip ${dist.offRoute ? 'off-route-chip' : ''}">
+              🏁 Dest: ${dist.dest.toFixed(1)} km ${dist.offRoute ? 'off-route' : 'away'}
+            </span>
+          </div>
+        ` : ''}
 
         ${load.cargo_placement ? `<div class="placement-chip">${load.cargo_placement}</div>` : ''}
 
@@ -878,7 +1199,6 @@
   function togglePhotos(btn, loadId, imageCount) {
     const grid = document.getElementById(`photos-${loadId}`);
     if (grid.style.display === 'none') {
-      // Load images
       grid.innerHTML = '';
       for (let i = 0; i < imageCount; i++) {
         const img = document.createElement('img');
@@ -906,7 +1226,6 @@
     document.getElementById('lightbox-img').src = '';
   }
 
-  // Close lightbox on escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeLightbox();
   });
@@ -920,7 +1239,15 @@
     } catch { return dateStr; }
   }
 
-  // Auto refresh every 2 minutes
+  // Also allow pressing Enter in find space inputs
+  document.addEventListener('DOMContentLoaded', () => {
+    ['fs-origin','fs-dest','fs-weight','fs-volume'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') findSpace();
+      });
+    });
+  });
+
   fetchLoads();
   setInterval(fetchLoads, 120000);
 </script>
