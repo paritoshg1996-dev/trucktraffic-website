@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TruckTraffic.in – India's Truck Load Market</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://apis.mappls.com/advancedmaps/api/xlpbqtrcpkscihyiexqxhnxramyzmkqkdqpd/map_sdk?layer=vector&v=3.0&callback=mapplsReady" defer></script>
   <style>
     :root {
       --navy: #0A2463;
@@ -667,6 +668,137 @@
       margin-top: 8px;
     }
 
+    /* ===== LOCATION INPUT WRAPPER ===== */
+    .loc-input-wrap {
+      position: relative;
+      width: 200px;
+    }
+
+    .loc-input-inner {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+      overflow: visible;
+    }
+
+    .loc-input-inner:focus-within {
+      border-color: var(--orange);
+    }
+
+    .loc-input-inner input {
+      flex: 1;
+      padding: 10px 6px 10px 12px;
+      border: none !important;
+      border-radius: 10px !important;
+      background: transparent !important;
+      color: #fff !important;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none !important;
+      width: 100% !important;
+      min-width: 0;
+    }
+
+    .loc-input-inner input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .loc-voice-btn {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      margin-right: 4px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: color 0.2s, background 0.15s;
+      padding: 0;
+    }
+
+    .loc-voice-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .loc-voice-btn.listening { color: #FF6B6B; animation: voicePulse 1s infinite; }
+
+    @keyframes voicePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loc-type-badge {
+      position: absolute;
+      top: -8px;
+      right: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 100px;
+      pointer-events: none;
+      transition: all 0.2s;
+    }
+
+    .loc-type-badge.pin {
+      background: rgba(255,107,53,0.85);
+      color: #fff;
+    }
+
+    .loc-type-badge.addr {
+      background: rgba(74,222,128,0.85);
+      color: #002;
+    }
+
+    /* Autocomplete dropdown */
+    .loc-suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      z-index: 999;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .loc-suggestions.open { display: block; }
+
+    .loc-suggestion-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .loc-suggestion-item:last-child { border-bottom: none; }
+    .loc-suggestion-item:hover { background: #F0F4FF; }
+
+    .loc-suggestion-icon { flex-shrink: 0; margin-top: 1px; color: var(--navy); }
+
+    .loc-suggestion-main { font-weight: 600; color: var(--text); }
+    .loc-suggestion-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .loc-suggestion-spinner {
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
     .distance-chips {
       display: flex;
       gap: 6px;
@@ -803,12 +935,26 @@
   <div class="find-space-inner">
     <div class="find-space-form">
       <div class="find-space-field">
-        <label>My Origin Pincode</label>
-        <input type="text" id="fs-origin" placeholder="e.g. 400069" maxlength="6" oninput="this.value=this.value.replace(/\D/g,'')"/>
+        <label>My Origin — Pincode or Address</label>
+        <div class="loc-input-wrap" id="origin-wrap">
+          <div class="loc-input-inner">
+            <input type="text" id="fs-origin" placeholder="400069 or Mumbai…" autocomplete="off"/>
+            <button class="loc-voice-btn" id="voice-origin" title="Speak origin" onclick="startVoice('fs-origin', 'voice-origin')">🎙</button>
+          </div>
+          <span class="loc-type-badge" id="origin-badge"></span>
+          <div class="loc-suggestions" id="origin-suggestions"></div>
+        </div>
       </div>
       <div class="find-space-field">
-        <label>My Destination Pincode</label>
-        <input type="text" id="fs-dest" placeholder="e.g. 110001" maxlength="6" oninput="this.value=this.value.replace(/\D/g,'')"/>
+        <label>My Destination — Pincode or Address</label>
+        <div class="loc-input-wrap" id="dest-wrap">
+          <div class="loc-input-inner">
+            <input type="text" id="fs-dest" placeholder="110001 or Delhi…" autocomplete="off"/>
+            <button class="loc-voice-btn" id="voice-dest" title="Speak destination" onclick="startVoice('fs-dest', 'voice-dest')">🎙</button>
+          </div>
+          <span class="loc-type-badge" id="dest-badge"></span>
+          <div class="loc-suggestions" id="dest-suggestions"></div>
+        </div>
       </div>
       <div class="find-space-field">
         <label>My Cargo Weight (kg)</label>
@@ -876,12 +1022,188 @@
 
 <script>
   const API = 'https://ptl-market.onrender.com/api';
+  // ⚙️  Replace with your actual Mappls REST API key
+ const MAPPLS_REST_KEY = 'xlpbqtrcpkscihyiexqxhnxramyzmkqkdqpd';
+
   let allLoads = [];
   let activeFilter = null;
   let distanceMap = {};
   const geoCache = {};
 
-  // ===== GEO MATH (ported from index.tsx) =====
+  // Stores resolved {lat,lon} from address picks so findSpace can use them
+  const resolvedCoords = { origin: null, dest: null };
+
+  /* ============================================================
+     LOCATION INPUT — Smart Pincode vs Address detection
+  ============================================================ */
+
+  function isPincode(val) {
+    return /^\d{1,6}$/.test(val.trim());
+  }
+
+  function updateBadge(badgeId, val) {
+    const badge = document.getElementById(badgeId);
+    const v = val.trim();
+    if (!v) { badge.textContent = ''; badge.className = 'loc-type-badge'; return; }
+    if (/^\d{6}$/.test(v)) {
+      badge.textContent = 'Pincode'; badge.className = 'loc-type-badge pin';
+    } else if (/^\d{1,5}$/.test(v)) {
+      badge.textContent = 'Pincode?'; badge.className = 'loc-type-badge pin';
+    } else {
+      badge.textContent = 'Address'; badge.className = 'loc-type-badge addr';
+    }
+  }
+
+  /* ============================================================
+     MAPPLS Autocomplete
+  ============================================================ */
+
+  let acTimers = {};
+
+  function setupLocationInput(inputId, suggestionsId, badgeId, resolvedKey) {
+    const input = document.getElementById(inputId);
+    const sugBox = document.getElementById(suggestionsId);
+
+    input.addEventListener('input', () => {
+      const val = input.value;
+      resolvedCoords[resolvedKey] = null; // reset when user types
+      updateBadge(badgeId, val);
+
+      clearTimeout(acTimers[inputId]);
+      const trimmed = val.trim();
+
+      // Only autocomplete addresses (not pure pincode attempts)
+      if (trimmed.length < 3 || /^\d+$/.test(trimmed)) {
+        closeSuggestions(suggestionsId);
+        return;
+      }
+
+      acTimers[inputId] = setTimeout(() => fetchMapplsSuggestions(trimmed, suggestionsId, inputId, badgeId, resolvedKey), 300);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSuggestions(suggestionsId);
+      if (e.key === 'Enter') { closeSuggestions(suggestionsId); findSpace(); }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!input.closest('.loc-input-wrap').contains(e.target)) {
+        closeSuggestions(suggestionsId);
+      }
+    });
+  }
+
+  async function fetchMapplsSuggestions(query, suggestionsId, inputId, badgeId, resolvedKey) {
+    const sugBox = document.getElementById(suggestionsId);
+    sugBox.innerHTML = '<div class="loc-suggestion-spinner">🔍 Searching…</div>';
+    sugBox.classList.add('open');
+
+    try {
+      const url = `https://atlas.mappls.com/api/places/search/json?query=${encodeURIComponent(query)}&region=IND&access_token=${MAPPLS_REST_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const suggestions = (data.suggestedLocations || []).slice(0, 6);
+
+      if (!suggestions.length) {
+        sugBox.innerHTML = '<div class="loc-suggestion-spinner">No results found</div>';
+        return;
+      }
+
+      sugBox.innerHTML = suggestions.map((s, i) => `
+        <div class="loc-suggestion-item" data-idx="${i}" data-lat="${s.latitude}" data-lon="${s.longitude}" data-label="${escapeAttr(s.placeName)}" data-type="${s.type || ''}">
+          <span class="loc-suggestion-icon">📍</span>
+          <div>
+            <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
+            <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress || s.type || '')}</div>
+          </div>
+        </div>
+      `).join('');
+
+      sugBox.querySelectorAll('.loc-suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const lat = parseFloat(item.dataset.lat);
+          const lon = parseFloat(item.dataset.lon);
+          const label = item.dataset.label;
+          document.getElementById(inputId).value = label;
+          resolvedCoords[resolvedKey] = { lat, lon, found: true };
+          updateBadge(badgeId, label);
+          closeSuggestions(suggestionsId);
+        });
+      });
+    } catch (err) {
+      sugBox.innerHTML = '<div class="loc-suggestion-spinner">⚠️ Search unavailable</div>';
+    }
+  }
+
+  function closeSuggestions(id) {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escapeAttr(s) {
+    return String(s || '').replace(/"/g,'&quot;');
+  }
+
+  /* ============================================================
+     VOICE RECOGNITION
+  ============================================================ */
+
+  let activeRecognition = null;
+
+  function startVoice(inputId, btnId) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Voice recognition is not supported in your browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    // Stop any active session
+    if (activeRecognition) {
+      activeRecognition.stop();
+      activeRecognition = null;
+    }
+
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    activeRecognition = recognition;
+
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    btn.classList.add('listening');
+    btn.textContent = '🔴';
+    btn.title = 'Listening…';
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      input.value = transcript;
+      input.dispatchEvent(new Event('input'));
+    };
+
+    recognition.onerror = (event) => {
+      console.warn('Voice error:', event.error);
+    };
+
+    recognition.onend = () => {
+      btn.classList.remove('listening');
+      btn.textContent = '🎙';
+      btn.title = btn.id === 'voice-origin' ? 'Speak origin' : 'Speak destination';
+      activeRecognition = null;
+    };
+
+    recognition.start();
+  }
+
+  /* ============================================================
+     GEO MATH
+  ============================================================ */
+
   function toRad(d) { return d * Math.PI / 180; }
 
   function haversineKm(a, b) {
@@ -925,10 +1247,45 @@
     }
   }
 
-  // ===== FIND SPACE =====
+  /* ============================================================
+     FIND SPACE — supports both pincode and address
+  ============================================================ */
+
+  async function resolveLocation(inputId, resolvedKey, labelName) {
+    const val = document.getElementById(inputId).value.trim();
+    if (!val) return { coords: null, error: `⚠️ Enter your ${labelName} (pincode or address)` };
+
+    // If user picked from autocomplete, we already have coords
+    if (resolvedCoords[resolvedKey]) return { coords: resolvedCoords[resolvedKey], error: null };
+
+    // 6-digit pincode
+    if (/^\d{6}$/.test(val)) {
+      const c = await geocodePin(val);
+      if (!c.found) return { coords: null, error: `⚠️ ${labelName} pincode not found` };
+      return { coords: c, error: null };
+    }
+
+    // Pure numbers that aren't 6 digits
+    if (/^\d+$/.test(val)) {
+      return { coords: null, error: `⚠️ Pincodes must be 6 digits. For addresses, type the full name.` };
+    }
+
+    // Address — try Mappls geocode
+    try {
+      const url = `https://atlas.mappls.com/api/places/search/json?query=${encodeURIComponent(val)}&region=IND&access_token=${MAPPLS_REST_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const first = (data.suggestedLocations || [])[0];
+      if (first && first.latitude) {
+        return { coords: { lat: parseFloat(first.latitude), lon: parseFloat(first.longitude), found: true }, error: null };
+      }
+      return { coords: null, error: `⚠️ Could not locate "${val}". Try being more specific or use a pincode.` };
+    } catch {
+      return { coords: null, error: `⚠️ Address search failed. Please use a pincode instead.` };
+    }
+  }
+
   async function findSpace() {
-    const origin = document.getElementById('fs-origin').value.trim();
-    const dest = document.getElementById('fs-dest').value.trim();
     const weightKg = parseFloat(document.getElementById('fs-weight').value);
     const volumeCuft = document.getElementById('fs-volume').value.trim()
       ? parseFloat(document.getElementById('fs-volume').value)
@@ -939,19 +1296,24 @@
     errorEl.textContent = '';
     statusEl.textContent = '';
 
-    if (!/^\d{6}$/.test(origin)) { errorEl.textContent = '⚠️ Enter a valid 6-digit origin pincode'; return; }
-    if (!/^\d{6}$/.test(dest))   { errorEl.textContent = '⚠️ Enter a valid 6-digit destination pincode'; return; }
     if (!weightKg || weightKg <= 0) { errorEl.textContent = '⚠️ Enter your cargo weight in kg'; return; }
 
     const btn = document.getElementById('fs-btn');
     btn.disabled = true;
     btn.textContent = '⏳ Searching...';
-    statusEl.textContent = 'Geocoding your route...';
+    statusEl.textContent = 'Resolving your locations…';
 
     try {
-      const [oc, dc] = await Promise.all([geocodePin(origin), geocodePin(dest)]);
-      if (!oc.found) { errorEl.textContent = '⚠️ Origin pincode not found'; btn.disabled = false; btn.textContent = '🚛 Find Matching Trucks'; statusEl.textContent=''; return; }
-      if (!dc.found) { errorEl.textContent = '⚠️ Destination pincode not found'; btn.disabled = false; btn.textContent = '🚛 Find Matching Trucks'; statusEl.textContent=''; return; }
+      const [originRes, destRes] = await Promise.all([
+        resolveLocation('fs-origin', 'origin', 'origin'),
+        resolveLocation('fs-dest', 'dest', 'destination')
+      ]);
+
+      if (originRes.error) { errorEl.textContent = originRes.error; return; }
+      if (destRes.error)   { errorEl.textContent = destRes.error; return; }
+
+      const oc = originRes.coords;
+      const dc = destRes.coords;
 
       statusEl.textContent = `Checking ${allLoads.length} trucks against your route...`;
 
@@ -959,9 +1321,7 @@
       distanceMap = {};
 
       for (const load of allLoads) {
-        // Weight check (truck tons → kg)
         if (load.weight_tons * 1000 < weightKg) continue;
-        // Volume check
         if (volumeCuft != null && load.space_cuft != null && load.space_cuft < volumeCuft) continue;
 
         const lo = await geocodePin(load.origin_pincode);
@@ -999,6 +1359,8 @@
       }
 
       survivors.sort((a, b) => a.total - b.total);
+      const origin = document.getElementById('fs-origin').value.trim();
+      const dest = document.getElementById('fs-dest').value.trim();
       activeFilter = { origin, dest, weightKg, volumeCuft, oc, dc };
 
       document.getElementById('fs-clear-wrap').style.display = 'block';
@@ -1020,6 +1382,12 @@
   function clearFindSpace() {
     activeFilter = null;
     distanceMap = {};
+    resolvedCoords.origin = null;
+    resolvedCoords.dest = null;
+    document.getElementById('fs-origin').value = '';
+    document.getElementById('fs-dest').value = '';
+    document.getElementById('origin-badge').textContent = '';
+    document.getElementById('dest-badge').textContent = '';
     document.getElementById('fs-clear-wrap').style.display = 'none';
     document.getElementById('fs-error').textContent = '';
     document.getElementById('fs-status').textContent = '';
@@ -1233,7 +1601,10 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    ['fs-origin','fs-dest','fs-weight','fs-volume'].forEach(id => {
+    setupLocationInput('fs-origin', 'origin-suggestions', 'origin-badge', 'origin');
+    setupLocationInput('fs-dest',   'dest-suggestions',   'dest-badge',   'dest');
+
+    ['fs-weight','fs-volume'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') findSpace();
       });
