@@ -803,7 +803,6 @@
 <!-- FIND SPACE PANEL -->
 <div class="find-space-bar">
   <div class="find-space-inner">
-    <div class="find-space-title">🔍 Find Space on a Truck Route</div>
     <div class="find-space-form">
       <div class="find-space-field">
         <label>My Origin Pincode</label>
@@ -821,8 +820,27 @@
         <label>Volume (cu ft) — optional</label>
         <input type="number" id="fs-volume" placeholder="Optional" min="1"/>
       </div>
-      <button class="find-space-btn" id="fs-btn" onclick="findSpace()">🚛 Find Matching Trucks</button>
-      <button class="clear-filter-btn" id="fs-clear" onclick="clearFindSpace()" style="display:none">✕ Clear</button>
+      <div class="find-space-field">
+        <label>Truck Type</label>
+        <select class="filter-select" id="truck-filter" onchange="filterLoads()" style="height:42px;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">
+          <option value="" style="color:#000">All Types</option>
+          <option value="Open" style="color:#000">Open</option>
+          <option value="Container" style="color:#000">Container</option>
+          <option value="Trailer" style="color:#000">Trailer</option>
+        </select>
+      </div>
+      <div class="find-space-field">
+        <label>&nbsp;</label>
+        <button class="find-space-btn" id="fs-btn" onclick="findSpace()">🚛 Find Trucks</button>
+      </div>
+      <div class="find-space-field">
+        <label>&nbsp;</label>
+        <button class="refresh-btn" onclick="fetchLoads()" style="height:42px;">🔄 Refresh</button>
+      </div>
+      <div class="find-space-field" id="fs-clear-wrap" style="display:none">
+        <label>&nbsp;</label>
+        <button class="clear-filter-btn" id="fs-clear" onclick="clearFindSpace()" style="height:42px;">✕ Clear</button>
+      </div>
     </div>
     <div id="fs-error" class="find-space-error"></div>
     <div id="fs-status" class="find-space-status"></div>
@@ -832,19 +850,6 @@
 <!-- FILTERS -->
 <div class="filters-bar">
   <div class="filters-inner">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Search by city, pincode, or route..." oninput="filterLoads()"/>
-    </div>
-    <select class="filter-select" id="truck-filter" onchange="filterLoads()">
-      <option value="">All Truck Types</option>
-      <option value="Open">Open</option>
-      <option value="Container">Container</option>
-      <option value="Trailer">Trailer</option>
-    </select>
-    <button class="refresh-btn" onclick="fetchLoads()">
-      🔄 Refresh
-    </button>
     <span class="results-count" id="results-count">Loading...</span>
   </div>
 </div>
@@ -998,7 +1003,7 @@
       survivors.sort((a, b) => a.total - b.total);
       activeFilter = { origin, dest, weightKg, volumeCuft, oc, dc };
 
-      document.getElementById('fs-clear').style.display = 'block';
+      document.getElementById('fs-clear-wrap').style.display = 'block';
       statusEl.textContent = `✅ Found ${survivors.length} matching truck${survivors.length !== 1 ? 's' : ''} within 15 km of your route`;
 
       document.getElementById('results-count').textContent =
@@ -1017,7 +1022,7 @@
   function clearFindSpace() {
     activeFilter = null;
     distanceMap = {};
-    document.getElementById('fs-clear').style.display = 'none';
+    document.getElementById('fs-clear-wrap').style.display = 'none';
     document.getElementById('fs-error').textContent = '';
     document.getElementById('fs-status').textContent = '';
     filterLoads();
@@ -1067,21 +1072,11 @@
   }
 
   function filterLoads() {
-    const search = document.getElementById('search-input').value.toLowerCase();
     const truckFilter = document.getElementById('truck-filter').value;
 
     const filtered = allLoads.filter(load => {
-      const matchSearch = !search ||
-        (load.origin_city || '').toLowerCase().includes(search) ||
-        (load.destination_city || '').toLowerCase().includes(search) ||
-        (load.origin_pincode || '').includes(search) ||
-        (load.destination_pincode || '').includes(search) ||
-        (load.origin_state || '').toLowerCase().includes(search) ||
-        (load.destination_state || '').toLowerCase().includes(search);
-
       const matchTruck = !truckFilter || load.truck_type === truckFilter;
-
-      return matchSearch && matchTruck;
+      return matchTruck;
     });
 
     document.getElementById('results-count').textContent =
@@ -1239,7 +1234,6 @@
     } catch { return dateStr; }
   }
 
-  // Also allow pressing Enter in find space inputs
   document.addEventListener('DOMContentLoaded', () => {
     ['fs-origin','fs-dest','fs-weight','fs-volume'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
