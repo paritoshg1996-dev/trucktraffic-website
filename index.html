@@ -481,6 +481,85 @@
       margin: 0 20px 12px;
     }
 
+    .show-photos-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 20px 16px;
+      padding: 10px;
+      background: #EEF2FA;
+      border: 1.5px dashed var(--navy);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      width: calc(100% - 40px);
+    }
+
+    .show-photos-btn:hover { background: #dce4f5; }
+
+    .photos-grid {
+      display: flex;
+      gap: 8px;
+      margin: 0 20px 16px;
+      overflow-x: auto;
+    }
+
+    .photos-grid img {
+      width: 100px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .photos-grid img:hover { transform: scale(1.05); }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox.active { display: flex; }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* ===== LOADING ===== */
     .loading {
       text-align: center;
@@ -624,6 +703,12 @@
   </div>
 </main>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="Load photo"/>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <p>© 2026 TruckTraffic.in · Powered by <a href="#">LoadLink</a> · All loads are posted by verified transporters</p>
@@ -722,6 +807,7 @@
     const date = formatDate(load.loading_date);
     const originCity = load.origin_city || load.origin_pincode;
     const destCity = load.destination_city || load.destination_pincode;
+    const imageCount = load.image_count || 0;
 
     return `
       <div class="card" style="animation-delay: ${index * 0.05}s">
@@ -751,6 +837,13 @@
 
         ${load.cargo_placement ? `<div class="placement-chip">${load.cargo_placement}</div>` : ''}
 
+        ${imageCount > 0 ? `
+          <button class="show-photos-btn" onclick="togglePhotos(this, '${load.id}', ${imageCount})">
+            📸 Show ${imageCount} Photo${imageCount > 1 ? 's' : ''}
+          </button>
+          <div class="photos-grid" id="photos-${load.id}" style="display:none"></div>
+        ` : ''}
+
         <div class="card-divider"></div>
 
         <div class="card-specs">
@@ -763,7 +856,7 @@
             <div class="spec-label">Space</div>
           </div>
           <div class="spec">
-            <div class="spec-value">${load.image_count || 0}</div>
+            <div class="spec-value">${imageCount}</div>
             <div class="spec-label">Photos</div>
           </div>
         </div>
@@ -781,6 +874,42 @@
       </div>
     `;
   }
+
+  function togglePhotos(btn, loadId, imageCount) {
+    const grid = document.getElementById(`photos-${loadId}`);
+    if (grid.style.display === 'none') {
+      // Load images
+      grid.innerHTML = '';
+      for (let i = 0; i < imageCount; i++) {
+        const img = document.createElement('img');
+        img.src = `https://ptl-market.onrender.com/api/loads/${loadId}/image/${i}`;
+        img.alt = `Photo ${i + 1}`;
+        img.onclick = () => openLightbox(img.src);
+        img.onerror = () => img.style.display = 'none';
+        grid.appendChild(img);
+      }
+      grid.style.display = 'flex';
+      btn.textContent = '🙈 Hide Photos';
+    } else {
+      grid.style.display = 'none';
+      btn.textContent = `📸 Show ${imageCount} Photo${imageCount > 1 ? 's' : ''}`;
+    }
+  }
+
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.getElementById('lightbox-img').src = '';
+  }
+
+  // Close lightbox on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 
   function formatDate(dateStr) {
     if (!dateStr) return '—';
