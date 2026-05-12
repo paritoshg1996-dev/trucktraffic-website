@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TruckTraffic.in – India's Truck Load Market</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <script src="https://apis.mappls.com/advancedmaps/api/xlpbqtrcpkscihyiexqxhnxramyzmkqkdqpd/map_sdk?layer=vector&v=3.0&callback=mapplsReady" defer></script>
   <style>
     :root {
       --navy: #0A2463;
@@ -74,9 +73,7 @@
       letter-spacing: 0.5px;
     }
 
-    .logo-text span {
-      color: var(--orange);
-    }
+    .logo-text span { color: var(--orange); }
 
     .header-right {
       display: flex;
@@ -149,24 +146,6 @@
 
     .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
 
-    .hero h1 {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(32px, 5vw, 56px);
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.1;
-      margin-bottom: 16px;
-    }
-
-    .hero h1 span { color: var(--orange); }
-
-    .hero p {
-      font-size: 16px;
-      color: rgba(255,255,255,0.75);
-      margin-bottom: 32px;
-      line-height: 1.6;
-    }
-
     .hero-stats {
       display: flex;
       justify-content: center;
@@ -174,9 +153,7 @@
       flex-wrap: wrap;
     }
 
-    .stat {
-      text-align: center;
-    }
+    .stat { text-align: center; }
 
     .stat-value {
       font-family: 'Rajdhani', sans-serif;
@@ -193,7 +170,245 @@
       letter-spacing: 1px;
     }
 
-    /* ===== FILTERS ===== */
+    /* ===== FIND SPACE PANEL ===== */
+    .find-space-bar {
+      background: linear-gradient(135deg, #0d2f7a, var(--navy));
+      padding: 20px 24px;
+      border-bottom: 3px solid var(--orange);
+    }
+
+    .find-space-inner { max-width: 1200px; margin: 0 auto; }
+
+    .find-space-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .find-space-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .find-space-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .find-space-field input,
+    .find-space-field select {
+      padding: 10px 14px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      outline: none;
+      width: 140px;
+      transition: border-color 0.2s;
+      height: 42px;
+    }
+
+    .find-space-field input::placeholder { color: rgba(255,255,255,0.4); }
+    .find-space-field input:focus,
+    .find-space-field select:focus { border-color: var(--orange); }
+
+    .find-space-btn {
+      padding: 10px 20px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      height: 42px;
+      white-space: nowrap;
+    }
+
+    .find-space-btn:hover { background: #e85a25; }
+    .find-space-btn:disabled { background: #666; cursor: not-allowed; }
+
+    .refresh-btn {
+      padding: 10px 18px;
+      background: var(--navy);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 42px;
+    }
+
+    .refresh-btn:hover { background: #0d2f7a; }
+
+    .clear-filter-btn {
+      padding: 10px 16px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      height: 42px;
+      transition: all 0.2s;
+    }
+
+    .clear-filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    .find-space-error {
+      color: #FF6B6B;
+      font-size: 12px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .find-space-status {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* ===== LOCATION INPUT ===== */
+    .loc-input-wrap {
+      position: relative;
+      width: 200px;
+    }
+
+    .loc-input-inner {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+      overflow: visible;
+      height: 42px;
+    }
+
+    .loc-input-inner:focus-within { border-color: var(--orange); }
+
+    .loc-input-inner input {
+      flex: 1;
+      padding: 10px 6px 10px 12px;
+      border: none !important;
+      border-radius: 10px !important;
+      background: transparent !important;
+      color: #fff !important;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none !important;
+      width: 100% !important;
+      min-width: 0;
+      height: 100% !important;
+    }
+
+    .loc-input-inner input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .loc-voice-btn {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      margin-right: 4px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: color 0.2s, background 0.15s;
+      padding: 0;
+    }
+
+    .loc-voice-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .loc-voice-btn.listening { color: #FF6B6B; animation: voicePulse 1s infinite; }
+
+    @keyframes voicePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loc-type-badge {
+      position: absolute;
+      top: -8px;
+      right: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 100px;
+      pointer-events: none;
+      transition: all 0.2s;
+    }
+
+    .loc-type-badge.pin { background: rgba(255,107,53,0.85); color: #fff; }
+    .loc-type-badge.addr { background: rgba(74,222,128,0.85); color: #002; }
+
+    /* Autocomplete dropdown */
+    .loc-suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      z-index: 999;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .loc-suggestions.open { display: block; }
+
+    .loc-suggestion-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .loc-suggestion-item:last-child { border-bottom: none; }
+    .loc-suggestion-item:hover { background: #F0F4FF; }
+
+    .loc-suggestion-icon { flex-shrink: 0; margin-top: 1px; color: var(--navy); }
+    .loc-suggestion-main { font-weight: 600; color: var(--text); }
+    .loc-suggestion-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .loc-suggestion-spinner {
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* ===== FILTERS BAR ===== */
     .filters-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -212,65 +427,6 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-
-    .search-box {
-      flex: 1;
-      min-width: 200px;
-      position: relative;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 10px 16px 10px 40px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-box input:focus { border-color: var(--navy); }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    .filter-select {
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      outline: none;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .refresh-btn {
-      padding: 10px 18px;
-      background: var(--navy);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .refresh-btn:hover { background: #0d2f7a; }
 
     .results-count {
       font-size: 13px;
@@ -330,17 +486,8 @@
       padding: 4px 10px;
     }
 
-    .truck-badge span {
-      font-size: 12px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .date-badge {
-      font-size: 12px;
-      color: rgba(255,255,255,0.7);
-      font-weight: 500;
-    }
+    .truck-badge span { font-size: 12px; font-weight: 600; color: #fff; }
+    .date-badge { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
 
     .card-route {
       padding: 20px;
@@ -358,17 +505,8 @@
       color: var(--text);
     }
 
-    .route-city {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-      margin-top: 2px;
-    }
-
-    .route-state {
-      font-size: 11px;
-      color: var(--subtle);
-    }
+    .route-city { font-size: 13px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+    .route-state { font-size: 11px; color: var(--subtle); }
 
     .route-arrow {
       display: flex;
@@ -385,17 +523,9 @@
       border-radius: 2px;
     }
 
-    .arrow-icon {
-      font-size: 18px;
-      color: var(--orange);
-      margin-top: -14px;
-    }
+    .arrow-icon { font-size: 18px; color: var(--orange); margin-top: -14px; }
 
-    .card-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0 20px;
-    }
+    .card-divider { height: 1px; background: var(--border); margin: 0 20px; }
 
     .card-specs {
       padding: 16px 20px;
@@ -403,10 +533,7 @@
       gap: 16px;
     }
 
-    .spec {
-      flex: 1;
-      text-align: center;
-    }
+    .spec { flex: 1; text-align: center; }
 
     .spec-value {
       font-family: 'Rajdhani', sans-serif;
@@ -433,24 +560,9 @@
     }
 
     .poster-info { flex: 1; }
-
-    .poster-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .poster-company {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .poster-phone {
-      font-size: 11px;
-      color: var(--subtle);
-      margin-top: 2px;
-    }
+    .poster-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .poster-company { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .poster-phone { font-size: 11px; color: var(--subtle); margin-top: 2px; }
 
     .call-btn {
       display: flex;
@@ -523,6 +635,24 @@
 
     .photos-grid img:hover { transform: scale(1.05); }
 
+    .distance-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 0 20px 12px;
+    }
+
+    .distance-chip {
+      background: #E8F5EA;
+      color: var(--green);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .off-route-chip { background: #FFF4EE; color: var(--orange); }
+
     /* Lightbox */
     .lightbox {
       display: none;
@@ -561,270 +691,8 @@
       justify-content: center;
     }
 
-    /* ===== FIND SPACE PANEL ===== */
-    .find-space-bar {
-      background: linear-gradient(135deg, #0d2f7a, var(--navy));
-      padding: 20px 24px;
-      border-bottom: 3px solid var(--orange);
-    }
-
-    .find-space-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .find-space-title {
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .find-space-form {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
-
-    .find-space-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .find-space-field label {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .find-space-field input {
-      padding: 10px 14px;
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      outline: none;
-      width: 140px;
-      transition: border-color 0.2s;
-    }
-
-    .find-space-field input::placeholder { color: rgba(255,255,255,0.4); }
-    .find-space-field input:focus { border-color: var(--orange); }
-
-    .find-space-btn {
-      padding: 10px 20px;
-      background: var(--orange);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: background 0.2s;
-      height: 42px;
-      white-space: nowrap;
-    }
-
-    .find-space-btn:hover { background: #e85a25; }
-    .find-space-btn:disabled { background: #666; cursor: not-allowed; }
-
-    .clear-filter-btn {
-      padding: 10px 16px;
-      background: transparent;
-      color: rgba(255,255,255,0.7);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      height: 42px;
-      transition: all 0.2s;
-    }
-
-    .clear-filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-
-    .find-space-error {
-      color: #FF6B6B;
-      font-size: 12px;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-
-    .find-space-status {
-      color: rgba(255,255,255,0.7);
-      font-size: 12px;
-      margin-top: 8px;
-    }
-
-    /* ===== LOCATION INPUT WRAPPER ===== */
-    .loc-input-wrap {
-      position: relative;
-      width: 200px;
-    }
-
-    .loc-input-inner {
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.1);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      transition: border-color 0.2s;
-      overflow: visible;
-    }
-
-    .loc-input-inner:focus-within {
-      border-color: var(--orange);
-    }
-
-    .loc-input-inner input {
-      flex: 1;
-      padding: 10px 6px 10px 12px;
-      border: none !important;
-      border-radius: 10px !important;
-      background: transparent !important;
-      color: #fff !important;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      outline: none !important;
-      width: 100% !important;
-      min-width: 0;
-    }
-
-    .loc-input-inner input::placeholder { color: rgba(255,255,255,0.4); }
-
-    .loc-voice-btn {
-      flex-shrink: 0;
-      width: 30px;
-      height: 30px;
-      margin-right: 4px;
-      border: none;
-      background: transparent;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      transition: color 0.2s, background 0.15s;
-      padding: 0;
-    }
-
-    .loc-voice-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
-    .loc-voice-btn.listening { color: #FF6B6B; animation: voicePulse 1s infinite; }
-
-    @keyframes voicePulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .loc-type-badge {
-      position: absolute;
-      top: -8px;
-      right: 6px;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 100px;
-      pointer-events: none;
-      transition: all 0.2s;
-    }
-
-    .loc-type-badge.pin {
-      background: rgba(255,107,53,0.85);
-      color: #fff;
-    }
-
-    .loc-type-badge.addr {
-      background: rgba(74,222,128,0.85);
-      color: #002;
-    }
-
-    /* Autocomplete dropdown */
-    .loc-suggestions {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      right: 0;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
-      z-index: 999;
-      max-height: 220px;
-      overflow-y: auto;
-      display: none;
-    }
-
-    .loc-suggestions.open { display: block; }
-
-    .loc-suggestion-item {
-      padding: 10px 14px;
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-
-    .loc-suggestion-item:last-child { border-bottom: none; }
-    .loc-suggestion-item:hover { background: #F0F4FF; }
-
-    .loc-suggestion-icon { flex-shrink: 0; margin-top: 1px; color: var(--navy); }
-
-    .loc-suggestion-main { font-weight: 600; color: var(--text); }
-    .loc-suggestion-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-    .loc-suggestion-spinner {
-      padding: 12px 14px;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .distance-chips {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
-    .distance-chip {
-      background: #E8F5EA;
-      color: var(--green);
-      border-radius: 100px;
-      padding: 3px 10px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .off-route-chip {
-      background: #FFF4EE;
-      color: var(--orange);
-    }
-
-    /* ===== LOADING ===== */
-    .loading {
-      text-align: center;
-      padding: 80px 24px;
-    }
+    /* ===== LOADING / EMPTY / ERROR ===== */
+    .loading { text-align: center; padding: 80px 24px; }
 
     .spinner {
       width: 48px;
@@ -838,12 +706,8 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .loading p {
-      color: var(--muted);
-      font-size: 15px;
-    }
+    .loading p { color: var(--muted); font-size: 15px; }
 
-    /* ===== EMPTY ===== */
     .empty {
       text-align: center;
       padding: 80px 24px;
@@ -854,7 +718,6 @@
     .empty h3 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
     .empty p { color: var(--muted); font-size: 14px; }
 
-    /* ===== ERROR ===== */
     .error-banner {
       background: #FFF5F5;
       border: 1px solid #FED7D7;
@@ -886,7 +749,6 @@
       .hero-stats { gap: 24px; }
       .loads-grid { grid-template-columns: 1fr; }
       .filters-inner { flex-direction: column; align-items: stretch; }
-      .search-box { min-width: unset; }
       .header-right .download-btn { display: none; }
     }
   </style>
@@ -934,57 +796,66 @@
 <div class="find-space-bar">
   <div class="find-space-inner">
     <div class="find-space-form">
+
       <div class="find-space-field">
         <label>My Origin — Pincode or Address</label>
         <div class="loc-input-wrap" id="origin-wrap">
           <div class="loc-input-inner">
             <input type="text" id="fs-origin" placeholder="400069 or Mumbai…" autocomplete="off"/>
-            <button class="loc-voice-btn" id="voice-origin" title="Speak origin" onclick="startVoice('fs-origin', 'voice-origin')">🎙</button>
+            <button class="loc-voice-btn" id="voice-origin" title="Speak origin" onclick="startVoice('fs-origin','voice-origin','origin-badge','origin')">🎙</button>
           </div>
           <span class="loc-type-badge" id="origin-badge"></span>
           <div class="loc-suggestions" id="origin-suggestions"></div>
         </div>
       </div>
+
       <div class="find-space-field">
         <label>My Destination — Pincode or Address</label>
         <div class="loc-input-wrap" id="dest-wrap">
           <div class="loc-input-inner">
             <input type="text" id="fs-dest" placeholder="110001 or Delhi…" autocomplete="off"/>
-            <button class="loc-voice-btn" id="voice-dest" title="Speak destination" onclick="startVoice('fs-dest', 'voice-dest')">🎙</button>
+            <button class="loc-voice-btn" id="voice-dest" title="Speak destination" onclick="startVoice('fs-dest','voice-dest','dest-badge','dest')">🎙</button>
           </div>
           <span class="loc-type-badge" id="dest-badge"></span>
           <div class="loc-suggestions" id="dest-suggestions"></div>
         </div>
       </div>
+
       <div class="find-space-field">
         <label>My Cargo Weight (kg)</label>
         <input type="number" id="fs-weight" placeholder="e.g. 500" min="1"/>
       </div>
+
       <div class="find-space-field">
         <label>Volume (cu ft) — optional</label>
         <input type="number" id="fs-volume" placeholder="Optional" min="1"/>
       </div>
+
       <div class="find-space-field">
         <label>Truck Type</label>
-        <select class="filter-select" id="truck-filter" onchange="filterLoads()" style="height:42px;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;">
-          <option value="" style="color:#000">All Types</option>
-          <option value="Open" style="color:#000">Open</option>
-          <option value="Container" style="color:#000">Container</option>
-          <option value="Trailer" style="color:#000">Trailer</option>
+        <select id="truck-filter" onchange="filterLoads()" style="color:#fff;option-color:#000">
+          <option value="" style="color:#000;background:#fff">All Types</option>
+          <option value="Open" style="color:#000;background:#fff">Open</option>
+          <option value="Container" style="color:#000;background:#fff">Container</option>
+          <option value="Trailer" style="color:#000;background:#fff">Trailer</option>
         </select>
       </div>
+
       <div class="find-space-field">
         <label>&nbsp;</label>
         <button class="find-space-btn" id="fs-btn" onclick="findSpace()">🚛 Find Trucks</button>
       </div>
+
       <div class="find-space-field">
         <label>&nbsp;</label>
-        <button class="refresh-btn" onclick="fetchLoads()" style="height:42px;">🔄 Refresh</button>
+        <button class="refresh-btn" onclick="fetchLoads()">🔄 Refresh</button>
       </div>
+
       <div class="find-space-field" id="fs-clear-wrap" style="display:none">
         <label>&nbsp;</label>
-        <button class="clear-filter-btn" id="fs-clear" onclick="clearFindSpace()" style="height:42px;">✕ Clear</button>
+        <button class="clear-filter-btn" onclick="clearFindSpace()">✕ Clear</button>
       </div>
+
     </div>
     <div id="fs-error" class="find-space-error"></div>
     <div id="fs-status" class="find-space-status"></div>
@@ -1022,123 +893,22 @@
 
 <script>
   const API = 'https://ptl-market.onrender.com/api';
-  // ⚙️  Replace with your actual Mappls REST API key
- const MAPPLS_REST_KEY = 'xlpbqtrcpkscihyiexqxhnxramyzmkqkdqpd';
 
-  let allLoads = [];
+  // ─── STATE ────────────────────────────────────────────────────────────────
+  let allLoads     = [];
   let activeFilter = null;
-  let distanceMap = {};
-  const geoCache = {};
-
-  // Stores resolved {lat,lon} from address picks so findSpace can use them
+  let distanceMap  = {};
+  const geoCache   = {};
   const resolvedCoords = { origin: null, dest: null };
 
-  /* ============================================================
-     LOCATION INPUT — Smart Pincode vs Address detection
-  ============================================================ */
-
-  function isPincode(val) {
-    return /^\d{1,6}$/.test(val.trim());
-  }
-
+  // ─── BADGE HELPERS ────────────────────────────────────────────────────────
   function updateBadge(badgeId, val) {
     const badge = document.getElementById(badgeId);
     const v = val.trim();
     if (!v) { badge.textContent = ''; badge.className = 'loc-type-badge'; return; }
-    if (/^\d{6}$/.test(v)) {
-      badge.textContent = 'Pincode'; badge.className = 'loc-type-badge pin';
-    } else if (/^\d{1,5}$/.test(v)) {
-      badge.textContent = 'Pincode?'; badge.className = 'loc-type-badge pin';
-    } else {
-      badge.textContent = 'Address'; badge.className = 'loc-type-badge addr';
-    }
-  }
-
-  /* ============================================================
-     MAPPLS Autocomplete
-  ============================================================ */
-
-  let acTimers = {};
-
-  function setupLocationInput(inputId, suggestionsId, badgeId, resolvedKey) {
-    const input = document.getElementById(inputId);
-    const sugBox = document.getElementById(suggestionsId);
-
-    input.addEventListener('input', () => {
-      const val = input.value;
-      resolvedCoords[resolvedKey] = null; // reset when user types
-      updateBadge(badgeId, val);
-
-      clearTimeout(acTimers[inputId]);
-      const trimmed = val.trim();
-
-      // Only autocomplete addresses (not pure pincode attempts)
-      if (trimmed.length < 3 || /^\d+$/.test(trimmed)) {
-        closeSuggestions(suggestionsId);
-        return;
-      }
-
-      acTimers[inputId] = setTimeout(() => fetchMapplsSuggestions(trimmed, suggestionsId, inputId, badgeId, resolvedKey), 300);
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeSuggestions(suggestionsId);
-      if (e.key === 'Enter') { closeSuggestions(suggestionsId); findSpace(); }
-    });
-
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!input.closest('.loc-input-wrap').contains(e.target)) {
-        closeSuggestions(suggestionsId);
-      }
-    });
-  }
-
-  async function fetchMapplsSuggestions(query, suggestionsId, inputId, badgeId, resolvedKey) {
-    const sugBox = document.getElementById(suggestionsId);
-    sugBox.innerHTML = '<div class="loc-suggestion-spinner">🔍 Searching…</div>';
-    sugBox.classList.add('open');
-
-    try {
-      const url = `https://atlas.mappls.com/api/places/search/json?query=${encodeURIComponent(query)}&region=IND&access_token=${MAPPLS_REST_KEY}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const suggestions = (data.suggestedLocations || []).slice(0, 6);
-
-      if (!suggestions.length) {
-        sugBox.innerHTML = '<div class="loc-suggestion-spinner">No results found</div>';
-        return;
-      }
-
-      sugBox.innerHTML = suggestions.map((s, i) => `
-        <div class="loc-suggestion-item" data-idx="${i}" data-lat="${s.latitude}" data-lon="${s.longitude}" data-label="${escapeAttr(s.placeName)}" data-type="${s.type || ''}">
-          <span class="loc-suggestion-icon">📍</span>
-          <div>
-            <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
-            <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress || s.type || '')}</div>
-          </div>
-        </div>
-      `).join('');
-
-      sugBox.querySelectorAll('.loc-suggestion-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const lat = parseFloat(item.dataset.lat);
-          const lon = parseFloat(item.dataset.lon);
-          const label = item.dataset.label;
-          document.getElementById(inputId).value = label;
-          resolvedCoords[resolvedKey] = { lat, lon, found: true };
-          updateBadge(badgeId, label);
-          closeSuggestions(suggestionsId);
-        });
-      });
-    } catch (err) {
-      sugBox.innerHTML = '<div class="loc-suggestion-spinner">⚠️ Search unavailable</div>';
-    }
-  }
-
-  function closeSuggestions(id) {
-    const el = document.getElementById(id);
-    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+    if (/^\d{6}$/.test(v))    { badge.textContent = 'Pincode';  badge.className = 'loc-type-badge pin'; }
+    else if (/^\d+$/.test(v)) { badge.textContent = 'Pincode?'; badge.className = 'loc-type-badge pin'; }
+    else                       { badge.textContent = 'Address';  badge.className = 'loc-type-badge addr'; }
   }
 
   function escapeHtml(s) {
@@ -1148,97 +918,173 @@
     return String(s || '').replace(/"/g,'&quot;');
   }
 
-  /* ============================================================
-     VOICE RECOGNITION
-  ============================================================ */
+  // ─── AUTOCOMPLETE ─────────────────────────────────────────────────────────
+  let acTimers = {};
 
-  let activeRecognition = null;
+  function setupLocationInput(inputId, suggestionsId, badgeId, resolvedKey) {
+    const input  = document.getElementById(inputId);
+    const sugBox = document.getElementById(suggestionsId);
 
-  function startVoice(inputId, btnId) {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Voice recognition is not supported in your browser. Please use Chrome or Edge.');
+    input.addEventListener('input', () => {
+      const val = input.value;
+      resolvedCoords[resolvedKey] = null;
+      updateBadge(badgeId, val);
+
+      clearTimeout(acTimers[inputId]);
+      const trimmed = val.trim();
+
+      // Only suggest for non-pure-digit strings of 3+ chars
+      if (trimmed.length < 3 || /^\d+$/.test(trimmed)) {
+        closeSuggestions(suggestionsId);
+        return;
+      }
+
+      acTimers[inputId] = setTimeout(
+        () => fetchMapplsSuggestions(trimmed, suggestionsId, inputId, badgeId, resolvedKey),
+        350
+      );
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSuggestions(suggestionsId);
+      if (e.key === 'Enter')  { closeSuggestions(suggestionsId); findSpace(); }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!input.closest('.loc-input-wrap').contains(e.target)) closeSuggestions(suggestionsId);
+    });
+  }
+
+  async function fetchMapplsSuggestions(query, suggestionsId, inputId, badgeId, resolvedKey) {
+    const sugBox = document.getElementById(suggestionsId);
+    sugBox.innerHTML = '<div class="loc-suggestion-spinner">🔍 Searching…</div>';
+    sugBox.classList.add('open');
+
+    try {
+      // Route through our backend proxy to avoid CORS issues
+      const url = `${API}/places?query=${encodeURIComponent(query)}`;
+      const res  = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      handleSuggestionsResponse(await res.json(), sugBox, inputId, badgeId, resolvedKey);
+    } catch (err) {
+      console.error('Autocomplete error:', err);
+      sugBox.innerHTML = '<div class="loc-suggestion-spinner">⚠️ Search unavailable</div>';
+    }
+  }
+
+  function handleSuggestionsResponse(data, sugBox, inputId, badgeId, resolvedKey) {
+    const suggestions = (data.suggestedLocations || []).slice(0, 6);
+
+    if (!suggestions.length) {
+      sugBox.innerHTML = '<div class="loc-suggestion-spinner">No results found</div>';
       return;
     }
 
-    // Stop any active session
-    if (activeRecognition) {
-      activeRecognition.stop();
-      activeRecognition = null;
-    }
+    sugBox.innerHTML = suggestions.map((s, i) => `
+      <div class="loc-suggestion-item"
+           data-lat="${s.latitude}"
+           data-lon="${s.longitude}"
+           data-label="${escapeAttr(s.placeName)}">
+        <span class="loc-suggestion-icon">📍</span>
+        <div>
+          <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
+          <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress || s.type || '')}</div>
+        </div>
+      </div>
+    `).join('');
 
-    const btn = document.getElementById(btnId);
+    sugBox.querySelectorAll('.loc-suggestion-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const lat   = parseFloat(item.dataset.lat);
+        const lon   = parseFloat(item.dataset.lon);
+        const label = item.dataset.label;
+        document.getElementById(inputId).value = label;
+        resolvedCoords[resolvedKey] = { lat, lon, found: true };
+        updateBadge(badgeId, label);
+        closeSuggestions(sugBox.id);
+      });
+    });
+  }
+
+  function closeSuggestions(id) {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+  }
+
+  // ─── VOICE RECOGNITION ────────────────────────────────────────────────────
+  let activeRecognition = null;
+
+  function startVoice(inputId, btnId, badgeId, resolvedKey) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Voice recognition not supported. Please use Chrome or Edge.'); return; }
+
+    if (activeRecognition) { activeRecognition.stop(); activeRecognition = null; }
+
+    const btn   = document.getElementById(btnId);
     const input = document.getElementById(inputId);
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    activeRecognition = recognition;
+    const rec   = new SR();
+    activeRecognition = rec;
 
-    recognition.lang = 'en-IN';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    rec.lang             = 'en-IN';
+    rec.interimResults   = false;
+    rec.maxAlternatives  = 1;
 
     btn.classList.add('listening');
     btn.textContent = '🔴';
     btn.title = 'Listening…';
 
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      input.value = transcript;
+    rec.onresult = (e) => {
+      input.value = e.results[0][0].transcript;
       input.dispatchEvent(new Event('input'));
     };
 
-    recognition.onerror = (event) => {
-      console.warn('Voice error:', event.error);
-    };
+    rec.onerror = (e) => console.warn('Voice error:', e.error);
 
-    recognition.onend = () => {
+    rec.onend = () => {
       btn.classList.remove('listening');
       btn.textContent = '🎙';
-      btn.title = btn.id === 'voice-origin' ? 'Speak origin' : 'Speak destination';
+      btn.title = 'Speak location';
       activeRecognition = null;
     };
 
-    recognition.start();
+    rec.start();
   }
 
-  /* ============================================================
-     GEO MATH
-  ============================================================ */
-
+  // ─── GEO MATH ─────────────────────────────────────────────────────────────
   function toRad(d) { return d * Math.PI / 180; }
 
   function haversineKm(a, b) {
     const R = 6371;
     const dLat = toRad(b.lat - a.lat);
     const dLon = toRad(b.lon - a.lon);
-    const lat1 = toRad(a.lat);
-    const lat2 = toRad(b.lat);
-    const x = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    const x = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;
     return 2 * R * Math.asin(Math.sqrt(x));
   }
 
   function bearingRad(a, b) {
     const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
-    const dLon = toRad(b.lon - a.lon);
-    const y = Math.sin(dLon) * Math.cos(lat2);
-    const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
-    return Math.atan2(y, x);
+    const dLon  = toRad(b.lon - a.lon);
+    return Math.atan2(
+      Math.sin(dLon)*Math.cos(lat2),
+      Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon)
+    );
   }
 
   function trackDistancesKm(start, end, p) {
-    const R = 6371;
+    const R   = 6371;
     const d13 = haversineKm(start, p) / R;
     const t13 = bearingRad(start, p);
     const t12 = bearingRad(start, end);
-    const xt = Math.asin(Math.sin(d13) * Math.sin(t13 - t12)) * R;
-    const at = Math.acos(Math.cos(d13) / Math.cos(xt / R)) * R;
+    const xt  = Math.asin(Math.sin(d13) * Math.sin(t13 - t12)) * R;
+    const at  = Math.acos(Math.cos(d13) / Math.cos(xt / R)) * R;
     return { cross: Math.abs(xt), along: at };
   }
 
   async function geocodePin(pin) {
     if (geoCache[pin]) return geoCache[pin];
     try {
-      const r = await fetch(`${API}/geocode/${pin}`);
-      const j = await r.json();
+      const r   = await fetch(`${API}/geocode/${pin}`);
+      const j   = await r.json();
       const out = { lat: j.lat || 0, lon: j.lon || 0, found: !!j.found };
       if (out.found) geoCache[pin] = out;
       return out;
@@ -1247,70 +1093,67 @@
     }
   }
 
-  /* ============================================================
-     FIND SPACE — supports both pincode and address
-  ============================================================ */
-
+  // ─── RESOLVE LOCATION (pincode or address) ────────────────────────────────
   async function resolveLocation(inputId, resolvedKey, labelName) {
     const val = document.getElementById(inputId).value.trim();
     if (!val) return { coords: null, error: `⚠️ Enter your ${labelName} (pincode or address)` };
 
-    // If user picked from autocomplete, we already have coords
+    // Already resolved via autocomplete pick
     if (resolvedCoords[resolvedKey]) return { coords: resolvedCoords[resolvedKey], error: null };
 
-    // 6-digit pincode
+    // 6-digit pincode → backend geocode
     if (/^\d{6}$/.test(val)) {
       const c = await geocodePin(val);
       if (!c.found) return { coords: null, error: `⚠️ ${labelName} pincode not found` };
       return { coords: c, error: null };
     }
 
-    // Pure numbers that aren't 6 digits
+    // Non-6-digit number
     if (/^\d+$/.test(val)) {
       return { coords: null, error: `⚠️ Pincodes must be 6 digits. For addresses, type the full name.` };
     }
 
-    // Address — try Mappls geocode
+    // Free-text address → backend proxy → Mappls geocode
     try {
-      const url = `https://atlas.mappls.com/api/places/search/json?query=${encodeURIComponent(val)}&region=IND&access_token=${MAPPLS_REST_KEY}`;
+      const url = `${API}/places?query=${encodeURIComponent(val)}`;
       const res = await fetch(url);
       const data = await res.json();
       const first = (data.suggestedLocations || [])[0];
-      if (first && first.latitude) {
+      if (first?.latitude) {
         return { coords: { lat: parseFloat(first.latitude), lon: parseFloat(first.longitude), found: true }, error: null };
       }
-      return { coords: null, error: `⚠️ Could not locate "${val}". Try being more specific or use a pincode.` };
+      return { coords: null, error: `⚠️ Could not locate "${val}". Try a more specific address or use a pincode.` };
     } catch {
       return { coords: null, error: `⚠️ Address search failed. Please use a pincode instead.` };
     }
   }
 
+  // ─── FIND SPACE ───────────────────────────────────────────────────────────
   async function findSpace() {
-    const weightKg = parseFloat(document.getElementById('fs-weight').value);
-    const volumeCuft = document.getElementById('fs-volume').value.trim()
-      ? parseFloat(document.getElementById('fs-volume').value)
-      : null;
+    const weightKg   = parseFloat(document.getElementById('fs-weight').value);
+    const volumeVal  = document.getElementById('fs-volume').value.trim();
+    const volumeCuft = volumeVal ? parseFloat(volumeVal) : null;
 
-    const errorEl = document.getElementById('fs-error');
+    const errorEl  = document.getElementById('fs-error');
     const statusEl = document.getElementById('fs-status');
-    errorEl.textContent = '';
+    errorEl.textContent  = '';
     statusEl.textContent = '';
 
     if (!weightKg || weightKg <= 0) { errorEl.textContent = '⚠️ Enter your cargo weight in kg'; return; }
 
     const btn = document.getElementById('fs-btn');
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = '⏳ Searching...';
     statusEl.textContent = 'Resolving your locations…';
 
     try {
       const [originRes, destRes] = await Promise.all([
         resolveLocation('fs-origin', 'origin', 'origin'),
-        resolveLocation('fs-dest', 'dest', 'destination')
+        resolveLocation('fs-dest',   'dest',   'destination'),
       ]);
 
       if (originRes.error) { errorEl.textContent = originRes.error; return; }
-      if (destRes.error)   { errorEl.textContent = destRes.error; return; }
+      if (destRes.error)   { errorEl.textContent = destRes.error;   return; }
 
       const oc = originRes.coords;
       const dc = destRes.coords;
@@ -1329,82 +1172,77 @@
         const ld = await geocodePin(load.destination_pincode);
         if (!ld.found) continue;
 
-        // Path A: endpoint match ≤ 15 km on both ends
         const dOrigin = haversineKm(oc, lo);
-        const dDest = haversineKm(dc, ld);
+        const dDest   = haversineKm(dc, ld);
+
         if (dOrigin <= 15 && dDest <= 15) {
           distanceMap[load.id] = { origin: dOrigin, dest: dDest, offRoute: false };
           survivors.push({ load, total: dOrigin + dDest });
           continue;
         }
 
-        // Path B: route deviation ≤ 15 km for long-haul trucks (> 400 km)
         const routeLen = haversineKm(lo, ld);
         if (routeLen > 400) {
           const oTrack = trackDistancesKm(lo, ld, oc);
           const dTrack = trackDistancesKm(lo, ld, dc);
-          const inSeg = at => at >= 0 && at <= routeLen;
+          const inSeg  = at => at >= 0 && at <= routeLen;
           if (
-            oTrack.cross <= 15 &&
-            dTrack.cross <= 15 &&
-            inSeg(oTrack.along) &&
-            inSeg(dTrack.along) &&
+            oTrack.cross <= 15 && dTrack.cross <= 15 &&
+            inSeg(oTrack.along) && inSeg(dTrack.along) &&
             oTrack.along <= dTrack.along
           ) {
             distanceMap[load.id] = { origin: oTrack.cross, dest: dTrack.cross, offRoute: true };
             survivors.push({ load, total: oTrack.cross + dTrack.cross });
-            continue;
           }
         }
       }
 
       survivors.sort((a, b) => a.total - b.total);
-      const origin = document.getElementById('fs-origin').value.trim();
-      const dest = document.getElementById('fs-dest').value.trim();
-      activeFilter = { origin, dest, weightKg, volumeCuft, oc, dc };
+
+      activeFilter = {
+        origin: document.getElementById('fs-origin').value.trim(),
+        dest:   document.getElementById('fs-dest').value.trim(),
+        weightKg, volumeCuft, oc, dc,
+      };
 
       document.getElementById('fs-clear-wrap').style.display = 'block';
       statusEl.textContent = `✅ Found ${survivors.length} matching truck${survivors.length !== 1 ? 's' : ''} within 15 km of your route`;
-
-      document.getElementById('results-count').textContent =
-        `${survivors.length} truck${survivors.length !== 1 ? 's' : ''} matched`;
+      document.getElementById('results-count').textContent = `${survivors.length} truck${survivors.length !== 1 ? 's' : ''} matched`;
 
       renderLoads(survivors.map(s => s.load), true);
-
     } catch (e) {
+      console.error(e);
       errorEl.textContent = '⚠️ Something went wrong. Please try again.';
     } finally {
-      btn.disabled = false;
-      btn.textContent = '🚛 Find Matching Trucks';
+      btn.disabled    = false;
+      btn.textContent = '🚛 Find Trucks';
     }
   }
 
   function clearFindSpace() {
     activeFilter = null;
-    distanceMap = {};
+    distanceMap  = {};
     resolvedCoords.origin = null;
-    resolvedCoords.dest = null;
-    document.getElementById('fs-origin').value = '';
-    document.getElementById('fs-dest').value = '';
-    document.getElementById('origin-badge').textContent = '';
-    document.getElementById('dest-badge').textContent = '';
+    resolvedCoords.dest   = null;
+    ['fs-origin','fs-dest'].forEach(id => document.getElementById(id).value = '');
+    ['origin-badge','dest-badge'].forEach(id => {
+      const el = document.getElementById(id);
+      el.textContent = ''; el.className = 'loc-type-badge';
+    });
     document.getElementById('fs-clear-wrap').style.display = 'none';
-    document.getElementById('fs-error').textContent = '';
+    document.getElementById('fs-error').textContent  = '';
     document.getElementById('fs-status').textContent = '';
     filterLoads();
   }
 
-  // ===== FETCH & FILTER =====
+  // ─── FETCH & RENDER ───────────────────────────────────────────────────────
   async function fetchLoads() {
-    const container = document.getElementById('loads-container');
+    const container      = document.getElementById('loads-container');
     const errorContainer = document.getElementById('error-container');
     errorContainer.innerHTML = '';
 
     container.innerHTML = `
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Loading live truck loads...</p>
-      </div>
+      <div class="loading"><div class="spinner"></div><p>Loading live truck loads...</p></div>
     `;
 
     try {
@@ -1413,11 +1251,9 @@
       allLoads = await res.json();
       updateStats();
       filterLoads();
-    } catch (err) {
+    } catch {
       errorContainer.innerHTML = `
-        <div class="error-banner">
-          ⚠️ Unable to load data. Please try refreshing in a moment.
-        </div>
+        <div class="error-banner">⚠️ Unable to load data. Please try refreshing in a moment.</div>
       `;
       container.innerHTML = `
         <div class="empty">
@@ -1433,28 +1269,22 @@
     document.getElementById('stat-loads').textContent = allLoads.length;
     const routes = new Set(allLoads.map(l => `${l.origin_pincode}-${l.destination_pincode}`)).size;
     document.getElementById('stat-routes').textContent = routes;
-    const totalWeight = allLoads.reduce((s, l) => s + (l.weight_tons || 0), 0).toFixed(0);
-    document.getElementById('stat-weight').textContent = totalWeight + 'T';
+    const total = allLoads.reduce((s, l) => s + (l.weight_tons || 0), 0).toFixed(0);
+    document.getElementById('stat-weight').textContent = total + 'T';
   }
 
   function filterLoads() {
-    const truckFilter = document.getElementById('truck-filter').value;
-
-    const filtered = allLoads.filter(load => {
-      const matchTruck = !truckFilter || load.truck_type === truckFilter;
-      return matchTruck;
-    });
-
+    const tf = document.getElementById('truck-filter').value;
+    const filtered = allLoads.filter(l => !tf || l.truck_type === tf);
     document.getElementById('results-count').textContent =
       `${filtered.length} truck${filtered.length !== 1 ? 's' : ''} found`;
-
     renderLoads(filtered, false);
   }
 
   function renderLoads(loads, isFiltered = false) {
     const container = document.getElementById('loads-container');
 
-    if (loads.length === 0) {
+    if (!loads.length) {
       container.innerHTML = `
         <div class="loads-grid">
           <div class="empty">
@@ -1468,24 +1298,22 @@
     }
 
     container.innerHTML = `
-      <div class="loads-grid">${loads.map((load, i) => renderCard(load, i)).join('')}</div>
+      <div class="loads-grid">${loads.map((l, i) => renderCard(l, i)).join('')}</div>
       ${isFiltered ? '<p style="text-align:center;color:var(--subtle);font-size:12px;margin-top:16px">* Distances are approximate (straight-line)</p>' : ''}
     `;
   }
 
   function renderCard(load, index) {
-    const date = formatDate(load.loading_date);
+    const date       = formatDate(load.loading_date);
     const originCity = load.origin_city || load.origin_pincode;
-    const destCity = load.destination_city || load.destination_pincode;
+    const destCity   = load.destination_city || load.destination_pincode;
     const imageCount = load.image_count || 0;
-    const dist = distanceMap[load.id];
+    const dist       = distanceMap[load.id];
 
     return `
-      <div class="card" style="animation-delay: ${index * 0.05}s">
+      <div class="card" style="animation-delay:${index * 0.05}s">
         <div class="card-header">
-          <div class="truck-badge">
-            <span>🚛 ${load.truck_type || 'Truck'}</span>
-          </div>
+          <div class="truck-badge"><span>🚛 ${load.truck_type || 'Truck'}</span></div>
           <span class="date-badge">📅 ${date}</span>
         </div>
 
@@ -1507,7 +1335,7 @@
         </div>
 
         ${dist ? `
-          <div class="distance-chips" style="padding: 0 20px 12px">
+          <div class="distance-chips">
             <span class="distance-chip ${dist.offRoute ? 'off-route-chip' : ''}">
               📍 Origin: ${dist.origin.toFixed(1)} km ${dist.offRoute ? 'off-route' : 'away'}
             </span>
@@ -1520,7 +1348,7 @@
         ${load.cargo_placement ? `<div class="placement-chip">${load.cargo_placement}</div>` : ''}
 
         ${imageCount > 0 ? `
-          <button class="show-photos-btn" onclick="togglePhotos(this, '${load.id}', ${imageCount})">
+          <button class="show-photos-btn" onclick="togglePhotos(this,'${load.id}',${imageCount})">
             📸 Show ${imageCount} Photo${imageCount > 1 ? 's' : ''}
           </button>
           <div class="photos-grid" id="photos-${load.id}" style="display:none"></div>
@@ -1549,9 +1377,7 @@
             ${load.poster_company ? `<div class="poster-company">${load.poster_company}</div>` : ''}
             <div class="poster-phone">+91 ${load.poster_phone}</div>
           </div>
-          <a href="tel:${load.poster_phone}" class="call-btn">
-            📞 Call
-          </a>
+          <a href="tel:${load.poster_phone}" class="call-btn">📞 Call</a>
         </div>
       </div>
     `;
@@ -1563,8 +1389,8 @@
       grid.innerHTML = '';
       for (let i = 0; i < imageCount; i++) {
         const img = document.createElement('img');
-        img.src = `https://ptl-market.onrender.com/api/loads/${loadId}/image/${i}`;
-        img.alt = `Photo ${i + 1}`;
+        img.src    = `${API}/loads/${loadId}/image/${i}`;
+        img.alt    = `Photo ${i + 1}`;
         img.onclick = () => openLightbox(img.src);
         img.onerror = () => img.style.display = 'none';
         grid.appendChild(img);
@@ -1587,19 +1413,15 @@
     document.getElementById('lightbox-img').src = '';
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
-  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
   function formatDate(dateStr) {
     if (!dateStr) return '—';
-    try {
-      return new Date(dateStr).toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric'
-      });
-    } catch { return dateStr; }
+    try { return new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }); }
+    catch { return dateStr; }
   }
 
+  // ─── INIT ─────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     setupLocationInput('fs-origin', 'origin-suggestions', 'origin-badge', 'origin');
     setupLocationInput('fs-dest',   'dest-suggestions',   'dest-badge',   'dest');
@@ -1612,7 +1434,7 @@
   });
 
   fetchLoads();
-  setInterval(fetchLoads, 120000);
+  setInterval(fetchLoads, 120_000);
 </script>
 </body>
 </html>
