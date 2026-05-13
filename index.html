@@ -980,28 +980,43 @@
       return;
     }
 
-    sugBox.innerHTML = suggestions.map((s, i) => `
-      <div class="loc-suggestion-item"
-           data-lat="${s.latitude}"
-           data-lon="${s.longitude}"
-           data-label="${escapeAttr(s.placeName)}">
-        <span class="loc-suggestion-icon">📍</span>
-        <div>
-          <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
-          <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress || s.type || '')}</div>
+    sugBox.innerHTML = suggestions.map((s) => {
+      // Extract 6-digit pincode from address string e.g. "..., Delhi, 110020"
+      const pincodeMatch = (s.placeAddress || '').match(/\b(\d{6})\b/);
+      const pincode = pincodeMatch ? pincodeMatch[1] : '';
+      return `
+        <div class="loc-suggestion-item"
+             data-eloc="${escapeAttr(s.eLoc || '')}"
+             data-pincode="${pincode}"
+             data-label="${escapeAttr(s.placeName)}">
+          <span class="loc-suggestion-icon">📍</span>
+          <div>
+            <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
+            <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress || s.type || '')}</div>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     sugBox.querySelectorAll('.loc-suggestion-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const lat   = parseFloat(item.dataset.lat);
-        const lon   = parseFloat(item.dataset.lon);
-        const label = item.dataset.label;
+      item.addEventListener('click', async () => {
+        const label   = item.dataset.label;
+        const pincode = item.dataset.pincode;
+
         document.getElementById(inputId).value = label;
-        resolvedCoords[resolvedKey] = { lat, lon, found: true };
         updateBadge(badgeId, label);
         closeSuggestions(sugBox.id);
+
+        if (pincode) {
+          // Geocode the pincode to lat/lon via backend
+          const geo = await geocodePin(pincode);
+          resolvedCoords[resolvedKey] = geo.found
+            ? { lat: geo.lat, lon: geo.lon, found: true, pincode }
+            : { found: false, pincode };
+        } else {
+          // No pincode in address — store label, user may need to enter pincode manually
+          resolvedCoords[resolvedKey] = { found: false, label };
+        }
       });
     });
   }
@@ -1098,10 +1113,19 @@
     const val = document.getElementById(inputId).value.trim();
     if (!val) return { coords: null, error: `⚠️ Enter your ${labelName} (pincode or address)` };
 
-    // Already resolved via autocomplete pick
-    if (resolvedCoords[resolvedKey]) return { coords: resolvedCoords[resolvedKey], error: null };
+    // Already resolved via autocomplete pick with full coords
+    if (resolvedCoords[resolvedKey]?.found) {
+      return { coords: resolvedCoords[resolvedKey], error: null };
+    }
 
-    // 6-digit pincode → backend geocode
+    // Resolved via autocomplete but only have pincode — geocode it now
+    if (resolvedCoords[resolvedKey]?.pincode) {
+      const geo = await geocodePin(resolvedCoords[resolvedKey].pincode);
+      if (geo.found) return { coords: geo, error: null };
+      return { coords: null, error: `⚠️ Could not geocode ${labelName} pincode` };
+    }
+
+    // 6-digit pincode typed directly
     if (/^\d{6}$/.test(val)) {
       const c = await geocodePin(val);
       if (!c.found) return { coords: null, error: `⚠️ ${labelName} pincode not found` };
@@ -1113,16 +1137,21 @@
       return { coords: null, error: `⚠️ Pincodes must be 6 digits. For addresses, type the full name.` };
     }
 
-    // Free-text address → backend proxy → Mappls geocode
+    // Free-text with no autocomplete pick — search and extract pincode
     try {
       const url = `${API}/places?query=${encodeURIComponent(val)}`;
       const res = await fetch(url);
       const data = await res.json();
       const first = (data.suggestedLocations || [])[0];
-      if (first?.latitude) {
-        return { coords: { lat: parseFloat(first.latitude), lon: parseFloat(first.longitude), found: true }, error: null };
+      if (first) {
+        const pincodeMatch = (first.placeAddress || '').match(/\b(\d{6})\b/);
+        const pincode = pincodeMatch ? pincodeMatch[1] : '';
+        if (pincode) {
+          const geo = await geocodePin(pincode);
+          if (geo.found) return { coords: geo, error: null };
+        }
       }
-      return { coords: null, error: `⚠️ Could not locate "${val}". Try a more specific address or use a pincode.` };
+      return { coords: null, error: `⚠️ Could not locate "${val}". Please select from the dropdown or use a pincode.` };
     } catch {
       return { coords: null, error: `⚠️ Address search failed. Please use a pincode instead.` };
     }
