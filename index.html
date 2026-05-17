@@ -22,632 +22,503 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* FIX 1: full-height flex column so footer stays anchored */
+    html, body { height: 100%; }
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ===== HEADER ===== */
     header {
       background: var(--navy);
       padding: 0 24px;
-      position: sticky;
-      top: 0;
-      z-index: 200;
+      position: sticky; top: 0; z-index: 200;
       box-shadow: 0 4px 20px rgba(10,36,99,0.3);
+      flex-shrink: 0;
     }
-
     .header-inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
       height: 60px;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
+    .logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
     .logo-icon {
-      width: 36px; height: 36px;
-      background: var(--orange);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+      width:36px; height:36px; background:var(--orange);
+      border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;
     }
-
-    .logo-text {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px; font-weight: 700;
-      color: #fff; letter-spacing: 0.5px;
-    }
-
-    .logo-text span { color: var(--orange); }
-
-    .header-right {
-      display: flex; align-items: center; gap: 14px;
-    }
-
+    .logo-text { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:#fff; letter-spacing:0.5px; }
+    .logo-text span { color:var(--orange); }
+    .header-right { display:flex; align-items:center; gap:14px; }
     .live-badge {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 100px;
-      padding: 5px 12px;
-      color: #fff; font-size: 12px; font-weight: 600;
+      display:flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+      border-radius:100px; padding:5px 12px; color:#fff; font-size:12px; font-weight:600;
     }
-
-    .live-dot {
-      width: 7px; height: 7px;
-      background: #4ade80; border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
+    .live-dot { width:7px; height:7px; background:#4ade80; border-radius:50%; animation:pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
     .download-btn {
-      background: var(--orange); color: #fff;
-      border: none; border-radius: 8px;
-      padding: 7px 14px; font-size: 13px; font-weight: 600;
-      cursor: pointer; text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      transition: background 0.2s;
+      background:var(--orange); color:#fff; border:none; border-radius:8px;
+      padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer;
+      text-decoration:none; font-family:'Inter',sans-serif; transition:background 0.2s;
     }
-    .download-btn:hover { background: #e85a25; }
+    .download-btn:hover { background:#e85a25; }
 
-    /* ===== FILTER BAR ===== */
+    /* ===== DESKTOP FILTER BAR ===== */
     .filter-bar {
-      background: linear-gradient(135deg, #0d2f7a, var(--navy));
+      background: linear-gradient(135deg,#0d2f7a,var(--navy));
       padding: 14px 24px;
       border-bottom: 3px solid var(--orange);
-      position: sticky;
-      top: 60px;
-      z-index: 150;
+      position: sticky; top: 60px; z-index: 150;
+      flex-shrink: 0;
     }
-
     .filter-bar-inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
+      max-width:1400px; margin:0 auto;
+      display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
     }
-
-    .filter-field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
+    .filter-field { display:flex; flex-direction:column; gap:4px; }
     .filter-field label {
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,0.65);
-      text-transform: uppercase; letter-spacing: 0.5px;
+      font-size:10px; font-weight:600;
+      color:rgba(255,255,255,0.65); text-transform:uppercase; letter-spacing:0.5px;
     }
 
-    /* Location input wrapper */
-    .loc-input-wrap { position: relative; width: 190px; }
-
+    /* location input */
+    .loc-input-wrap { position:relative; width:190px; }
     .loc-input-inner {
-      display: flex; align-items: center;
-      background: rgba(255,255,255,0.1);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 9px;
-      height: 40px;
-      transition: border-color 0.2s;
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2);
+      border-radius:9px; height:40px; transition:border-color 0.2s;
     }
-
-    .loc-input-inner:focus-within { border-color: var(--orange); }
-
+    .loc-input-inner:focus-within { border-color:var(--orange); }
     .loc-input-inner input {
-      flex: 1; padding: 0 6px 0 12px;
-      border: none !important; background: transparent !important;
-      color: #fff !important; font-size: 13px;
-      font-family: 'Inter', sans-serif;
-      outline: none !important; min-width: 0; height: 100%;
+      flex:1; padding:0 6px 0 12px;
+      border:none !important; background:transparent !important;
+      color:#fff !important; font-size:13px; font-family:'Inter',sans-serif;
+      outline:none !important; min-width:0; height:100%;
     }
-
-    .loc-input-inner input::placeholder { color: rgba(255,255,255,0.38); }
-
+    .loc-input-inner input::placeholder { color:rgba(255,255,255,0.38); }
     .loc-voice-btn {
-      flex-shrink: 0; width: 28px; height: 28px;
-      margin-right: 4px; border: none;
-      background: transparent; color: rgba(255,255,255,0.5);
-      cursor: pointer; border-radius: 5px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; transition: color 0.2s;
+      flex-shrink:0; width:28px; height:28px; margin-right:4px;
+      border:none; background:transparent; color:rgba(255,255,255,0.5);
+      cursor:pointer; border-radius:5px; display:flex; align-items:center;
+      justify-content:center; font-size:14px; transition:color 0.2s;
     }
-    .loc-voice-btn:hover { color:#fff; background: rgba(255,255,255,0.1); }
-    .loc-voice-btn.listening { color:#FF6B6B; animation: voicePulse 1s infinite; }
-
+    .loc-voice-btn:hover { color:#fff; background:rgba(255,255,255,0.1); }
+    .loc-voice-btn.listening { color:#FF6B6B; animation:voicePulse 1s infinite; }
     @keyframes voicePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
     .loc-type-badge {
-      position: absolute; top: -8px; right: 6px;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.4px;
-      text-transform: uppercase; padding: 1px 5px;
-      border-radius: 100px; pointer-events: none;
+      position:absolute; top:-8px; right:6px;
+      font-size:9px; font-weight:700; letter-spacing:0.4px;
+      text-transform:uppercase; padding:1px 5px;
+      border-radius:100px; pointer-events:none;
     }
-    .loc-type-badge.pin  { background: rgba(255,107,53,0.85); color:#fff; }
-    .loc-type-badge.addr { background: rgba(74,222,128,0.85); color:#002; }
-
+    .loc-type-badge.pin  { background:rgba(255,107,53,0.85); color:#fff; }
+    .loc-type-badge.addr { background:rgba(74,222,128,0.85); color:#002; }
     .loc-suggestions {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: #fff; border: 1px solid var(--border);
-      border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      z-index: 999; max-height: 220px; overflow-y: auto; display: none;
+      position:absolute; top:calc(100% + 4px); left:0; right:0;
+      background:#fff; border:1px solid var(--border);
+      border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.2);
+      z-index:999; max-height:220px; overflow-y:auto; display:none;
+      min-width:260px;
     }
-    .loc-suggestions.open { display: block; }
-
+    .loc-suggestions.open { display:block; }
     .loc-suggestion-item {
-      padding: 9px 13px; font-size: 13px; color: var(--text);
-      cursor: pointer; display: flex; align-items: flex-start;
-      gap: 7px; border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
+      padding:9px 13px; font-size:13px; color:var(--text);
+      cursor:pointer; display:flex; align-items:flex-start;
+      gap:7px; border-bottom:1px solid var(--border); transition:background 0.15s;
     }
-    .loc-suggestion-item:last-child { border-bottom: none; }
-    .loc-suggestion-item:hover { background: #F0F4FF; }
-    .loc-suggestion-icon { flex-shrink:0; margin-top:1px; color: var(--navy); }
-    .loc-suggestion-main { font-weight: 600; color: var(--text); }
-    .loc-suggestion-sub  { font-size: 11px; color: var(--muted); margin-top:1px; }
-    .loc-suggestion-spinner { padding: 11px 14px; color: var(--muted); font-size: 13px; text-align:center; }
+    .loc-suggestion-item:last-child { border-bottom:none; }
+    .loc-suggestion-item:hover { background:#F0F4FF; }
+    .loc-suggestion-icon { flex-shrink:0; margin-top:1px; color:var(--navy); }
+    .loc-suggestion-main { font-weight:600; color:var(--text); }
+    .loc-suggestion-sub  { font-size:11px; color:var(--muted); margin-top:1px; }
+    .loc-suggestion-spinner { padding:11px 14px; color:var(--muted); font-size:13px; text-align:center; }
 
-    /* Weight input */
+    /* FIX 6: weight in tons */
     .filter-field input[type="number"] {
-      padding: 0 12px; height: 40px;
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 9px; font-size: 13px;
-      font-family: 'Inter', sans-serif;
-      background: rgba(255,255,255,0.1);
-      color: #fff; outline: none; width: 110px;
-      transition: border-color 0.2s;
-      -moz-appearance: textfield;
+      padding:0 12px; height:40px;
+      border:1.5px solid rgba(255,255,255,0.2); border-radius:9px;
+      font-size:13px; font-family:'Inter',sans-serif;
+      background:rgba(255,255,255,0.1); color:#fff; outline:none; width:110px;
+      transition:border-color 0.2s; -moz-appearance:textfield;
     }
     .filter-field input[type="number"]::-webkit-outer-spin-button,
     .filter-field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; }
-    .filter-field input[type="number"]::placeholder { color: rgba(255,255,255,0.38); }
-    .filter-field input[type="number"]:focus { border-color: var(--orange); }
+    .filter-field input[type="number"]::placeholder { color:rgba(255,255,255,0.38); }
+    .filter-field input[type="number"]:focus { border-color:var(--orange); }
 
-    /* Buttons in filter bar */
-    .filter-btn-group {
-      display: flex; align-items: flex-end; gap: 8px;
-      margin-left: auto;
-    }
-
+    .filter-btn-group { display:flex; align-items:flex-end; gap:8px; margin-left:auto; }
     .btn-find {
-      height: 40px; padding: 0 20px;
-      background: var(--orange); color: #fff;
-      border: none; border-radius: 9px;
-      font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: background 0.2s; white-space: nowrap;
+      height:40px; padding:0 20px; background:var(--orange); color:#fff;
+      border:none; border-radius:9px; font-size:13px; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.2s; white-space:nowrap;
     }
-    .btn-find:hover { background: #e85a25; }
-    .btn-find:disabled { background: #888; cursor: not-allowed; }
-
+    .btn-find:hover { background:#e85a25; }
+    .btn-find:disabled { background:#888; cursor:not-allowed; }
     .btn-refresh {
-      height: 40px; padding: 0 16px;
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.85);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 9px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: background 0.2s; white-space: nowrap;
-      display: flex; align-items: center; gap: 5px;
+      height:40px; padding:0 16px; background:rgba(255,255,255,0.12);
+      color:rgba(255,255,255,0.85); border:1.5px solid rgba(255,255,255,0.2);
+      border-radius:9px; font-size:13px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.2s; white-space:nowrap;
+      display:flex; align-items:center; gap:5px;
     }
-    .btn-refresh:hover { background: rgba(255,255,255,0.2); }
-
+    .btn-refresh:hover { background:rgba(255,255,255,0.2); }
     .btn-clear {
-      height: 40px; padding: 0 14px;
-      background: transparent;
-      color: rgba(255,255,255,0.65);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 9px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: all 0.2s; white-space: nowrap;
+      height:40px; padding:0 14px; background:transparent;
+      color:rgba(255,255,255,0.65); border:1.5px solid rgba(255,255,255,0.2);
+      border-radius:9px; font-size:13px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; white-space:nowrap;
     }
-    .btn-clear:hover { background: rgba(255,255,255,0.1); color:#fff; }
-
+    .btn-clear:hover { background:rgba(255,255,255,0.1); color:#fff; }
     .filter-status-row {
-      max-width: 1400px; margin: 0 auto;
-      display: flex; align-items: center; gap: 12px;
-      margin-top: 6px; min-height: 18px;
+      max-width:1400px; margin:6px auto 0;
+      display:flex; align-items:center; gap:12px; min-height:18px;
     }
+    .filter-error  { color:#FF8080; font-size:12px; font-weight:500; }
+    .filter-status { color:rgba(255,255,255,0.6); font-size:12px; }
 
-    .filter-error  { color: #FF8080; font-size: 12px; font-weight:500; }
-    .filter-status { color: rgba(255,255,255,0.6); font-size: 12px; }
+    /* ===== MOBILE SEARCH BAR ===== */
+    .mobile-search-bar {
+      display:none;
+      background:linear-gradient(135deg,#0d2f7a,var(--navy));
+      padding:10px 16px;
+      border-bottom:3px solid var(--orange);
+      position:sticky; top:60px; z-index:150;
+      flex-shrink:0;
+    }
+    .mobile-search-trigger {
+      display:flex; align-items:center; gap:10px;
+      background:rgba(255,255,255,0.12);
+      border:1.5px solid rgba(255,255,255,0.25);
+      border-radius:100px; padding:10px 16px;
+      cursor:pointer; transition:background 0.2s;
+    }
+    .mobile-search-trigger:hover { background:rgba(255,255,255,0.18); }
+    .mobile-search-icon { font-size:16px; color:rgba(255,255,255,0.7); }
+    .mobile-search-text { flex:1; font-size:14px; color:rgba(255,255,255,0.55); font-family:'Inter',sans-serif; }
+    .mobile-active-badge {
+      background:var(--orange); color:#fff;
+      border-radius:100px; padding:2px 8px;
+      font-size:11px; font-weight:700; display:none;
+    }
+    .mobile-active-badge.visible { display:inline-block; }
+
+    /* ===== MOBILE FILTER DRAWER ===== */
+    .mobile-filter-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:400;
+    }
+    .mobile-filter-overlay.open { display:block; }
+    .mobile-filter-drawer {
+      position:fixed; bottom:0; left:0; right:0;
+      background:linear-gradient(160deg,#0d2f7a,var(--navy));
+      border-radius:20px 20px 0 0;
+      padding:0 20px 32px;
+      z-index:450;
+      transform:translateY(100%);
+      transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      max-height:92vh; overflow-y:auto;
+    }
+    .mobile-filter-drawer.open { transform:translateY(0); }
+    .drawer-handle {
+      width:40px; height:4px; background:rgba(255,255,255,0.25);
+      border-radius:2px; margin:14px auto 20px;
+    }
+    .drawer-title { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:20px; }
+    .drawer-field { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .drawer-field label { font-size:11px; font-weight:600; color:rgba(255,255,255,0.65); text-transform:uppercase; letter-spacing:0.5px; }
+    .drawer-loc-wrap { position:relative; width:100%; }
+    .drawer-loc-inner {
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.22);
+      border-radius:12px; height:48px; transition:border-color 0.2s;
+    }
+    .drawer-loc-inner:focus-within { border-color:var(--orange); }
+    .drawer-loc-inner input {
+      flex:1; padding:0 8px 0 14px;
+      border:none !important; background:transparent !important;
+      color:#fff !important; font-size:15px; font-family:'Inter',sans-serif;
+      outline:none !important; min-width:0; height:100%;
+    }
+    .drawer-loc-inner input::placeholder { color:rgba(255,255,255,0.38); }
+    .drawer-voice-btn {
+      flex-shrink:0; width:36px; height:36px; margin-right:6px;
+      border:none; background:transparent; color:rgba(255,255,255,0.5);
+      cursor:pointer; border-radius:8px;
+      display:flex; align-items:center; justify-content:center; font-size:18px;
+    }
+    .drawer-voice-btn:hover { color:#fff; background:rgba(255,255,255,0.1); }
+    .drawer-voice-btn.listening { color:#FF6B6B; animation:voicePulse 1s infinite; }
+    .drawer-loc-suggestions {
+      position:absolute; top:calc(100% + 4px); left:0; right:0;
+      background:#fff; border:1px solid var(--border);
+      border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.25);
+      z-index:999; max-height:220px; overflow-y:auto; display:none;
+    }
+    .drawer-loc-suggestions.open { display:block; }
+    .drawer-field input[type="number"] {
+      padding:0 14px; height:48px;
+      border:1.5px solid rgba(255,255,255,0.22); border-radius:12px;
+      font-size:15px; font-family:'Inter',sans-serif;
+      background:rgba(255,255,255,0.1); color:#fff; outline:none; width:100%;
+      transition:border-color 0.2s; -moz-appearance:textfield;
+    }
+    .drawer-field input[type="number"]::-webkit-outer-spin-button,
+    .drawer-field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; }
+    .drawer-field input[type="number"]::placeholder { color:rgba(255,255,255,0.38); }
+    .drawer-field input[type="number"]:focus { border-color:var(--orange); }
+    /* FIX 5: centred button row */
+    .drawer-btn-row { display:flex; gap:10px; margin-top:20px; justify-content:center; }
+    .drawer-btn-find {
+      flex:1; height:48px; background:var(--orange); color:#fff;
+      border:none; border-radius:12px; font-size:15px; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.2s;
+    }
+    .drawer-btn-find:hover { background:#e85a25; }
+    .drawer-btn-find:disabled { background:#888; cursor:not-allowed; }
+    .drawer-btn-refresh {
+      height:48px; padding:0 18px;
+      background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85);
+      border:1.5px solid rgba(255,255,255,0.2); border-radius:12px;
+      font-size:15px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+      display:flex; align-items:center; gap:6px; transition:background 0.2s;
+    }
+    .drawer-btn-refresh:hover { background:rgba(255,255,255,0.2); }
+    .drawer-btn-clear {
+      height:48px; padding:0 16px; background:transparent;
+      color:rgba(255,255,255,0.65); border:1.5px solid rgba(255,255,255,0.2);
+      border-radius:12px; font-size:15px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif;
+    }
+    .drawer-status { margin-top:10px; font-size:12px; color:rgba(255,255,255,0.6); text-align:center; }
+    .drawer-error  { margin-top:8px; font-size:12px; color:#FF8080; font-weight:500; text-align:center; }
 
     /* ===== RESULTS BAR ===== */
-    .results-bar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 24px;
-    }
+    .results-bar { background:var(--surface); border-bottom:1px solid var(--border); padding:10px 24px; flex-shrink:0; }
+    .results-bar-inner { max-width:1400px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+    .results-count { font-size:13px; color:var(--muted); font-weight:500; }
 
-    .results-bar-inner {
-      max-width: 1400px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .results-count {
-      font-size: 13px; color: var(--muted); font-weight: 500;
-    }
-
-    /* ===== MAIN ===== */
+    /* ===== MAIN (flex:1 pushes footer down) ===== */
     .main {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px 24px 60px;
+      max-width:1400px; margin:0 auto;
+      padding:20px 24px 40px; width:100%;
+      flex:1;
     }
 
     /* ===== TABLE ===== */
     .table-wrap {
-      background: var(--surface);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: 0 2px 12px rgba(10,36,99,0.06);
+      background:var(--surface); border-radius:14px;
+      border:1px solid var(--border); overflow:hidden;
+      box-shadow:0 2px 12px rgba(10,36,99,0.06);
+      overflow-x:auto;
     }
-
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    thead {
-      background: linear-gradient(135deg, var(--navy), #1a3a8f);
-      position: sticky;
-      top: 0;
-    }
-
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead { background:linear-gradient(135deg,var(--navy),#1a3a8f); }
     thead th {
-      padding: 13px 16px;
-      text-align: left;
-      font-size: 11px; font-weight: 700;
-      color: rgba(255,255,255,0.75);
-      text-transform: uppercase; letter-spacing: 0.6px;
-      white-space: nowrap;
-      cursor: pointer; user-select: none;
+      padding:13px 14px; text-align:left;
+      font-size:11px; font-weight:700;
+      color:rgba(255,255,255,0.75); text-transform:uppercase;
+      letter-spacing:0.6px; white-space:nowrap; user-select:none;
     }
+    tbody tr { border-bottom:1px solid var(--border); transition:background 0.12s; cursor:pointer; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--row-hover); }
+    tbody tr.highlighted { background:#EEF4FF; }
+    td { padding:12px 14px; vertical-align:middle; }
 
-    thead th:hover { color: #fff; }
-    thead th .sort-arrow { margin-left: 4px; opacity: 0.5; font-size: 10px; }
-    thead th.sorted .sort-arrow { opacity: 1; color: var(--orange); }
-
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.12s;
-      cursor: pointer;
-    }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--row-hover); }
-    tbody tr.highlighted { background: #EEF4FF; }
-
-    td {
-      padding: 13px 16px;
-      vertical-align: middle;
-    }
-
-    /* Route cell */
-    .td-route {
-      display: flex; align-items: center; gap: 8px;
-      min-width: 260px;
-    }
-
+    /* FIX 2: Route — pincode + city only, no state */
+    .td-route { display:flex; align-items:center; gap:6px; }
+    .route-endpoint { min-width:0; }
     .td-pin {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px; font-weight: 700; color: var(--text);
-      line-height: 1;
+      font-family:'Rajdhani',sans-serif;
+      font-size:15px; font-weight:700; color:var(--text);
+      line-height:1; white-space:nowrap;
     }
-
     .td-city {
-      font-size: 11px; color: var(--muted);
-      margin-top: 2px; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
-      max-width: 90px;
+      font-size:11px; color:var(--muted);
+      margin-top:1px; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis; max-width:80px;
     }
+    .td-arrow { color:var(--orange); font-size:13px; flex-shrink:0; padding:0 2px; }
 
-    .td-arrow {
-      color: var(--orange); font-size: 14px; flex-shrink:0;
-    }
-
-    /* Truck type pill */
     .truck-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #EEF2FA; color: var(--navy);
-      border-radius: 100px; padding: 3px 10px;
-      font-size: 11px; font-weight: 700; white-space: nowrap;
+      display:inline-flex; align-items:center; gap:4px;
+      background:#EEF2FA; color:var(--navy);
+      border-radius:100px; padding:3px 10px;
+      font-size:11px; font-weight:700; white-space:nowrap;
     }
-
-    /* Placement pill */
     .place-pill {
-      display: inline-block;
-      background: #FFF4EE; color: var(--orange);
-      border-radius: 100px; padding: 3px 9px;
-      font-size: 11px; font-weight: 600; white-space: nowrap;
+      display:inline-block; background:#FFF4EE; color:var(--orange);
+      border-radius:100px; padding:3px 9px;
+      font-size:11px; font-weight:600; white-space:nowrap;
     }
-
-    /* Weight */
     .td-weight {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px; font-weight: 700; color: var(--navy);
+      font-family:'Rajdhani',sans-serif;
+      font-size:16px; font-weight:700; color:var(--navy); white-space:nowrap;
     }
-
-    /* Distance chips */
     .dist-badge {
-      display: inline-block;
-      background: #E8F5EA; color: var(--green);
-      border-radius: 100px; padding: 2px 8px;
-      font-size: 10px; font-weight: 700; white-space: nowrap;
-      margin-bottom: 3px;
+      display:inline-block; background:#E8F5EA; color:var(--green);
+      border-radius:100px; padding:2px 8px;
+      font-size:10px; font-weight:700; white-space:nowrap; margin-bottom:3px;
     }
-
-    /* Date */
-    .td-date { color: var(--muted); white-space: nowrap; }
-
-    /* Photos count */
-    .photo-count {
-      display: inline-flex; align-items: center; gap: 4px;
-      color: var(--navy); font-size: 12px; font-weight: 600;
-    }
-
-    /* Info button */
+    .td-date { color:var(--muted); white-space:nowrap; font-size:12px; }
+    .photo-count { display:inline-flex; align-items:center; gap:4px; color:var(--navy); font-size:12px; font-weight:600; }
     .info-btn {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 14px; border-radius: 100px;
-      background: var(--navy); color: #fff;
-      border: none; cursor: pointer;
-      font-size: 12px; font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      transition: background 0.15s; white-space: nowrap;
+      display:inline-flex; align-items:center; gap:5px;
+      padding:6px 14px; border-radius:100px;
+      background:var(--navy); color:#fff;
+      border:none; cursor:pointer; font-size:12px; font-weight:600;
+      font-family:'Inter',sans-serif; transition:background 0.15s; white-space:nowrap;
     }
-    .info-btn:hover { background: #0d2f7a; }
+    .info-btn:hover { background:#0d2f7a; }
 
-    /* ===== DETAIL PANEL (slide-in) ===== */
-    .detail-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 500;
-      animation: fadeIn 0.2s ease;
-    }
-    .detail-overlay.open { display: block; }
-
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
+    /* ===== DETAIL PANEL ===== */
+    .detail-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:500; }
+    .detail-overlay.open { display:block; }
     .detail-panel {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: 480px; max-width: 100vw;
-      background: var(--surface);
-      box-shadow: -8px 0 40px rgba(10,36,99,0.18);
-      z-index: 600;
-      display: flex; flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
-      overflow: hidden;
+      position:fixed; top:0; right:0; bottom:0;
+      width:480px; max-width:100vw;
+      background:var(--surface); box-shadow:-8px 0 40px rgba(10,36,99,0.18);
+      z-index:600; display:flex; flex-direction:column;
+      transform:translateX(100%);
+      transition:transform 0.28s cubic-bezier(0.4,0,0.2,1); overflow:hidden;
     }
-
-    .detail-panel.open { transform: translateX(0); }
-
+    .detail-panel.open { transform:translateX(0); }
     .detail-header {
-      background: linear-gradient(135deg, var(--navy), #1a3a8f);
-      padding: 20px 24px;
-      display: flex; align-items: flex-start; justify-content: space-between;
-      flex-shrink: 0;
+      background:linear-gradient(135deg,var(--navy),#1a3a8f);
+      padding:20px 24px;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      flex-shrink:0;
     }
-
     .detail-close {
-      background: rgba(255,255,255,0.15); border: none;
-      color: #fff; width: 32px; height: 32px; border-radius: 50%;
-      cursor: pointer; font-size: 16px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-left: 12px;
-      transition: background 0.15s;
+      background:rgba(255,255,255,0.15); border:none; color:#fff;
+      width:32px; height:32px; border-radius:50%;
+      cursor:pointer; font-size:16px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; margin-left:12px; transition:background 0.15s;
     }
-    .detail-close:hover { background: rgba(255,255,255,0.28); }
-
-    .detail-route-header {
-      flex: 1;
-    }
-
+    .detail-close:hover { background:rgba(255,255,255,0.28); }
+    .detail-route-header { flex:1; }
     .detail-truck-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 100px; padding: 3px 10px;
-      font-size: 11px; font-weight: 700; color: #fff;
-      margin-bottom: 10px;
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(255,255,255,0.15);
+      border-radius:100px; padding:3px 10px;
+      font-size:11px; font-weight:700; color:#fff; margin-bottom:10px;
     }
-
-    .detail-route-row {
-      display: flex; align-items: center; gap: 14px;
-    }
-
-    .detail-pin {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 26px; font-weight: 700; color: #fff;
-      line-height: 1;
-    }
-
-    .detail-city {
-      font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 3px;
-    }
-
-    .detail-state {
-      font-size: 11px; color: rgba(255,255,255,0.5);
-    }
-
-    .detail-arrow { color: var(--orange); font-size: 22px; }
-
-    .detail-body {
-      flex: 1; overflow-y: auto; padding: 24px;
-    }
-
-    .detail-section { margin-bottom: 24px; }
-
+    .detail-route-row { display:flex; align-items:center; gap:14px; }
+    .detail-pin { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; color:#fff; line-height:1; }
+    .detail-city  { font-size:12px; color:rgba(255,255,255,0.75); margin-top:3px; }
+    .detail-state { font-size:11px; color:rgba(255,255,255,0.5); }
+    .detail-arrow { color:var(--orange); font-size:22px; }
+    .detail-body { flex:1; overflow-y:auto; padding:24px; }
+    .detail-section { margin-bottom:24px; }
     .detail-section-title {
-      font-size: 10px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.7px;
-      margin-bottom: 12px;
-      padding-bottom: 6px; border-bottom: 1px solid var(--border);
+      font-size:10px; font-weight:700; color:var(--muted);
+      text-transform:uppercase; letter-spacing:0.7px;
+      margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border);
     }
-
-    .detail-specs-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-    }
-
-    .detail-spec {
-      background: var(--bg); border-radius: 10px; padding: 12px;
-      text-align: center;
-    }
-
-    .detail-spec-value {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px; font-weight: 700; color: var(--navy);
-    }
-
-    .detail-spec-label {
-      font-size: 10px; color: var(--subtle);
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-top: 3px;
-    }
-
-    .detail-info-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
-    }
-    .detail-info-row:last-child { border-bottom: none; }
-
-    .detail-info-icon { font-size: 16px; width: 24px; text-align:center; flex-shrink:0; }
-    .detail-info-label { font-size: 11px; color: var(--muted); width: 100px; flex-shrink:0; }
-    .detail-info-value { font-size: 13px; font-weight: 600; color: var(--text); }
-
-    /* Photo gallery in detail */
-    .detail-photos-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-    }
-
+    .detail-specs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .detail-spec { background:var(--bg); border-radius:10px; padding:12px; text-align:center; }
+    .detail-spec-value { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:var(--navy); }
+    .detail-spec-label { font-size:10px; color:var(--subtle); text-transform:uppercase; letter-spacing:0.5px; margin-top:3px; }
+    .detail-info-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+    .detail-info-row:last-child { border-bottom:none; }
+    .detail-info-icon { font-size:16px; width:24px; text-align:center; flex-shrink:0; }
+    .detail-info-label { font-size:11px; color:var(--muted); width:100px; flex-shrink:0; }
+    .detail-info-value { font-size:13px; font-weight:600; color:var(--text); }
+    .detail-photos-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
     .detail-photos-grid img {
-      width: 100%; aspect-ratio: 4/3;
-      object-fit: cover; border-radius: 10px;
-      border: 1px solid var(--border);
-      cursor: pointer; transition: transform 0.15s;
+      width:100%; aspect-ratio:4/3; object-fit:cover;
+      border-radius:10px; border:1px solid var(--border);
+      cursor:pointer; transition:transform 0.15s;
     }
-    .detail-photos-grid img:hover { transform: scale(1.02); }
-
-    .no-photos {
-      text-align: center; padding: 24px;
-      background: var(--bg); border-radius: 10px;
-      color: var(--subtle); font-size: 13px;
-    }
-
-    /* Contact footer */
+    .detail-photos-grid img:hover { transform:scale(1.02); }
+    .no-photos { text-align:center; padding:24px; background:var(--bg); border-radius:10px; color:var(--subtle); font-size:13px; }
     .detail-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      background: #F8F9FA;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-shrink: 0;
+      padding:16px 24px; border-top:1px solid var(--border);
+      background:#F8F9FA; display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0;
     }
-
-    .detail-poster-name { font-size: 15px; font-weight: 700; color: var(--text); }
-    .detail-poster-company { font-size: 12px; color: var(--muted); margin-top:2px; }
-    .detail-poster-phone { font-size: 11px; color: var(--subtle); margin-top:2px; }
-
+    .detail-poster-name    { font-size:15px; font-weight:700; color:var(--text); }
+    .detail-poster-company { font-size:12px; color:var(--muted); margin-top:2px; }
+    .detail-poster-phone   { font-size:11px; color:var(--subtle); margin-top:2px; }
     .detail-call-btn {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--green); color: #fff;
-      border: none; border-radius: 100px;
-      padding: 10px 20px;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer; text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      transition: background 0.2s;
+      display:flex; align-items:center; gap:6px;
+      background:var(--green); color:#fff;
+      border:none; border-radius:100px; padding:10px 20px;
+      font-size:14px; font-weight:700; cursor:pointer;
+      text-decoration:none; font-family:'Inter',sans-serif; transition:background 0.2s;
     }
-    .detail-call-btn:hover { background: #1a6124; }
-
-    /* Distance chips in detail */
+    .detail-call-btn:hover { background:#1a6124; }
     .detail-dist-chips { display:flex; gap:6px; flex-wrap:wrap; }
-    .detail-dist-chip {
-      background: #E8F5EA; color: var(--green);
-      border-radius: 100px; padding: 3px 10px;
-      font-size: 11px; font-weight: 700;
-    }
-    .detail-dist-chip.off { background: #FFF4EE; color: var(--orange); }
+    .detail-dist-chip { background:#E8F5EA; color:var(--green); border-radius:100px; padding:3px 10px; font-size:11px; font-weight:700; }
+    .detail-dist-chip.off { background:#FFF4EE; color:var(--orange); }
 
     /* ===== LIGHTBOX ===== */
-    .lightbox {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.92); z-index: 1000;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .lightbox.active { display: flex; }
+    .lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+    .lightbox.active { display:flex; }
     .lightbox img { max-width:100%; max-height:90vh; border-radius:10px; object-fit:contain; }
     .lightbox-close {
       position:absolute; top:20px; right:20px;
-      background: rgba(255,255,255,0.15); border:none;
-      color:#fff; font-size:22px; width:38px; height:38px;
+      background:rgba(255,255,255,0.15); border:none; color:#fff;
+      font-size:22px; width:38px; height:38px;
       border-radius:50%; cursor:pointer;
       display:flex; align-items:center; justify-content:center;
     }
 
     /* ===== LOADING / EMPTY / ERROR ===== */
-    .loading { text-align:center; padding: 80px 24px; }
+    .loading { text-align:center; padding:80px 24px; }
     .spinner {
-      width: 44px; height: 44px;
-      border: 4px solid var(--border);
-      border-top-color: var(--navy);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      width:44px; height:44px;
+      border:4px solid var(--border); border-top-color:var(--navy);
+      border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px;
     }
     @keyframes spin { to{transform:rotate(360deg)} }
-    .loading p { color: var(--muted); font-size:15px; }
-
-    .empty { text-align:center; padding: 80px 24px; }
-    .empty-icon { font-size: 56px; margin-bottom:16px; }
+    .loading p { color:var(--muted); font-size:15px; }
+    .empty { text-align:center; padding:80px 24px; }
+    .empty-icon { font-size:56px; margin-bottom:16px; }
     .empty h3 { font-size:18px; font-weight:600; color:var(--text); margin-bottom:8px; }
     .empty p  { color:var(--muted); font-size:14px; }
+    .error-banner { background:#FFF5F5; border:1px solid #FED7D7; border-radius:10px; padding:14px 18px; color:var(--danger); font-size:13px; margin-bottom:16px; }
 
-    .error-banner {
-      background:#FFF5F5; border:1px solid #FED7D7;
-      border-radius:10px; padding:14px 18px;
-      color:var(--danger); font-size:13px;
-      margin-bottom:16px;
-    }
-
-    /* ===== FOOTER ===== */
+    /* FIX 1: footer is last flex child — always at the bottom */
     footer {
-      background: var(--navy);
-      color: rgba(255,255,255,0.55);
-      text-align:center; padding:20px;
-      font-size:12px;
+      background:var(--navy); color:rgba(255,255,255,0.55);
+      text-align:center; padding:18px; font-size:12px;
+      flex-shrink:0; margin-top:auto;
     }
-    footer a { color: var(--orange); text-decoration:none; }
+    footer a { color:var(--orange); text-decoration:none; }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 900px) {
-      .filter-bar-inner { gap: 8px; }
-      .loc-input-wrap { width: 160px; }
-      table { font-size: 12px; }
-      td { padding: 10px 12px; }
-      .td-route { min-width: 200px; }
-      .detail-panel { width: 100vw; }
+    @media (max-width:768px) {
+      .filter-bar { display:none; }
+      .mobile-search-bar { display:block; }
+      .results-bar { padding:8px 12px; }
+      .main { padding:12px 8px 40px; }
+
+      /* FIX 3: On mobile show only Route · Truck · Weight in one line */
+      .col-placement, .col-date, .col-photos, .col-btn { display:none; }
+      table  { font-size:13px; min-width:0; }
+      thead th { padding:10px 10px; }
+      td     { padding:10px 10px; }
+      .td-pin  { font-size:14px; }
+      .td-city { max-width:60px; font-size:10px; }
+      .td-arrow{ font-size:11px; }
+      .truck-pill { font-size:10px; padding:2px 8px; }
+      .td-weight  { font-size:15px; }
+
+      .detail-panel { width:100vw; }
+      .header-right .download-btn { display:none; }
     }
 
-    @media (max-width: 640px) {
-      .filter-bar-inner { flex-direction: column; align-items: stretch; }
-      .filter-btn-group { margin-left: 0; justify-content: flex-end; }
-      .loc-input-wrap { width: 100%; }
-      .header-right .download-btn { display:none; }
+    @media (max-width:420px) {
+      .td-city { max-width:48px; }
+      .td-pin  { font-size:13px; }
+      .truck-pill { padding:2px 6px; font-size:10px; }
     }
   </style>
 </head>
@@ -661,65 +532,109 @@
       <span class="logo-text">Truck<span>Traffic</span>.in</span>
     </a>
     <div class="header-right">
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        Live Market
-      </div>
+      <div class="live-badge"><div class="live-dot"></div>Live Market</div>
       <a href="#" class="download-btn">📱 Download App</a>
     </div>
   </div>
 </header>
 
-<!-- FILTER BAR -->
+<!-- DESKTOP FILTER BAR -->
 <div class="filter-bar">
   <div class="filter-bar-inner">
-
-    <!-- Origin -->
     <div class="filter-field">
       <label>Origin</label>
       <div class="loc-input-wrap" id="origin-wrap">
         <div class="loc-input-inner">
           <input type="text" id="fs-origin" placeholder="400069 or Mumbai…" autocomplete="off"/>
-          <button class="loc-voice-btn" id="voice-origin" title="Speak origin"
-            onclick="startVoice('fs-origin','voice-origin','origin-badge','origin')">🎙</button>
+          <button class="loc-voice-btn" id="voice-origin" onclick="startVoice('fs-origin','voice-origin','origin-badge','origin')">🎙</button>
         </div>
         <span class="loc-type-badge" id="origin-badge"></span>
         <div class="loc-suggestions" id="origin-suggestions"></div>
       </div>
     </div>
-
-    <!-- Destination -->
     <div class="filter-field">
       <label>Destination</label>
       <div class="loc-input-wrap" id="dest-wrap">
         <div class="loc-input-inner">
           <input type="text" id="fs-dest" placeholder="110001 or Delhi…" autocomplete="off"/>
-          <button class="loc-voice-btn" id="voice-dest" title="Speak destination"
-            onclick="startVoice('fs-dest','voice-dest','dest-badge','dest')">🎙</button>
+          <button class="loc-voice-btn" id="voice-dest" onclick="startVoice('fs-dest','voice-dest','dest-badge','dest')">🎙</button>
         </div>
         <span class="loc-type-badge" id="dest-badge"></span>
         <div class="loc-suggestions" id="dest-suggestions"></div>
       </div>
     </div>
-
-    <!-- Weight -->
+    <!-- FIX 6: label says Tons -->
     <div class="filter-field">
-      <label>Cargo Weight (kg)</label>
-      <input type="number" id="fs-weight" placeholder="e.g. 500" min="1"/>
+      <label>Cargo Weight (Tons)</label>
+      <input type="number" id="fs-weight" placeholder="e.g. 5" min="0.1" step="0.5"/>
     </div>
-
-    <!-- Action buttons — inline with filters -->
     <div class="filter-btn-group">
       <button class="btn-find" id="fs-btn" onclick="findSpace()">🚛 Find Trucks</button>
       <button class="btn-refresh" onclick="fetchLoads()">🔄 Refresh</button>
       <button class="btn-clear" id="fs-clear-btn" onclick="clearFindSpace()" style="display:none">✕ Clear</button>
     </div>
-
   </div>
   <div class="filter-status-row">
     <span class="filter-error"  id="fs-error"></span>
     <span class="filter-status" id="fs-status"></span>
   </div>
+</div>
+
+<!-- MOBILE SEARCH BAR -->
+<div class="mobile-search-bar">
+  <div class="mobile-search-trigger" onclick="openMobileFilter()">
+    <span class="mobile-search-icon">🔍</span>
+    <span class="mobile-search-text" id="mobile-search-hint">Search by origin, destination &amp; weight…</span>
+    <span class="mobile-active-badge" id="mobile-active-badge">Active</span>
+  </div>
+</div>
+
+<!-- MOBILE FILTER OVERLAY -->
+<div class="mobile-filter-overlay" id="mobile-filter-overlay" onclick="closeMobileFilter()"></div>
+
+<!-- MOBILE FILTER DRAWER -->
+<div class="mobile-filter-drawer" id="mobile-filter-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">🚛 Find Trucks</div>
+
+  <div class="drawer-field">
+    <label>My Origin</label>
+    <div class="drawer-loc-wrap">
+      <div class="drawer-loc-inner">
+        <input type="text" id="mob-origin" placeholder="400069 or Mumbai…" autocomplete="off"/>
+        <button class="drawer-voice-btn" id="mob-voice-origin" onclick="startVoice('mob-origin','mob-voice-origin','mob-origin-badge','mob-origin')">🎙</button>
+      </div>
+      <span class="loc-type-badge" id="mob-origin-badge"></span>
+      <div class="drawer-loc-suggestions loc-suggestions" id="mob-origin-suggestions"></div>
+    </div>
+  </div>
+
+  <div class="drawer-field">
+    <label>My Destination</label>
+    <div class="drawer-loc-wrap">
+      <div class="drawer-loc-inner">
+        <input type="text" id="mob-dest" placeholder="110001 or Delhi…" autocomplete="off"/>
+        <button class="drawer-voice-btn" id="mob-voice-dest" onclick="startVoice('mob-dest','mob-voice-dest','mob-dest-badge','mob-dest')">🎙</button>
+      </div>
+      <span class="loc-type-badge" id="mob-dest-badge"></span>
+      <div class="drawer-loc-suggestions loc-suggestions" id="mob-dest-suggestions"></div>
+    </div>
+  </div>
+
+  <!-- FIX 6: Tons -->
+  <div class="drawer-field">
+    <label>Cargo Weight (Tons)</label>
+    <input type="number" id="mob-weight" placeholder="e.g. 5" min="0.1" step="0.5"/>
+  </div>
+
+  <!-- FIX 5: centred -->
+  <div class="drawer-btn-row">
+    <button class="drawer-btn-find" id="mob-fs-btn" onclick="findSpaceMobile()">🚛 Find Trucks</button>
+    <button class="drawer-btn-refresh" onclick="fetchLoads();closeMobileFilter()">🔄</button>
+    <button class="drawer-btn-clear" id="mob-clear-btn" onclick="clearMobileFilter()" style="display:none">✕</button>
+  </div>
+  <div class="drawer-error"  id="mob-fs-error"></div>
+  <div class="drawer-status" id="mob-fs-status"></div>
 </div>
 
 <!-- RESULTS BAR -->
@@ -733,14 +648,11 @@
 <main class="main">
   <div id="error-container"></div>
   <div id="loads-container">
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading live truck loads…</p>
-    </div>
+    <div class="loading"><div class="spinner"></div><p>Loading live truck loads…</p></div>
   </div>
 </main>
 
-<!-- DETAIL OVERLAY + PANEL -->
+<!-- DETAIL PANEL -->
 <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
 <div class="detail-panel" id="detail-panel">
   <div class="detail-header" id="detail-header"></div>
@@ -754,7 +666,7 @@
   <img id="lightbox-img" src="" alt="Load photo"/>
 </div>
 
-<!-- FOOTER -->
+<!-- FIX 1: Footer is last flex child — always anchored to the bottom -->
 <footer>
   <p>© 2026 TruckTraffic.in · Powered by <a href="#">LoadLink</a> · All loads are posted by verified transporters</p>
 </footer>
@@ -766,124 +678,107 @@
   let activeFilter = null;
   let distanceMap  = {};
   const geoCache   = {};
-  const resolvedCoords = { origin: null, dest: null };
+  const resolvedCoords    = { origin: null, dest: null };
+  const resolvedCoordsMob = { 'mob-origin': null, 'mob-dest': null };
 
   // ─── HELPERS ──────────────────────────────────────────────────────────────
-  function escapeHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-  function escapeAttr(s) {
-    return String(s||'').replace(/"/g,'&quot;');
-  }
+  const escapeHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escapeAttr = s => String(s||'').replace(/"/g,'&quot;');
   function formatDate(d) {
     if (!d) return '—';
     try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
     catch { return d; }
   }
-
-  function updateBadge(badgeId, val) {
-    const badge = document.getElementById(badgeId);
+  function updateBadge(id, val) {
+    const el = document.getElementById(id); if (!el) return;
     const v = val.trim();
-    if (!v) { badge.textContent=''; badge.className='loc-type-badge'; return; }
-    if (/^\d{6}$/.test(v))   { badge.textContent='Pincode';  badge.className='loc-type-badge pin'; }
-    else if (/^\d+$/.test(v)){ badge.textContent='Pincode?'; badge.className='loc-type-badge pin'; }
-    else                      { badge.textContent='Address';  badge.className='loc-type-badge addr'; }
+    if (!v) { el.textContent=''; el.className='loc-type-badge'; return; }
+    if (/^\d{6}$/.test(v))   { el.textContent='Pincode';  el.className='loc-type-badge pin'; }
+    else if (/^\d+$/.test(v)){ el.textContent='Pincode?'; el.className='loc-type-badge pin'; }
+    else                      { el.textContent='Address';  el.className='loc-type-badge addr'; }
   }
+
+  // ─── MOBILE DRAWER ────────────────────────────────────────────────────────
+  function openMobileFilter()  { document.getElementById('mobile-filter-overlay').classList.add('open'); document.getElementById('mobile-filter-drawer').classList.add('open'); }
+  function closeMobileFilter() { document.getElementById('mobile-filter-overlay').classList.remove('open'); document.getElementById('mobile-filter-drawer').classList.remove('open'); }
 
   // ─── AUTOCOMPLETE ─────────────────────────────────────────────────────────
   let acTimers = {};
 
-  function setupLocationInput(inputId, suggestionsId, badgeId, resolvedKey) {
+  function setupLocationInput(inputId, suggestionsId, badgeId, resolvedKey, coordsObj) {
     const input  = document.getElementById(inputId);
     const sugBox = document.getElementById(suggestionsId);
+    if (!input || !sugBox) return;
 
     input.addEventListener('input', () => {
       const val = input.value;
-      resolvedCoords[resolvedKey] = null;
+      coordsObj[resolvedKey] = null;
       updateBadge(badgeId, val);
       clearTimeout(acTimers[inputId]);
       const trimmed = val.trim();
       if (trimmed.length < 3 || /^\d+$/.test(trimmed)) { closeSuggestions(suggestionsId); return; }
-      acTimers[inputId] = setTimeout(
-        () => fetchMapplsSuggestions(trimmed, suggestionsId, inputId, badgeId, resolvedKey), 350
-      );
+      acTimers[inputId] = setTimeout(() =>
+        fetchMapplsSuggestions(trimmed, suggestionsId, inputId, badgeId, resolvedKey, coordsObj), 350);
     });
 
     input.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeSuggestions(suggestionsId);
-      if (e.key === 'Enter')  { closeSuggestions(suggestionsId); findSpace(); }
     });
 
     document.addEventListener('click', e => {
-      if (!input.closest('.loc-input-wrap').contains(e.target)) closeSuggestions(suggestionsId);
+      const wrap = input.closest('.loc-input-wrap') || input.closest('.drawer-loc-wrap');
+      if (wrap && !wrap.contains(e.target)) closeSuggestions(suggestionsId);
     });
   }
 
-  async function fetchMapplsSuggestions(query, suggestionsId, inputId, badgeId, resolvedKey) {
+  async function fetchMapplsSuggestions(query, suggestionsId, inputId, badgeId, resolvedKey, coordsObj) {
     const sugBox = document.getElementById(suggestionsId);
     sugBox.innerHTML = '<div class="loc-suggestion-spinner">🔍 Searching…</div>';
     sugBox.classList.add('open');
     try {
       const res = await fetch(`${API}/places?query=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error();
-      handleSuggestionsResponse(await res.json(), sugBox, inputId, badgeId, resolvedKey);
+      handleSuggestionsResponse(await res.json(), sugBox, inputId, badgeId, resolvedKey, coordsObj);
     } catch {
       sugBox.innerHTML = '<div class="loc-suggestion-spinner">⚠️ Search unavailable</div>';
     }
   }
 
-  function handleSuggestionsResponse(data, sugBox, inputId, badgeId, resolvedKey) {
+  function handleSuggestionsResponse(data, sugBox, inputId, badgeId, resolvedKey, coordsObj) {
     const all = [...(data.suggestedLocations||[]), ...(data.userAddedLocations||[])];
-
-    // Build pincode index across all results
     const pincodeByWord = {};
     all.forEach(s => {
       const m = (s.placeAddress||'').match(/\b(\d{6})\b/);
-      if (m) {
-        (s.placeName||'').toLowerCase().split(/\s+/).forEach(w => {
-          if (w.length > 3 && !pincodeByWord[w]) pincodeByWord[w] = m[1];
-        });
-      }
+      if (m) (s.placeName||'').toLowerCase().split(/\s+/).forEach(w => { if (w.length>3 && !pincodeByWord[w]) pincodeByWord[w]=m[1]; });
     });
-
-    const suggestions = all.slice(0, 7).map(s => {
+    const suggestions = all.slice(0,7).map(s => {
       const direct = (s.placeAddress||'').match(/\b(\d{6})\b/);
       const lookup = (s.placeName||'').toLowerCase().split(/\s+/).map(w=>pincodeByWord[w]).find(Boolean);
-      const pincode = direct ? direct[1] : (lookup||'');
-      return { ...s, pincode };
+      return { ...s, pincode: direct ? direct[1] : (lookup||'') };
     }).filter(s => s.pincode);
 
-    if (!suggestions.length) {
-      sugBox.innerHTML = '<div class="loc-suggestion-spinner">No results found</div>';
-      return;
-    }
+    if (!suggestions.length) { sugBox.innerHTML='<div class="loc-suggestion-spinner">No results found</div>'; return; }
 
     sugBox.innerHTML = suggestions.map(s => `
-      <div class="loc-suggestion-item"
-           data-pincode="${escapeAttr(s.pincode)}"
-           data-label="${escapeAttr(s.placeName)}">
+      <div class="loc-suggestion-item" data-pincode="${escapeAttr(s.pincode)}" data-label="${escapeAttr(s.placeName)}">
         <span class="loc-suggestion-icon">📍</span>
         <div>
           <div class="loc-suggestion-main">${escapeHtml(s.placeName)}</div>
           <div class="loc-suggestion-sub">${escapeHtml(s.placeAddress||'')}</div>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
 
     sugBox.querySelectorAll('.loc-suggestion-item').forEach(item => {
       item.addEventListener('click', async () => {
-        const label   = item.dataset.label;
-        const pincode = item.dataset.pincode;
+        const label = item.dataset.label, pincode = item.dataset.pincode;
         document.getElementById(inputId).value = label;
         updateBadge(badgeId, label);
         closeSuggestions(sugBox.id);
         if (pincode) {
           const geo = await geocodePin(pincode);
-          resolvedCoords[resolvedKey] = geo.found
-            ? { lat: geo.lat, lon: geo.lon, found: true, pincode }
-            : { found: false, pincode };
+          coordsObj[resolvedKey] = geo.found ? { lat:geo.lat, lon:geo.lon, found:true, pincode } : { found:false, pincode };
         } else {
-          resolvedCoords[resolvedKey] = { found: false, label };
+          coordsObj[resolvedKey] = { found:false, label };
         }
       });
     });
@@ -891,69 +786,57 @@
 
   function closeSuggestions(id) {
     const el = document.getElementById(id);
-    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+    if (el) { el.classList.remove('open'); el.innerHTML=''; }
   }
 
   // ─── VOICE ────────────────────────────────────────────────────────────────
   let activeRecognition = null;
-
-  function startVoice(inputId, btnId, badgeId, resolvedKey) {
+  function startVoice(inputId, btnId, badgeId) {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { alert('Voice recognition not supported. Use Chrome or Edge.'); return; }
+    if (!SR) { alert('Voice not supported. Use Chrome or Edge.'); return; }
     if (activeRecognition) { activeRecognition.stop(); activeRecognition = null; }
-
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(inputId);
-    const rec = new SR();
-    activeRecognition = rec;
-    rec.lang = 'en-IN'; rec.interimResults = false; rec.maxAlternatives = 1;
-
-    btn.classList.add('listening'); btn.textContent = '🔴';
+    const btn = document.getElementById(btnId), input = document.getElementById(inputId);
+    const rec = new SR(); activeRecognition = rec;
+    rec.lang='en-IN'; rec.interimResults=false; rec.maxAlternatives=1;
+    btn.classList.add('listening'); btn.textContent='🔴';
     rec.onresult = e => { input.value = e.results[0][0].transcript; input.dispatchEvent(new Event('input')); };
     rec.onerror  = e => console.warn('Voice error:', e.error);
-    rec.onend    = () => { btn.classList.remove('listening'); btn.textContent = '🎙'; activeRecognition = null; };
+    rec.onend    = () => { btn.classList.remove('listening'); btn.textContent='🎙'; activeRecognition=null; };
     rec.start();
   }
 
   // ─── GEO MATH ─────────────────────────────────────────────────────────────
-  const toRad = d => d * Math.PI / 180;
-
-  function haversineKm(a, b) {
-    const R=6371, dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
-    const x=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;
-    return 2*R*Math.asin(Math.sqrt(x));
+  const toRad = d => d*Math.PI/180;
+  function haversineKm(a,b) {
+    const R=6371,dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon);
+    return 2*R*Math.asin(Math.sqrt(Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2));
   }
-
-  function bearingRad(a, b) {
+  function bearingRad(a,b) {
     const lat1=toRad(a.lat),lat2=toRad(b.lat),dLon=toRad(b.lon-a.lon);
-    return Math.atan2(Math.sin(dLon)*Math.cos(lat2), Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon));
+    return Math.atan2(Math.sin(dLon)*Math.cos(lat2),Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon));
   }
-
-  function trackDistancesKm(start, end, p) {
-    const R=6371, d13=haversineKm(start,p)/R, t13=bearingRad(start,p), t12=bearingRad(start,end);
+  function trackDistancesKm(start,end,p) {
+    const R=6371,d13=haversineKm(start,p)/R,t13=bearingRad(start,p),t12=bearingRad(start,end);
     const xt=Math.asin(Math.sin(d13)*Math.sin(t13-t12))*R;
     const at=Math.acos(Math.cos(d13)/Math.cos(xt/R))*R;
-    return { cross: Math.abs(xt), along: at };
+    return { cross:Math.abs(xt), along:at };
   }
-
   async function geocodePin(pin) {
     if (geoCache[pin]) return geoCache[pin];
     try {
-      const r = await fetch(`${API}/geocode/${pin}`);
-      const j = await r.json();
-      const out = { lat: j.lat||0, lon: j.lon||0, found: !!j.found };
-      if (out.found) geoCache[pin] = out;
-      return out;
-    } catch { return { lat:0, lon:0, found:false }; }
+      const r=await fetch(`${API}/geocode/${pin}`), j=await r.json();
+      const out={lat:j.lat||0,lon:j.lon||0,found:!!j.found};
+      if(out.found) geoCache[pin]=out; return out;
+    } catch { return {lat:0,lon:0,found:false}; }
   }
 
   // ─── RESOLVE LOCATION ─────────────────────────────────────────────────────
-  async function resolveLocation(inputId, resolvedKey, labelName) {
+  async function resolveLocation(inputId, coordsObj, resolvedKey, labelName) {
     const val = document.getElementById(inputId).value.trim();
     if (!val) return { coords:null, error:`⚠️ Enter your ${labelName}` };
-    if (resolvedCoords[resolvedKey]?.found) return { coords: resolvedCoords[resolvedKey], error:null };
-    if (resolvedCoords[resolvedKey]?.pincode) {
-      const geo = await geocodePin(resolvedCoords[resolvedKey].pincode);
+    if (coordsObj[resolvedKey]?.found) return { coords:coordsObj[resolvedKey], error:null };
+    if (coordsObj[resolvedKey]?.pincode) {
+      const geo = await geocodePin(coordsObj[resolvedKey].pincode);
       return geo.found ? { coords:geo, error:null } : { coords:null, error:`⚠️ Could not geocode ${labelName}` };
     }
     if (/^\d{6}$/.test(val)) {
@@ -962,351 +845,277 @@
     }
     if (/^\d+$/.test(val)) return { coords:null, error:`⚠️ Pincodes must be 6 digits` };
     try {
-      const res  = await fetch(`${API}/places?query=${encodeURIComponent(val)}`);
-      const data = await res.json();
-      const first = (data.suggestedLocations||[])[0];
-      if (first) {
-        const m = (first.placeAddress||'').match(/\b(\d{6})\b/);
-        if (m) { const geo = await geocodePin(m[1]); if (geo.found) return { coords:geo, error:null }; }
-      }
-      return { coords:null, error:`⚠️ Could not locate "${val}". Select from dropdown or use a pincode.` };
-    } catch { return { coords:null, error:`⚠️ Address search failed. Use a pincode instead.` }; }
+      const res=await fetch(`${API}/places?query=${encodeURIComponent(val)}`), data=await res.json();
+      const first=(data.suggestedLocations||[])[0];
+      if (first) { const m=(first.placeAddress||'').match(/\b(\d{6})\b/); if(m){ const geo=await geocodePin(m[1]); if(geo.found) return {coords:geo,error:null}; } }
+      return { coords:null, error:`⚠️ Could not locate "${val}". Use a pincode or select from dropdown.` };
+    } catch { return { coords:null, error:`⚠️ Address search failed. Use a pincode.` }; }
   }
 
-  // ─── FIND SPACE ───────────────────────────────────────────────────────────
-  async function findSpace() {
-    const weightKg = parseFloat(document.getElementById('fs-weight').value);
-    const errorEl  = document.getElementById('fs-error');
-    const statusEl = document.getElementById('fs-status');
-    errorEl.textContent = ''; statusEl.textContent = '';
+  // ─── FIND SPACE (shared) ──────────────────────────────────────────────────
+  async function runFind(originId,destId,weightId,coordsObj,originKey,destKey,errorId,statusId,btnId,isMobile) {
+    // FIX 6: weight is in tons now
+    const weightTons = parseFloat(document.getElementById(weightId).value);
+    const errorEl = document.getElementById(errorId), statusEl = document.getElementById(statusId);
+    errorEl.textContent=''; statusEl.textContent='';
+    if (!weightTons || weightTons<=0) { errorEl.textContent='⚠️ Enter cargo weight in tons'; return; }
 
-    if (!weightKg || weightKg <= 0) { errorEl.textContent = '⚠️ Enter your cargo weight in kg'; return; }
-
-    const btn = document.getElementById('fs-btn');
-    btn.disabled = true; btn.textContent = '⏳ Searching…';
-    statusEl.textContent = 'Resolving your locations…';
+    const btn = document.getElementById(btnId);
+    btn.disabled=true; btn.textContent='⏳ Searching…';
+    statusEl.textContent='Resolving locations…';
 
     try {
-      const [originRes, destRes] = await Promise.all([
-        resolveLocation('fs-origin','origin','origin'),
-        resolveLocation('fs-dest','dest','destination'),
+      const [oRes,dRes] = await Promise.all([
+        resolveLocation(originId,coordsObj,originKey,'origin'),
+        resolveLocation(destId,  coordsObj,destKey,  'destination'),
       ]);
-      if (originRes.error) { errorEl.textContent = originRes.error; return; }
-      if (destRes.error)   { errorEl.textContent = destRes.error; return; }
+      if (oRes.error) { errorEl.textContent=oRes.error; return; }
+      if (dRes.error) { errorEl.textContent=dRes.error; return; }
 
-      const oc = originRes.coords, dc = destRes.coords;
-      statusEl.textContent = `Checking ${allLoads.length} trucks…`;
-
-      const survivors = [];
-      distanceMap = {};
+      const oc=oRes.coords, dc=dRes.coords;
+      statusEl.textContent=`Checking ${allLoads.length} trucks…`;
+      const survivors=[]; distanceMap={};
 
       for (const load of allLoads) {
-        if (load.weight_tons * 1000 < weightKg) continue;
-        const lo = await geocodePin(load.origin_pincode); if (!lo.found) continue;
-        const ld = await geocodePin(load.destination_pincode); if (!ld.found) continue;
-        const dOrigin = haversineKm(oc, lo), dDest = haversineKm(dc, ld);
-        if (dOrigin <= 15 && dDest <= 15) {
-          distanceMap[load.id] = { origin: dOrigin, dest: dDest, offRoute: false };
-          survivors.push({ load, total: dOrigin + dDest }); continue;
+        // FIX 6: tons vs tons
+        if (load.weight_tons < weightTons) continue;
+        const lo=await geocodePin(load.origin_pincode); if(!lo.found) continue;
+        const ld=await geocodePin(load.destination_pincode); if(!ld.found) continue;
+        const dOrigin=haversineKm(oc,lo), dDest=haversineKm(dc,ld);
+        if (dOrigin<=15 && dDest<=15) {
+          distanceMap[load.id]={origin:dOrigin,dest:dDest,offRoute:false};
+          survivors.push({load,total:dOrigin+dDest}); continue;
         }
-        const routeLen = haversineKm(lo, ld);
-        if (routeLen > 400) {
-          const oT = trackDistancesKm(lo, ld, oc), dT = trackDistancesKm(lo, ld, dc);
-          const inSeg = at => at >= 0 && at <= routeLen;
-          if (oT.cross<=15 && dT.cross<=15 && inSeg(oT.along) && inSeg(dT.along) && oT.along<=dT.along) {
-            distanceMap[load.id] = { origin: oT.cross, dest: dT.cross, offRoute: true };
-            survivors.push({ load, total: oT.cross + dT.cross });
+        const routeLen=haversineKm(lo,ld);
+        if (routeLen>400) {
+          const oT=trackDistancesKm(lo,ld,oc),dT=trackDistancesKm(lo,ld,dc);
+          const inSeg=at=>at>=0&&at<=routeLen;
+          if(oT.cross<=15&&dT.cross<=15&&inSeg(oT.along)&&inSeg(dT.along)&&oT.along<=dT.along){
+            distanceMap[load.id]={origin:oT.cross,dest:dT.cross,offRoute:true};
+            survivors.push({load,total:oT.cross+dT.cross});
           }
         }
       }
 
-      survivors.sort((a,b) => a.total - b.total);
-      activeFilter = { origin: document.getElementById('fs-origin').value.trim(), dest: document.getElementById('fs-dest').value.trim(), weightKg, oc, dc };
-      document.getElementById('fs-clear-btn').style.display = 'inline-flex';
-      statusEl.textContent = `✅ Found ${survivors.length} matching truck${survivors.length!==1?'s':''} within 15 km of your route`;
-      document.getElementById('results-count').textContent = `${survivors.length} truck${survivors.length!==1?'s':''} matched`;
-      renderTable(survivors.map(s => s.load), true);
+      survivors.sort((a,b)=>a.total-b.total);
+      activeFilter={
+        origin: document.getElementById(originId).value.trim(),
+        dest:   document.getElementById(destId).value.trim(),
+        weightTons, oc, dc
+      };
+
+      const matchMsg=`${survivors.length} truck${survivors.length!==1?'s':''} matched`;
+      document.getElementById('results-count').textContent=matchMsg;
+      statusEl.textContent=`✅ ${matchMsg} within 15 km of your route`;
+
+      if (isMobile) {
+        document.getElementById('mob-clear-btn').style.display='inline-flex';
+        const hint=document.getElementById('mobile-search-hint');
+        hint.textContent=`${activeFilter.origin} → ${activeFilter.dest} · ${weightTons}T`;
+        document.getElementById('mobile-active-badge').classList.add('visible');
+        closeMobileFilter();
+      } else {
+        document.getElementById('fs-clear-btn').style.display='inline-flex';
+      }
+
+      renderTable(survivors.map(s=>s.load), true);
     } catch(e) {
       console.error(e);
-      errorEl.textContent = '⚠️ Something went wrong. Please try again.';
+      errorEl.textContent='⚠️ Something went wrong. Try again.';
     } finally {
-      btn.disabled = false; btn.textContent = '🚛 Find Trucks';
+      btn.disabled=false; btn.textContent='🚛 Find Trucks';
     }
   }
 
+  function findSpace()       { runFind('fs-origin','fs-dest','fs-weight',resolvedCoords,'origin','dest','fs-error','fs-status','fs-btn',false); }
+  function findSpaceMobile() { runFind('mob-origin','mob-dest','mob-weight',resolvedCoordsMob,'mob-origin','mob-dest','mob-fs-error','mob-fs-status','mob-fs-btn',true); }
+
   function clearFindSpace() {
-    activeFilter = null; distanceMap = {};
-    resolvedCoords.origin = null; resolvedCoords.dest = null;
-    ['fs-origin','fs-dest'].forEach(id => document.getElementById(id).value = '');
-    ['origin-badge','dest-badge'].forEach(id => { const el=document.getElementById(id); el.textContent=''; el.className='loc-type-badge'; });
-    document.getElementById('fs-clear-btn').style.display = 'none';
-    document.getElementById('fs-error').textContent  = '';
-    document.getElementById('fs-status').textContent = '';
+    activeFilter=null; distanceMap={};
+    resolvedCoords.origin=null; resolvedCoords.dest=null;
+    ['fs-origin','fs-dest'].forEach(id=>document.getElementById(id).value='');
+    ['origin-badge','dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
+    document.getElementById('fs-clear-btn').style.display='none';
+    document.getElementById('fs-error').textContent='';
+    document.getElementById('fs-status').textContent='';
     filterLoads();
+  }
+
+  function clearMobileFilter() {
+    activeFilter=null; distanceMap={};
+    resolvedCoordsMob['mob-origin']=null; resolvedCoordsMob['mob-dest']=null;
+    ['mob-origin','mob-dest'].forEach(id=>document.getElementById(id).value='');
+    ['mob-origin-badge','mob-dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
+    document.getElementById('mob-clear-btn').style.display='none';
+    document.getElementById('mob-fs-error').textContent='';
+    document.getElementById('mob-fs-status').textContent='';
+    document.getElementById('mobile-search-hint').textContent='Search by origin, destination & weight…';
+    document.getElementById('mobile-active-badge').classList.remove('visible');
+    filterLoads(); closeMobileFilter();
   }
 
   // ─── FETCH & RENDER ───────────────────────────────────────────────────────
   async function fetchLoads() {
-    const container  = document.getElementById('loads-container');
-    const errorCont  = document.getElementById('error-container');
-    errorCont.innerHTML = '';
-    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading live truck loads…</p></div>';
-
+    const container=document.getElementById('loads-container'), errorCont=document.getElementById('error-container');
+    errorCont.innerHTML='';
+    container.innerHTML='<div class="loading"><div class="spinner"></div><p>Loading live truck loads…</p></div>';
     try {
-      const res = await fetch(`${API}/loads`);
-      if (!res.ok) throw new Error();
-      allLoads = await res.json();
-      filterLoads();
+      const res=await fetch(`${API}/loads`); if(!res.ok) throw new Error();
+      allLoads=await res.json(); filterLoads();
     } catch {
-      errorCont.innerHTML = '<div class="error-banner">⚠️ Unable to load data. Please try refreshing.</div>';
-      container.innerHTML = '<div class="empty"><div class="empty-icon">📡</div><h3>Connection Error</h3><p>Could not connect to the server.</p></div>';
+      errorCont.innerHTML='<div class="error-banner">⚠️ Unable to load data. Please try refreshing.</div>';
+      container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><h3>Connection Error</h3><p>Could not connect to the server.</p></div>';
     }
   }
 
   function filterLoads() {
-    const filtered = [...allLoads];
-    document.getElementById('results-count').textContent = `${filtered.length} truck${filtered.length!==1?'s':''} available`;
-    renderTable(filtered, false);
+    document.getElementById('results-count').textContent=`${allLoads.length} truck${allLoads.length!==1?'s':''} available`;
+    renderTable(allLoads,false);
   }
 
-  function renderTable(loads, isFiltered) {
-    const container = document.getElementById('loads-container');
-
+  function renderTable(loads,isFiltered) {
+    const container=document.getElementById('loads-container');
     if (!loads.length) {
-      container.innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">🚛</div>
-          <h3>${isFiltered ? 'No matching trucks found' : 'No loads found'}</h3>
-          <p>${isFiltered ? 'Try adjusting your cargo details or expand your route.' : 'Check back later.'}</p>
-        </div>`;
+      container.innerHTML=`<div class="empty"><div class="empty-icon">🚛</div><h3>${isFiltered?'No matching trucks found':'No loads found'}</h3><p>${isFiltered?'Try adjusting your search.':'Check back later.'}</p></div>`;
       return;
     }
 
-    const rows = loads.map((l, i) => {
-      const originCity = l.origin_city || l.origin_pincode;
-      const destCity   = l.destination_city || l.destination_pincode;
-      const dist       = distanceMap[l.id];
-      const imageCount = l.image_count || (l.images ? l.images.length : 0);
+    const rows=loads.map(l => {
+      // FIX 2: pincode + city name, no state in table
+      const oCity=l.origin_city||'', dCity=l.destination_city||'';
+      const dist=distanceMap[l.id];
+      const imageCount=l.image_count||(l.images?l.images.length:0);
+      const distHtml=dist?`<div style="margin-top:3px"><span class="dist-badge">📍${dist.origin.toFixed(1)}km</span> <span class="dist-badge">🏁${dist.dest.toFixed(1)}km</span></div>`:'';
 
-      const distHtml = dist ? `
-        <div style="margin-top:4px">
-          <span class="dist-badge ${dist.offRoute?'off-route':''}" title="${dist.offRoute?'Off-route':'Near origin'}">
-            📍 ${dist.origin.toFixed(1)} km
-          </span>
-          <span class="dist-badge ${dist.offRoute?'off-route':''}" title="${dist.offRoute?'Off-route':'Near dest'}">
-            🏁 ${dist.dest.toFixed(1)} km
-          </span>
-        </div>` : '';
-
-      return `
-        <tr onclick="openDetail('${escapeAttr(l.id)}')" title="Click for details">
-          <td>
-            <div class="td-route">
-              <div>
-                <div class="td-pin">${escapeHtml(l.origin_pincode)}</div>
-                <div class="td-city">${escapeHtml(originCity)}</div>
-              </div>
-              <span class="td-arrow">➤</span>
-              <div>
-                <div class="td-pin">${escapeHtml(l.destination_pincode)}</div>
-                <div class="td-city">${escapeHtml(destCity)}</div>
-              </div>
+      return `<tr onclick="openDetail('${escapeAttr(l.id)}')" title="Tap for full details">
+        <td>
+          <div class="td-route">
+            <div class="route-endpoint">
+              <div class="td-pin">${escapeHtml(l.origin_pincode)}</div>
+              <div class="td-city">${escapeHtml(oCity)}</div>
             </div>
-            ${distHtml}
-          </td>
-          <td><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
-          <td><span class="td-weight">${l.weight_tons}T</span></td>
-          <td>${l.cargo_placement ? `<span class="place-pill">${escapeHtml(l.cargo_placement)}</span>` : '—'}</td>
-          <td class="td-date">${formatDate(l.loading_date)}</td>
-          <td>${imageCount > 0 ? `<span class="photo-count">📸 ${imageCount}</span>` : '<span style="color:var(--subtle)">—</span>'}</td>
-          <td>
-            <button class="info-btn" onclick="event.stopPropagation();openDetail('${escapeAttr(l.id)}')">
-              More Info ›
-            </button>
-          </td>
-        </tr>`;
+            <span class="td-arrow">➤</span>
+            <div class="route-endpoint">
+              <div class="td-pin">${escapeHtml(l.destination_pincode)}</div>
+              <div class="td-city">${escapeHtml(dCity)}</div>
+            </div>
+          </div>
+          ${distHtml}
+        </td>
+        <td><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
+        <td><span class="td-weight">${l.weight_tons}T</span></td>
+        <td class="col-placement">${l.cargo_placement?`<span class="place-pill">${escapeHtml(l.cargo_placement)}</span>`:'—'}</td>
+        <td class="col-date td-date">${formatDate(l.loading_date)}</td>
+        <td class="col-photos">${imageCount>0?`<span class="photo-count">📸 ${imageCount}</span>`:'<span style="color:var(--subtle)">—</span>'}</td>
+        <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('${escapeAttr(l.id)}')">More Info ›</button></td>
+      </tr>`;
     }).join('');
 
-    container.innerHTML = `
+    container.innerHTML=`
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Route</th>
-              <th>Truck</th>
-              <th>Weight</th>
-              <th>Placement</th>
-              <th>Loading Date</th>
-              <th>Photos</th>
-              <th></th>
+              <th>Route</th><th>Truck</th><th>Weight</th>
+              <th class="col-placement">Placement</th>
+              <th class="col-date">Loading Date</th>
+              <th class="col-photos">Photos</th>
+              <th class="col-btn"></th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
-      ${isFiltered ? '<p style="text-align:center;color:var(--subtle);font-size:11px;margin-top:12px">* Distances are approximate (straight-line)</p>' : ''}
+      ${isFiltered?'<p style="text-align:center;color:var(--subtle);font-size:11px;margin-top:12px">* Distances are approximate (straight-line)</p>':''}
     `;
   }
 
   // ─── DETAIL PANEL ─────────────────────────────────────────────────────────
   function openDetail(loadId) {
-    const load = allLoads.find(l => l.id === loadId);
-    if (!load) return;
+    const load=allLoads.find(l=>l.id===loadId); if(!load) return;
+    const oCity=load.origin_city||load.origin_pincode, dCity=load.destination_city||load.destination_pincode;
+    const imageCount=load.image_count||(load.images?load.images.length:0);
+    const dist=distanceMap[load.id];
 
-    const originCity = load.origin_city || load.origin_pincode;
-    const destCity   = load.destination_city || load.destination_pincode;
-    const imageCount = load.image_count || (load.images ? load.images.length : 0);
-    const dist       = distanceMap[load.id];
-
-    // Header
-    document.getElementById('detail-header').innerHTML = `
+    document.getElementById('detail-header').innerHTML=`
       <div class="detail-route-header">
         <div class="detail-truck-badge">🚛 ${escapeHtml(load.truck_type||'Truck')}</div>
         <div class="detail-route-row">
-          <div>
-            <div class="detail-pin">${escapeHtml(load.origin_pincode)}</div>
-            <div class="detail-city">${escapeHtml(originCity)}</div>
-            <div class="detail-state">${escapeHtml(load.origin_state||'')}</div>
-          </div>
+          <div><div class="detail-pin">${escapeHtml(load.origin_pincode)}</div><div class="detail-city">${escapeHtml(oCity)}</div><div class="detail-state">${escapeHtml(load.origin_state||'')}</div></div>
           <div class="detail-arrow">➤</div>
-          <div>
-            <div class="detail-pin">${escapeHtml(load.destination_pincode)}</div>
-            <div class="detail-city">${escapeHtml(destCity)}</div>
-            <div class="detail-state">${escapeHtml(load.destination_state||'')}</div>
-          </div>
+          <div><div class="detail-pin">${escapeHtml(load.destination_pincode)}</div><div class="detail-city">${escapeHtml(dCity)}</div><div class="detail-state">${escapeHtml(load.destination_state||'')}</div></div>
         </div>
       </div>
-      <button class="detail-close" onclick="closeDetail()">✕</button>
-    `;
+      <button class="detail-close" onclick="closeDetail()">✕</button>`;
 
-    // Body
-    const distSection = dist ? `
-      <div class="detail-section">
-        <div class="detail-section-title">📍 Distance from Your Route</div>
-        <div class="detail-dist-chips">
-          <span class="detail-dist-chip ${dist.offRoute?'off':''}">Origin: ${dist.origin.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span>
-          <span class="detail-dist-chip ${dist.offRoute?'off':''}">Dest: ${dist.dest.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span>
-        </div>
-      </div>` : '';
+    const distSection=dist?`<div class="detail-section"><div class="detail-section-title">📍 Distance from Your Route</div><div class="detail-dist-chips"><span class="detail-dist-chip ${dist.offRoute?'off':''}">Origin: ${dist.origin.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span><span class="detail-dist-chip ${dist.offRoute?'off':''}">Dest: ${dist.dest.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span></div></div>`:'';
 
-    const photosHtml = (() => {
-      if (load.images && load.images.length > 0) {
-        const imgs = load.images.slice(0,6).map(src =>
-          `<img src="${escapeAttr(src)}" alt="Photo" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`
-        ).join('');
-        return `<div class="detail-photos-grid">${imgs}</div>`;
+    const photosHtml=(() => {
+      if (load.images&&load.images.length>0) {
+        return `<div class="detail-photos-grid">${load.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div>`;
       }
-      if (imageCount > 0) {
-        const imgs = Array.from({length: Math.min(imageCount,6)}, (_,i) => {
-          const src = `${API}/loads/${load.id}/image/${i}`;
-          return `<img src="${escapeAttr(src)}" alt="Photo ${i+1}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`;
-        }).join('');
-        return `<div class="detail-photos-grid">${imgs}</div>`;
+      if (imageCount>0) {
+        return `<div class="detail-photos-grid">${Array.from({length:Math.min(imageCount,6)},(_,i)=>{const src=`${API}/loads/${load.id}/image/${i}`;return `<img src="${escapeAttr(src)}" alt="Photo ${i+1}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`;}).join('')}</div>`;
       }
-      return `<div class="no-photos">📷 No photos attached to this listing</div>`;
+      return `<div class="no-photos">📷 No photos attached</div>`;
     })();
 
-    document.getElementById('detail-body').innerHTML = `
+    document.getElementById('detail-body').innerHTML=`
       ${distSection}
-
       <div class="detail-section">
         <div class="detail-section-title">Specs</div>
         <div class="detail-specs-grid">
-          <div class="detail-spec">
-            <div class="detail-spec-value">${load.weight_tons}T</div>
-            <div class="detail-spec-label">Weight</div>
-          </div>
-          <div class="detail-spec">
-            <div class="detail-spec-value">${load.space_cuft ? load.space_cuft+'ft³' : '—'}</div>
-            <div class="detail-spec-label">Space</div>
-          </div>
-          <div class="detail-spec">
-            <div class="detail-spec-value">${imageCount}</div>
-            <div class="detail-spec-label">Photos</div>
-          </div>
+          <div class="detail-spec"><div class="detail-spec-value">${load.weight_tons}T</div><div class="detail-spec-label">Weight</div></div>
+          <div class="detail-spec"><div class="detail-spec-value">${load.space_cuft?load.space_cuft+'ft³':'—'}</div><div class="detail-spec-label">Space</div></div>
+          <div class="detail-spec"><div class="detail-spec-value">${imageCount}</div><div class="detail-spec-label">Photos</div></div>
         </div>
       </div>
-
       <div class="detail-section">
         <div class="detail-section-title">Details</div>
-        <div class="detail-info-row">
-          <span class="detail-info-icon">📅</span>
-          <span class="detail-info-label">Loading Date</span>
-          <span class="detail-info-value">${formatDate(load.loading_date)}</span>
-        </div>
-        <div class="detail-info-row">
-          <span class="detail-info-icon">🧱</span>
-          <span class="detail-info-label">Placement</span>
-          <span class="detail-info-value">${escapeHtml(load.cargo_placement||'—')}</span>
-        </div>
-        <div class="detail-info-row">
-          <span class="detail-info-icon">🚛</span>
-          <span class="detail-info-label">Truck Type</span>
-          <span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span>
-        </div>
-        <div class="detail-info-row">
-          <span class="detail-info-icon">📍</span>
-          <span class="detail-info-label">Origin</span>
-          <span class="detail-info-value">${escapeHtml(load.origin_pincode)} ${escapeHtml(load.origin_city?`· ${load.origin_city}`:'')}</span>
-        </div>
-        <div class="detail-info-row">
-          <span class="detail-info-icon">🏁</span>
-          <span class="detail-info-label">Destination</span>
-          <span class="detail-info-value">${escapeHtml(load.destination_pincode)} ${escapeHtml(load.destination_city?`· ${load.destination_city}`:'')}</span>
-        </div>
+        <div class="detail-info-row"><span class="detail-info-icon">📅</span><span class="detail-info-label">Loading Date</span><span class="detail-info-value">${formatDate(load.loading_date)}</span></div>
+        <div class="detail-info-row"><span class="detail-info-icon">🧱</span><span class="detail-info-label">Placement</span><span class="detail-info-value">${escapeHtml(load.cargo_placement||'—')}</span></div>
+        <div class="detail-info-row"><span class="detail-info-icon">🚛</span><span class="detail-info-label">Truck Type</span><span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span></div>
+        <div class="detail-info-row"><span class="detail-info-icon">📍</span><span class="detail-info-label">Origin</span><span class="detail-info-value">${escapeHtml(load.origin_pincode)}${load.origin_city?` · ${escapeHtml(load.origin_city)}`:''}${load.origin_state?`, ${escapeHtml(load.origin_state)}`:''}</span></div>
+        <div class="detail-info-row"><span class="detail-info-icon">🏁</span><span class="detail-info-label">Destination</span><span class="detail-info-value">${escapeHtml(load.destination_pincode)}${load.destination_city?` · ${escapeHtml(load.destination_city)}`:''}${load.destination_state?`, ${escapeHtml(load.destination_state)}`:''}</span></div>
       </div>
+      <div class="detail-section"><div class="detail-section-title">Photos (${imageCount})</div>${photosHtml}</div>`;
 
-      <div class="detail-section">
-        <div class="detail-section-title">Photos (${imageCount})</div>
-        ${photosHtml}
-      </div>
-    `;
-
-    // Footer
-    document.getElementById('detail-footer').innerHTML = `
+    document.getElementById('detail-footer').innerHTML=`
       <div>
         <div class="detail-poster-name">${escapeHtml(load.poster_name)}</div>
-        ${load.poster_company ? `<div class="detail-poster-company">${escapeHtml(load.poster_company)}</div>` : ''}
+        ${load.poster_company?`<div class="detail-poster-company">${escapeHtml(load.poster_company)}</div>`:''}
         <div class="detail-poster-phone">+91 ${escapeHtml(load.poster_phone)}</div>
       </div>
-      <a href="tel:${escapeAttr(load.poster_phone)}" class="detail-call-btn">📞 Call</a>
-    `;
+      <a href="tel:${escapeAttr(load.poster_phone)}" class="detail-call-btn">📞 Call</a>`;
 
     document.getElementById('detail-overlay').classList.add('open');
     document.getElementById('detail-panel').classList.add('open');
-    // Highlight table row
-    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('highlighted'));
-    document.querySelectorAll('tbody tr').forEach(r => {
-      if (r.getAttribute('onclick')?.includes(loadId)) r.classList.add('highlighted');
-    });
+    document.querySelectorAll('tbody tr').forEach(r =>
+      r.classList.toggle('highlighted', r.getAttribute('onclick')?.includes(loadId))
+    );
   }
 
   function closeDetail() {
     document.getElementById('detail-overlay').classList.remove('open');
     document.getElementById('detail-panel').classList.remove('open');
-    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('highlighted'));
+    document.querySelectorAll('tbody tr').forEach(r=>r.classList.remove('highlighted'));
   }
 
   // ─── LIGHTBOX ─────────────────────────────────────────────────────────────
-  function openLightbox(src) {
-    document.getElementById('lightbox-img').src = src;
-    document.getElementById('lightbox').classList.add('active');
-  }
-  function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('active');
-    document.getElementById('lightbox-img').src = '';
-  }
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeLightbox(); closeDetail(); }
-  });
+  function openLightbox(src) { document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('active'); }
+  function closeLightbox()   { document.getElementById('lightbox').classList.remove('active'); document.getElementById('lightbox-img').src=''; }
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
 
   // ─── INIT ─────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    setupLocationInput('fs-origin','origin-suggestions','origin-badge','origin');
-    setupLocationInput('fs-dest','dest-suggestions','dest-badge','dest');
-    document.getElementById('fs-weight').addEventListener('keydown', e => {
-      if (e.key === 'Enter') findSpace();
-    });
+    // Desktop
+    setupLocationInput('fs-origin','origin-suggestions','origin-badge','origin', resolvedCoords);
+    setupLocationInput('fs-dest',  'dest-suggestions',  'dest-badge',  'dest',   resolvedCoords);
+    document.getElementById('fs-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpace(); });
+    // Mobile drawer
+    setupLocationInput('mob-origin','mob-origin-suggestions','mob-origin-badge','mob-origin', resolvedCoordsMob);
+    setupLocationInput('mob-dest',  'mob-dest-suggestions',  'mob-dest-badge',  'mob-dest',   resolvedCoordsMob);
+    document.getElementById('mob-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpaceMobile(); });
   });
 
   fetchLoads();
