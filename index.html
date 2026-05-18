@@ -1110,64 +1110,38 @@
   function closeLightbox()   { document.getElementById('lightbox').classList.remove('active'); document.getElementById('lightbox-img').src=''; }
   document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
 
-  // ─── INIT ─────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    // Desktop
-    setupLocationInput('fs-origin','origin-suggestions','origin-badge','origin', resolvedCoords);
-    setupLocationInput('fs-dest',  'dest-suggestions',  'dest-badge',  'dest',   resolvedCoords);
-    document.getElementById('fs-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpace(); });
-    // Mobile drawer
-    setupLocationInput('mob-origin','mob-origin-suggestions','mob-origin-badge','mob-origin', resolvedCoordsMob);
-    setupLocationInput('mob-dest',  'mob-dest-suggestions',  'mob-dest-badge',  'mob-dest',   resolvedCoordsMob);
-    document.getElementById('mob-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpaceMobile(); });
-  });
-
-  fetchLoads();
-  setInterval(fetchLoads, 120_000);
-
   // ─── DEEP LINK: auto-open detail panel from URL ───────────────────────────
-  // Supports: trucktraffic.in?load=LOAD_ID  (simplest, works on any static host)
-  // Also:     trucktraffic.in/load/LOAD_ID  (needs server-side rewrite to index.html)
   async function handleDeepLink() {
     let loadId = null;
-
-    // Check query string first: ?load=abc123  (works on Vercel/GitHub Pages as-is)
     const params = new URLSearchParams(window.location.search);
     loadId = params.get('load');
-
-    // Also check path: /load/abc123  (works if host rewrites 404 → index.html)
     if (!loadId) {
       const pathMatch = window.location.pathname.match(/\/load\/([^\/\?#]+)/);
       if (pathMatch) loadId = pathMatch[1];
     }
-
     if (!loadId) return;
-
-    // Wait up to 5s for loads to fetch
     let waited = 0;
     while (allLoads.length === 0 && waited < 5000) {
       await new Promise(r => setTimeout(r, 200));
       waited += 200;
     }
-
     let load = allLoads.find(l => l.id === loadId);
-
-    // Not in list — fetch individually (expired loads removed from list_loads)
     if (!load) {
       try {
         const res = await fetch(`${API}/loads/${loadId}`);
         if (res.ok) { load = await res.json(); if (load) allLoads.push(load); }
       } catch {}
     }
-
     if (load) {
       openDetail(load.id);
-      // Normalise URL to ?load=ID without reloading
       window.history.replaceState({}, '', `?load=${load.id}`);
     }
   }
 
   // ─── INIT ─────────────────────────────────────────────────────────────────
+  fetchLoads();
+  setInterval(fetchLoads, 120_000);
+
   document.addEventListener('DOMContentLoaded', () => {
     setupLocationInput('fs-origin','origin-suggestions','origin-badge','origin', resolvedCoords);
     setupLocationInput('fs-dest',  'dest-suggestions',  'dest-badge',  'dest',   resolvedCoords);
@@ -1177,5 +1151,6 @@
     document.getElementById('mob-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpaceMobile(); });
     handleDeepLink();
   });
+</script>
 </body>
 </html>
