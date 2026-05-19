@@ -390,7 +390,7 @@
     .detail-panel.open { transform:translateX(0); }
     .detail-header {
       background:linear-gradient(135deg,var(--navy),#1a3a8f);
-      padding:20px 24px;
+      padding:20px 20px 24px;
       display:flex; align-items:flex-start; justify-content:space-between;
       flex-shrink:0;
     }
@@ -402,29 +402,67 @@
       flex-shrink:0; margin-left:12px; transition:background 0.15s;
     }
     .detail-close:hover { background:rgba(255,255,255,0.28); }
-    .detail-route-header { flex:1; }
+    .detail-route-header { flex:1; min-width:0; }
     .detail-truck-badge {
       display:inline-flex; align-items:center; gap:5px;
       background:rgba(255,255,255,0.15);
       border-radius:100px; padding:3px 10px;
-      font-size:11px; font-weight:700; color:#fff; margin-bottom:10px;
+      font-size:11px; font-weight:700; color:#fff; margin-bottom:12px;
     }
-    .detail-route-row { display:flex; align-items:center; gap:14px; }
-    .detail-pin { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; color:#fff; line-height:1; }
-    .detail-city  { font-size:12px; color:rgba(255,255,255,0.75); margin-top:3px; }
-    .detail-state { font-size:11px; color:rgba(255,255,255,0.5); }
-    .detail-arrow { color:var(--orange); font-size:22px; }
-    .detail-body { flex:1; overflow-y:auto; padding:24px; }
-    .detail-section { margin-bottom:24px; }
+
+    /* Route — stacked vertically for clarity */
+    .detail-route-stack { display:flex; flex-direction:column; gap:0; }
+    .detail-endpoint {
+      background:rgba(255,255,255,0.08);
+      border-radius:12px; padding:12px 14px;
+    }
+    .detail-pin {
+      font-family:'Rajdhani',sans-serif;
+      font-size:28px; font-weight:700; color:#fff;
+      line-height:1; letter-spacing:0.5px;
+    }
+    .detail-locality {
+      font-size:15px; font-weight:600;
+      color:rgba(255,255,255,0.9); margin-top:3px;
+    }
+    .detail-city-line {
+      font-size:12px; color:rgba(255,255,255,0.6); margin-top:2px;
+    }
+    .detail-state {
+      font-size:11px; color:rgba(255,255,255,0.45); margin-top:1px;
+    }
+    .detail-route-divider {
+      display:flex; align-items:center; gap:8px;
+      padding:6px 14px;
+    }
+    .detail-route-divider-line {
+      flex:1; height:1px; background:rgba(255,255,255,0.15);
+    }
+    .detail-route-divider-icon {
+      color:var(--orange); font-size:18px; font-weight:700;
+    }
+
+    .detail-body { flex:1; overflow-y:auto; padding:20px; }
+    .detail-section { margin-bottom:20px; }
     .detail-section-title {
       font-size:10px; font-weight:700; color:var(--muted);
       text-transform:uppercase; letter-spacing:0.7px;
-      margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border);
+      margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border);
     }
-    .detail-specs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-    .detail-spec { background:var(--bg); border-radius:10px; padding:12px; text-align:center; }
-    .detail-spec-value { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:var(--navy); }
-    .detail-spec-label { font-size:10px; color:var(--subtle); text-transform:uppercase; letter-spacing:0.5px; margin-top:3px; }
+
+    /* KPI boxes — weight and date */
+    .detail-kpi-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+    .detail-kpi {
+      background:var(--navy); border-radius:14px;
+      padding:16px; text-align:center;
+    }
+    .detail-kpi-value {
+      font-family:'Rajdhani',sans-serif;
+      font-size:32px; font-weight:700; color:#fff; line-height:1;
+    }
+    .detail-kpi-date { font-size:20px; }
+    .detail-kpi-label { font-size:11px; color:rgba(255,255,255,0.6); margin-top:5px; font-weight:600; }
+
     .detail-info-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
     .detail-info-row:last-child { border-bottom:none; }
     .detail-info-icon { font-size:16px; width:24px; text-align:center; flex-shrink:0; }
@@ -437,7 +475,6 @@
       cursor:pointer; transition:transform 0.15s;
     }
     .detail-photos-grid img:hover { transform:scale(1.02); }
-    .no-photos { text-align:center; padding:24px; background:var(--bg); border-radius:10px; color:var(--subtle); font-size:13px; }
     .detail-footer {
       padding:16px 24px; border-top:1px solid var(--border);
       background:#F8F9FA; display:flex; align-items:center; justify-content:space-between;
@@ -454,8 +491,8 @@
       text-decoration:none; font-family:'Inter',sans-serif; transition:background 0.2s;
     }
     .detail-call-btn:hover { background:#1a6124; }
-    .detail-dist-chips { display:flex; gap:6px; flex-wrap:wrap; }
-    .detail-dist-chip { background:#E8F5EA; color:var(--green); border-radius:100px; padding:3px 10px; font-size:11px; font-weight:700; }
+    .detail-dist-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .detail-dist-chip { background:#E8F5EA; color:var(--green); border-radius:100px; padding:4px 12px; font-size:12px; font-weight:700; }
     .detail-dist-chip.off { background:#FFF4EE; color:var(--orange); }
 
     /* ===== LIGHTBOX ===== */
@@ -1033,52 +1070,97 @@
   // ─── DETAIL PANEL ─────────────────────────────────────────────────────────
   function openDetail(loadId) {
     const load=allLoads.find(l=>l.id===loadId); if(!load) return;
-    const oCity=load.origin_city||load.origin_pincode, dCity=load.destination_city||load.destination_pincode;
     const imageCount=load.image_count||(load.images?load.images.length:0);
     const dist=distanceMap[load.id];
+
+    // Clean hierarchy — deduplicate across locality / city / state
+    function buildEndpoint(pin, locality, city, state) {
+      // Deduplicate: if locality === city, only show once
+      const loc  = (locality||'').trim();
+      const cty  = (city||'').trim();
+      const st   = (state||'').trim();
+      const showLocality = loc;
+      // Only show city if it differs from locality
+      const showCity = cty && cty.toLowerCase() !== loc.toLowerCase() ? cty : null;
+      // Only show state if it isn't already contained in city or locality
+      const showState = st && st.toLowerCase() !== cty.toLowerCase() && st.toLowerCase() !== loc.toLowerCase() ? st : null;
+      return { pin, locality: showLocality||null, city: showCity, state: showState };
+    }
+
+    const oE = buildEndpoint(load.origin_pincode,      load.origin_locality,      load.origin_city,      load.origin_state);
+    const dE = buildEndpoint(load.destination_pincode, load.destination_locality, load.destination_city, load.destination_state);
+
+    function endpointHtml(e) {
+      return `
+        <div class="detail-endpoint">
+          <div class="detail-pin">${escapeHtml(e.pin)}</div>
+          ${e.locality ? `<div class="detail-locality">${escapeHtml(e.locality)}</div>` : ''}
+          ${e.city     ? `<div class="detail-city-line">${escapeHtml(e.city)}</div>`    : ''}
+          ${e.state    ? `<div class="detail-state">${escapeHtml(e.state)}</div>`       : ''}
+        </div>`;
+    }
 
     document.getElementById('detail-header').innerHTML=`
       <div class="detail-route-header">
         <div class="detail-truck-badge">🚛 ${escapeHtml(load.truck_type||'Truck')}</div>
-        <div class="detail-route-row">
-          <div><div class="detail-pin">${escapeHtml(load.origin_pincode)}</div><div class="detail-city">${escapeHtml(oCity)}</div><div class="detail-state">${escapeHtml(load.origin_state||'')}</div></div>
-          <div class="detail-arrow">➤</div>
-          <div><div class="detail-pin">${escapeHtml(load.destination_pincode)}</div><div class="detail-city">${escapeHtml(dCity)}</div><div class="detail-state">${escapeHtml(load.destination_state||'')}</div></div>
+        <div class="detail-route-stack">
+          ${endpointHtml(oE)}
+          <div class="detail-route-divider">
+            <div class="detail-route-divider-line"></div>
+            <div class="detail-route-divider-icon">↓</div>
+            <div class="detail-route-divider-line"></div>
+          </div>
+          ${endpointHtml(dE)}
         </div>
       </div>
       <button class="detail-close" onclick="closeDetail()">✕</button>`;
 
-    const distSection=dist?`<div class="detail-section"><div class="detail-section-title">📍 Distance from Your Route</div><div class="detail-dist-chips"><span class="detail-dist-chip ${dist.offRoute?'off':''}">Origin: ${dist.origin.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span><span class="detail-dist-chip ${dist.offRoute?'off':''}">Dest: ${dist.dest.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span></div></div>`:'';
+    const distSection = dist ? `
+      <div class="detail-dist-bar">
+        <span class="detail-dist-chip ${dist.offRoute?'off':''}">📍 Origin ${dist.origin.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span>
+        <span class="detail-dist-chip ${dist.offRoute?'off':''}">🏁 Dest ${dist.dest.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span>
+      </div>` : '';
 
-    const photosHtml=(() => {
-      if (load.images&&load.images.length>0) {
-        return `<div class="detail-photos-grid">${load.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div>`;
+    // Photos — only if they exist
+    const photosHtml = (() => {
+      if (load.images && load.images.length > 0) {
+        return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${load.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div></div>`;
       }
-      if (imageCount>0) {
-        return `<div class="detail-photos-grid">${Array.from({length:Math.min(imageCount,6)},(_,i)=>{const src=`${API}/loads/${load.id}/image/${i}`;return `<img src="${escapeAttr(src)}" alt="Photo ${i+1}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`;}).join('')}</div>`;
+      if (imageCount > 0) {
+        return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${Array.from({length:Math.min(imageCount,6)},(_,i)=>{const src=`${API}/loads/${load.id}/image/${i}`;return `<img src="${escapeAttr(src)}" alt="Photo ${i+1}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`;}).join('')}</div></div>`;
       }
-      return `<div class="no-photos">📷 No photos attached</div>`;
+      return '';
     })();
 
     document.getElementById('detail-body').innerHTML=`
       ${distSection}
-      <div class="detail-section">
-        <div class="detail-section-title">Specs</div>
-        <div class="detail-specs-grid">
-          <div class="detail-spec"><div class="detail-spec-value">${load.weight_tons}T</div><div class="detail-spec-label">Weight</div></div>
-          <div class="detail-spec"><div class="detail-spec-value">${load.space_cuft?load.space_cuft+'ft³':'—'}</div><div class="detail-spec-label">Space</div></div>
-          <div class="detail-spec"><div class="detail-spec-value">${imageCount}</div><div class="detail-spec-label">Photos</div></div>
+
+      <div class="detail-kpi-row">
+        <div class="detail-kpi">
+          <div class="detail-kpi-value">${load.weight_tons}T</div>
+          <div class="detail-kpi-label">⚖️ Weight Capacity</div>
+        </div>
+        <div class="detail-kpi">
+          <div class="detail-kpi-value detail-kpi-date">${formatDate(load.loading_date)}</div>
+          <div class="detail-kpi-label">📅 Loading Date</div>
         </div>
       </div>
+
       <div class="detail-section">
         <div class="detail-section-title">Details</div>
-        <div class="detail-info-row"><span class="detail-info-icon">📅</span><span class="detail-info-label">Loading Date</span><span class="detail-info-value">${formatDate(load.loading_date)}</span></div>
-        <div class="detail-info-row"><span class="detail-info-icon">🧱</span><span class="detail-info-label">Placement</span><span class="detail-info-value">${escapeHtml(load.cargo_placement||'—')}</span></div>
-        <div class="detail-info-row"><span class="detail-info-icon">🚛</span><span class="detail-info-label">Truck Type</span><span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span></div>
-        <div class="detail-info-row"><span class="detail-info-icon">📍</span><span class="detail-info-label">Origin</span><span class="detail-info-value">${escapeHtml(load.origin_pincode)}${load.origin_city?` · ${escapeHtml(load.origin_city)}`:''}${load.origin_state?`, ${escapeHtml(load.origin_state)}`:''}</span></div>
-        <div class="detail-info-row"><span class="detail-info-icon">🏁</span><span class="detail-info-label">Destination</span><span class="detail-info-value">${escapeHtml(load.destination_pincode)}${load.destination_city?` · ${escapeHtml(load.destination_city)}`:''}${load.destination_state?`, ${escapeHtml(load.destination_state)}`:''}</span></div>
+        <div class="detail-info-row">
+          <span class="detail-info-icon">🧱</span>
+          <span class="detail-info-label">Placement</span>
+          <span class="detail-info-value">${escapeHtml(load.cargo_placement||'—')}</span>
+        </div>
+        <div class="detail-info-row">
+          <span class="detail-info-icon">🚛</span>
+          <span class="detail-info-label">Truck Type</span>
+          <span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span>
+        </div>
       </div>
-      <div class="detail-section"><div class="detail-section-title">Photos (${imageCount})</div>${photosHtml}</div>`;
+
+      ${photosHtml}`;
 
     document.getElementById('detail-footer').innerHTML=`
       <div>
