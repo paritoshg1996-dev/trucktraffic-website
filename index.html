@@ -330,18 +330,23 @@
     tbody tr.highlighted { background:#EEF4FF; }
     td { padding:12px 14px; vertical-align:middle; }
 
-    /* FIX 2: Route — pincode + city only, no state */
+    /* Route — Area / State / Pincode order */
     .td-route { display:flex; align-items:center; gap:6px; }
     .route-endpoint { min-width:0; }
-    .td-pin {
-      font-family:'Rajdhani',sans-serif;
-      font-size:15px; font-weight:700; color:var(--text);
-      line-height:1; white-space:nowrap;
+    .td-area {
+      font-size:13px; font-weight:700; color:var(--text);
+      line-height:1.2; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis; max-width:90px;
     }
-    .td-city {
-      font-size:11px; color:var(--muted);
+    .td-state {
+      font-size:10px; color:var(--muted);
       margin-top:1px; white-space:nowrap;
       overflow:hidden; text-overflow:ellipsis; max-width:80px;
+    }
+    .td-pin {
+      font-family:'Rajdhani',sans-serif;
+      font-size:12px; font-weight:600; color:var(--subtle);
+      margin-top:1px; white-space:nowrap;
     }
     .td-arrow { color:var(--orange); font-size:13px; flex-shrink:0; padding:0 2px; }
 
@@ -450,8 +455,25 @@
       margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border);
     }
 
-    /* KPI boxes — weight and date */
+    /* KPI boxes — weight, date, price, dimensions */
     .detail-kpi-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+    .detail-kpi-row-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:20px; }
+    @media (max-width:520px) { .detail-kpi-row-4 { grid-template-columns:1fr 1fr; } }
+    .detail-kpi-sm {
+      background:rgba(10,36,99,0.06); border:1px solid var(--border);
+      border-radius:12px; padding:12px; text-align:center;
+    }
+    .detail-kpi-sm-value {
+      font-family:'Rajdhani',sans-serif;
+      font-size:20px; font-weight:700; color:var(--navy); line-height:1;
+    }
+    .detail-kpi-sm-label { font-size:10px; color:var(--muted); margin-top:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; }
+    .price-kpi {
+      background:linear-gradient(135deg,#1a4a1a,var(--green));
+      border-radius:14px; padding:16px; text-align:center;
+    }
+    .price-kpi-value { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; color:#fff; line-height:1; }
+    .price-kpi-label { font-size:11px; color:rgba(255,255,255,0.7); margin-top:5px; font-weight:600; }
     .detail-kpi {
       background:var(--navy); border-radius:14px;
       padding:16px; text-align:center;
@@ -1018,23 +1040,30 @@
     }
 
     const rows=loads.map(l => {
-      // FIX 2: pincode + city name, no state in table
-      const oCity=l.origin_city||'', dCity=l.destination_city||'';
+      // Route cells — area / state / pincode order (variables declared inside template below)
       const dist=distanceMap[l.id];
       const imageCount=l.image_count||(l.images?l.images.length:0);
       const distHtml=dist?`<div style="margin-top:3px"><span class="dist-badge">📍${dist.origin.toFixed(1)}km</span> <span class="dist-badge">🏁${dist.dest.toFixed(1)}km</span></div>`:'';
 
+      const oArea  = l.origin_locality || l.origin_city || '';
+      const oState = l.origin_state || '';
+      const oPin   = l.origin_pincode || '';
+      const dArea  = l.destination_locality || l.destination_city || '';
+      const dState = l.destination_state || '';
+      const dPin   = l.destination_pincode || '';
       return `<tr onclick="openDetail('${escapeAttr(l.id)}')" title="Tap for full details">
         <td>
           <div class="td-route">
             <div class="route-endpoint">
-              <div class="td-pin">${escapeHtml(l.origin_pincode)}</div>
-              <div class="td-city">${escapeHtml(oCity)}</div>
+              ${oArea  ? `<div class="td-area">${escapeHtml(oArea)}</div>`  : ''}
+              ${oState ? `<div class="td-state">${escapeHtml(oState)}</div>` : ''}
+              ${oPin   ? `<div class="td-pin">${escapeHtml(oPin)}</div>`    : ''}
             </div>
             <span class="td-arrow">➤</span>
             <div class="route-endpoint">
-              <div class="td-pin">${escapeHtml(l.destination_pincode)}</div>
-              <div class="td-city">${escapeHtml(dCity)}</div>
+              ${dArea  ? `<div class="td-area">${escapeHtml(dArea)}</div>`  : ''}
+              ${dState ? `<div class="td-state">${escapeHtml(dState)}</div>` : ''}
+              ${dPin   ? `<div class="td-pin">${escapeHtml(dPin)}</div>`    : ''}
             </div>
           </div>
           ${distHtml}
@@ -1073,18 +1102,16 @@
     const imageCount=load.image_count||(load.images?load.images.length:0);
     const dist=distanceMap[load.id];
 
-    // Clean hierarchy — deduplicate across locality / city / state
+    // Build endpoint — order: Area (locality/city) → State → Pincode
     function buildEndpoint(pin, locality, city, state) {
-      // Deduplicate: if locality === city, only show once
-      const loc  = (locality||'').trim();
-      const cty  = (city||'').trim();
-      const st   = (state||'').trim();
-      const showLocality = loc;
-      // Only show city if it differs from locality
-      const showCity = cty && cty.toLowerCase() !== loc.toLowerCase() ? cty : null;
-      // Only show state if it isn't already contained in city or locality
-      const showState = st && st.toLowerCase() !== cty.toLowerCase() && st.toLowerCase() !== loc.toLowerCase() ? st : null;
-      return { pin, locality: showLocality||null, city: showCity, state: showState };
+      const loc = (locality||'').trim();
+      const cty = (city||'').trim();
+      const st  = (state||'').trim();
+      // Area: prefer locality, fall back to city
+      const area = loc || cty || null;
+      // State: show only if different from area
+      const showState = st && st.toLowerCase() !== (area||'').toLowerCase() ? st : null;
+      return { pin: pin||null, area, state: showState };
     }
 
     const oE = buildEndpoint(load.origin_pincode,      load.origin_locality,      load.origin_city,      load.origin_state);
@@ -1093,10 +1120,9 @@
     function endpointHtml(e) {
       return `
         <div class="detail-endpoint">
-          <div class="detail-pin">${escapeHtml(e.pin)}</div>
-          ${e.locality ? `<div class="detail-locality">${escapeHtml(e.locality)}</div>` : ''}
-          ${e.city     ? `<div class="detail-city-line">${escapeHtml(e.city)}</div>`    : ''}
-          ${e.state    ? `<div class="detail-state">${escapeHtml(e.state)}</div>`       : ''}
+          ${e.area  ? `<div class="detail-locality">${escapeHtml(e.area)}</div>` : ''}
+          ${e.state ? `<div class="detail-city-line">${escapeHtml(e.state)}</div>` : ''}
+          ${e.pin   ? `<div class="detail-pin" style="font-size:22px;margin-top:4px;color:rgba(255,255,255,0.7)">${escapeHtml(e.pin)}</div>` : ''}
         </div>`;
     }
 
@@ -1132,6 +1158,22 @@
       return '';
     })();
 
+    // Dimensions helpers
+    const dimParts = [
+      load.length_ft ? `${load.length_ft}L` : null,
+      load.width_ft  ? `${load.width_ft}W`  : null,
+      load.height_ft ? `${load.height_ft}H` : null,
+    ].filter(Boolean);
+    const dimStr = dimParts.length ? dimParts.join(' × ') + ' ft' : null;
+    const volStr = load.space_cuft ? `${load.space_cuft} cu.ft` : null;
+
+    // Price helpers
+    const priceStr = load.price_per_ton
+      ? `₹${Number(load.price_per_ton).toLocaleString('en-IN')}/T`
+      : load.total_price
+        ? `₹${Number(load.total_price).toLocaleString('en-IN')}`
+        : null;
+
     document.getElementById('detail-body').innerHTML=`
       ${distSection}
 
@@ -1146,8 +1188,27 @@
         </div>
       </div>
 
+      ${priceStr || dimStr || volStr ? `
+      <div class="detail-kpi-row-4">
+        ${priceStr ? `
+        <div class="price-kpi" style="grid-column:${(!dimStr && !volStr)?'1/3':'auto'}">
+          <div class="price-kpi-value">${escapeHtml(priceStr)}</div>
+          <div class="price-kpi-label">💰 ${load.price_per_ton ? 'Price / Ton' : 'Total Price'}</div>
+        </div>` : ''}
+        ${dimStr ? `
+        <div class="detail-kpi-sm">
+          <div class="detail-kpi-sm-value" style="font-size:15px">${escapeHtml(dimStr)}</div>
+          <div class="detail-kpi-sm-label">📐 Dimensions</div>
+        </div>` : ''}
+        ${volStr ? `
+        <div class="detail-kpi-sm">
+          <div class="detail-kpi-sm-value">${escapeHtml(volStr)}</div>
+          <div class="detail-kpi-sm-label">📦 Volume</div>
+        </div>` : ''}
+      </div>` : ''}
+
       <div class="detail-section">
-        <div class="detail-section-title">Details</div>
+        <div class="detail-section-title">Cargo Details</div>
         <div class="detail-info-row">
           <span class="detail-info-icon">🧱</span>
           <span class="detail-info-label">Placement</span>
@@ -1158,6 +1219,42 @@
           <span class="detail-info-label">Truck Type</span>
           <span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span>
         </div>
+        ${load.cargo_type ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📦</span>
+          <span class="detail-info-label">Cargo Type</span>
+          <span class="detail-info-value">${escapeHtml(load.cargo_type)}</span>
+        </div>` : ''}
+        ${load.length_ft || load.width_ft || load.height_ft ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📐</span>
+          <span class="detail-info-label">Dimensions</span>
+          <span class="detail-info-value">${escapeHtml(dimStr||'—')}</span>
+        </div>` : ''}
+        ${load.space_cuft ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📦</span>
+          <span class="detail-info-label">Volume</span>
+          <span class="detail-info-value">${escapeHtml(volStr||'—')}</span>
+        </div>` : ''}
+        ${load.price_per_ton ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">💰</span>
+          <span class="detail-info-label">Rate</span>
+          <span class="detail-info-value" style="color:var(--green);font-size:15px;font-weight:700">₹${Number(load.price_per_ton).toLocaleString('en-IN')} / ton</span>
+        </div>` : ''}
+        ${load.total_price ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">💵</span>
+          <span class="detail-info-label">Total Price</span>
+          <span class="detail-info-value" style="color:var(--green);font-size:15px;font-weight:700">₹${Number(load.total_price).toLocaleString('en-IN')}</span>
+        </div>` : ''}
+        ${load.notes ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📝</span>
+          <span class="detail-info-label">Notes</span>
+          <span class="detail-info-value">${escapeHtml(load.notes)}</span>
+        </div>` : ''}
       </div>
 
       ${photosHtml}`;
