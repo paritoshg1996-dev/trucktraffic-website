@@ -1290,29 +1290,56 @@
   document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
 
   // ─── DEEP LINK: auto-open detail panel from URL ───────────────────────────
+  // Supports three URL formats:
+  //   /l/{short_id}            → new short link (e.g. /l/a3f9b2c1)
+  //   /load/{uuid}             → legacy long-form path
+  //   ?load={uuid}             → query-param form (used internally)
   async function handleDeepLink() {
-    let loadId = null;
-    const params = new URLSearchParams(window.location.search);
-    loadId = params.get('load');
-    if (!loadId) {
-      const pathMatch = window.location.pathname.match(/\/load\/([^\/\?#]+)/);
-      if (pathMatch) loadId = pathMatch[1];
-    }
-    if (!loadId) return;
-    let waited = 0;
-    while (allLoads.length === 0 && waited < 5000) {
-      await new Promise(r => setTimeout(r, 200));
-      waited += 200;
-    }
-    let load = allLoads.find(l => l.id === loadId);
-    if (!load) {
+    const params  = new URLSearchParams(window.location.search);
+    const path    = window.location.pathname;
+
+    // Detect format
+    const shortMatch  = path.match(/^\/l\/([a-z0-9]+)$/i);
+    const pathMatch   = path.match(/^\/load\/([^\/\?#]+)/);
+    const queryLoadId = params.get('load');
+
+    let load = null;
+
+    if (shortMatch) {
+      // Short link: resolve short_id → full load via dedicated endpoint
+      const shortId = shortMatch[1].toLowerCase();
       try {
-        const res = await fetch(`${API}/loads/${loadId}`);
-        if (res.ok) { load = await res.json(); if (load) allLoads.push(load); }
+        const res = await fetch(`${API}/loads/s/${encodeURIComponent(shortId)}`);
+        if (res.ok) {
+          load = await res.json();
+          if (load) allLoads.push(load);
+        }
       } catch {}
+
+    } else {
+      // Long-form: full UUID from path or query param
+      let loadId = queryLoadId || (pathMatch ? pathMatch[1] : null);
+      if (!loadId) return;
+
+      // Wait up to 5s for the initial load list to arrive
+      let waited = 0;
+      while (allLoads.length === 0 && waited < 5000) {
+        await new Promise(r => setTimeout(r, 200));
+        waited += 200;
+      }
+
+      load = allLoads.find(l => l.id === loadId) || null;
+      if (!load) {
+        try {
+          const res = await fetch(`${API}/loads/${encodeURIComponent(loadId)}`);
+          if (res.ok) { load = await res.json(); if (load) allLoads.push(load); }
+        } catch {}
+      }
     }
+
     if (load) {
       openDetail(load.id);
+      // Normalise URL to query-param form so browser back works cleanly
       window.history.replaceState({}, '', `?load=${load.id}`);
     }
   }
