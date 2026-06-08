@@ -1070,7 +1070,7 @@
         </td>
         <td><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
         <td><span class="td-weight">${l.weight_tons}T</span></td>
-        <td class="col-placement">${l.cargo_placement?`<span class="place-pill">${escapeHtml(l.cargo_placement)}</span>`:'—'}</td>
+        <td class="col-placement">${l.cargo_placement?`<span class="place-pill">${escapeHtml(l.cargo_placement)}</span>`:''}${(l.cargo_types&&l.cargo_types.length)?l.cargo_types.map(c=>`<span class="place-pill" style="background:#F0F4FF;color:var(--navy);margin-left:3px">${escapeHtml(c.startsWith('Others:')?c.slice(8).trim():c)}</span>`).join(''):''}${!l.cargo_placement&&!(l.cargo_types&&l.cargo_types.length)?'—':''}</td>
         <td class="col-date td-date">${formatDate(l.loading_date)}</td>
         <td class="col-photos">${imageCount>0?`<span class="photo-count">📸 ${imageCount}</span>`:'<span style="color:var(--subtle)">—</span>'}</td>
         <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('${escapeAttr(l.id)}')">More Info ›</button></td>
@@ -1219,11 +1219,11 @@
           <span class="detail-info-label">Truck Type</span>
           <span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span>
         </div>
-        ${load.cargo_type ? `
+        ${(load.cargo_types && load.cargo_types.length) ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">📦</span>
           <span class="detail-info-label">Cargo Type</span>
-          <span class="detail-info-value">${escapeHtml(load.cargo_type)}</span>
+          <span class="detail-info-value">${escapeHtml(load.cargo_types.map(c => c.startsWith('Others:') ? c.slice(8).trim() : c).join(', '))}</span>
         </div>` : ''}
         ${load.length_ft || load.width_ft || load.height_ft ? `
         <div class="detail-info-row">
@@ -1290,23 +1290,21 @@
   document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
 
   // ─── DEEP LINK: auto-open detail panel from URL ───────────────────────────
-  // Supports three URL formats:
-  //   /l/{short_id}            → new short link (e.g. /l/a3f9b2c1)
-  //   /load/{uuid}             → legacy long-form path
-  //   ?load={uuid}             → query-param form (used internally)
+  // Handles three URL formats:
+  //   /l/{short_id}   → short link from WhatsApp (e.g. /l/a3f9b2)
+  //   /load/{uuid}    → legacy long path
+  //   ?load={uuid}    → query-param form used internally
   async function handleDeepLink() {
-    const params  = new URLSearchParams(window.location.search);
-    const path    = window.location.pathname;
-
-    // Detect format
-    const shortMatch  = path.match(/^\/l\/([a-z0-9]+)$/i);
-    const pathMatch   = path.match(/^\/load\/([^\/\?#]+)/);
-    const queryLoadId = params.get('load');
+    const params    = new URLSearchParams(window.location.search);
+    const path      = window.location.pathname;
+    const shortMatch = path.match(/^\/l\/([a-z0-9]+)$/i);
+    const pathMatch  = path.match(/^\/load\/([^/?#]+)/);
+    const queryId    = params.get('load');
 
     let load = null;
 
     if (shortMatch) {
-      // Short link: resolve short_id → full load via dedicated endpoint
+      // ── Short link: resolve via /api/loads/s/{short_id} ──
       const shortId = shortMatch[1].toLowerCase();
       try {
         const res = await fetch(`${API}/loads/s/${encodeURIComponent(shortId)}`);
@@ -1314,32 +1312,30 @@
           load = await res.json();
           if (load) allLoads.push(load);
         }
-      } catch {}
+      } catch (e) { console.warn('Short-link fetch failed', e); }
 
     } else {
-      // Long-form: full UUID from path or query param
-      let loadId = queryLoadId || (pathMatch ? pathMatch[1] : null);
+      // ── Long form: UUID from query param or /load/ path ──
+      const loadId = queryId || (pathMatch ? pathMatch[1] : null);
       if (!loadId) return;
 
-      // Wait up to 5s for the initial load list to arrive
+      // Wait up to 5 s for the initial load list
       let waited = 0;
       while (allLoads.length === 0 && waited < 5000) {
         await new Promise(r => setTimeout(r, 200));
         waited += 200;
       }
-
       load = allLoads.find(l => l.id === loadId) || null;
       if (!load) {
         try {
           const res = await fetch(`${API}/loads/${encodeURIComponent(loadId)}`);
           if (res.ok) { load = await res.json(); if (load) allLoads.push(load); }
-        } catch {}
+        } catch (e) { console.warn('Long-link fetch failed', e); }
       }
     }
 
     if (load) {
       openDetail(load.id);
-      // Normalise URL to query-param form so browser back works cleanly
       window.history.replaceState({}, '', `?load=${load.id}`);
     }
   }
