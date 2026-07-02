@@ -330,6 +330,31 @@
     tbody tr.highlighted { background:#F0ECFF; }
     td { padding:12px 14px; vertical-align:middle; }
 
+    /* ===== ROW-LEVEL TYPE STYLING (entire row outlined & tinted by listing type) ===== */
+    tbody tr.row-truck-space {
+      outline:1.5px solid #93C5FD; outline-offset:-1.5px;
+      background:rgba(219,234,254,0.35);
+    }
+    tbody tr.row-truck-space:hover { background:rgba(219,234,254,0.6); }
+    tbody tr.row-truck-space.highlighted { background:#DCE8FF; }
+    tbody tr.row-truck-space .td-area,
+    tbody tr.row-truck-space .td-weight-dyn,
+    tbody tr.row-truck-space .td-date-full,
+    tbody tr.row-truck-space .td-date-short,
+    tbody tr.row-truck-space .td-pin { color:#1D4ED8; }
+
+    tbody tr.row-adjustment-load {
+      outline:1.5px solid #FDBA74; outline-offset:-1.5px;
+      background:rgba(255,237,213,0.35);
+    }
+    tbody tr.row-adjustment-load:hover { background:rgba(255,237,213,0.6); }
+    tbody tr.row-adjustment-load.highlighted { background:#FFE3C6; }
+    tbody tr.row-adjustment-load .td-area,
+    tbody tr.row-adjustment-load .td-weight-dyn,
+    tbody tr.row-adjustment-load .td-date-full,
+    tbody tr.row-adjustment-load .td-date-short,
+    tbody tr.row-adjustment-load .adj-members-count { color:#C2410C; }
+
     /* Route — Area / State / Pincode order */
     .td-route { display:flex; align-items:center; gap:6px; }
     .route-endpoint { min-width:0; }
@@ -668,18 +693,7 @@
     }
     .adj-share-copy:hover { background:#1a0f3e; }
 
-    /* ===== FILTER BAR TABS (Search Truck Space / Search Adjustment Loads) ===== */
-    .filter-tabs { display:flex; gap:6px; max-width:1400px; margin:0 auto 8px; padding:0 24px; }
-    .filter-tab-btn {
-      padding:6px 14px; border-radius:100px; border:1.5px solid rgba(255,255,255,0.2);
-      background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7);
-      font-family:'Inter',sans-serif; font-size:12px; font-weight:700; cursor:pointer;
-      transition:all 0.2s;
-    }
-    .filter-tab-btn.active-truck { background:var(--navy); border-color:var(--navy); color:#fff; }
-    .filter-tab-btn.active-adj   { background:var(--orange); border-color:var(--orange); color:#fff; }
-    .filter-panel { display:none; }
-    .filter-panel.active { display:block; }
+    /* (search tabs removed — single common search bar drives both listing types) */
 
     /* ===== RESPONSIVE ===== */
     @media (max-width:768px) {
@@ -692,23 +706,46 @@
 
       /* Mobile columns: Type · Origin · Destination · Loading Date · View */
       .col-truck, .col-weight { display:none; }
+
+      /* Shrink Type / Loading Date / View so Origin & Destination get the room */
+      thead th.col-type, td.col-type { width:1%; padding-left:6px; padding-right:4px; }
+      thead th.col-date, td.col-date { width:1%; padding-left:4px; padding-right:4px; }
+      thead th.col-btn,  td.col-btn  { width:1%; padding-left:4px; padding-right:6px; }
       thead th.col-btn { font-size:0; }
-      thead th.col-btn::after { content:'View'; font-size:11px; }
-      td.col-btn .info-btn { font-size:11px; padding:6px 10px; }
-      table  { font-size:12px; min-width:0; }
-      thead th { padding:10px 8px; }
-      td     { padding:10px 8px; }
-      .td-area { max-width:64px; font-size:12px; }
-      .td-state, .td-pin { font-size:9px; }
-      .type-badge { font-size:9px; padding:3px 7px; }
+      thead th.col-btn::after { content:'View'; font-size:10px; }
+      td.col-btn .info-btn { font-size:10px; padding:5px 8px; }
+
+      table  { font-size:12px; min-width:0; table-layout:auto; }
+      thead th { padding:10px 6px; }
+      td     { padding:10px 6px; }
+
+      /* Origin / Destination: full width, wrap instead of truncating */
+      .col-origin, .col-destination { max-width:none; width:auto; }
+      .td-area {
+        max-width:none; white-space:normal; overflow:visible;
+        text-overflow:clip; font-size:12px; word-break:break-word;
+      }
+      .td-state, .td-pin { font-size:9px; white-space:normal; max-width:none; }
+
+      /* Short date (no year) on mobile, full date hidden */
+      .td-date-full  { display:none; }
+      .td-date-short { display:inline; }
+
+      .type-badge.badge-in-table { font-size:8px; padding:3px 5px; letter-spacing:0.1px; display:inline-flex; align-items:center; gap:2px; }
+      .badge-in-table .badge-icon  { font-size:11px; }
+      .badge-in-table .badge-label { display:none; } /* icon-only on mobile */
 
       .detail-panel { width:100vw; }
-      .header-right .download-btn { display:none; }
+      .header-right .live-badge { display:none; }
+    }
+
+    @media (min-width:769px) {
+      .td-date-full  { display:inline; }
+      .td-date-short { display:none; }
     }
 
     @media (max-width:420px) {
-      .td-area { max-width:52px; }
-      .type-badge { padding:3px 6px; font-size:8px; }
+      .type-badge.badge-in-table { padding:3px 4px; }
     }
   </style>
 </head>
@@ -740,14 +777,7 @@
   </div>
 </div>
 
-<!-- FILTER TABS: switch which search form is shown -->
-<div class="filter-tabs">
-  <button class="filter-tab-btn active-truck" id="filter-tab-truck" onclick="setFilterTab('truck')">🚛 Search Truck Space</button>
-  <button class="filter-tab-btn" id="filter-tab-adj" onclick="setFilterTab('adj')">📦 Search Adjustment Loads</button>
-</div>
-
-<!-- ===================== SEARCH: TRUCK SPACE ===================== -->
-<div class="filter-panel active" id="filter-panel-truck">
+<!-- ===================== COMMON SEARCH (Truck Space + Adjustment Load) ===================== -->
 
 <!-- DESKTOP FILTER BAR -->
 <div class="filter-bar">
@@ -779,8 +809,8 @@
       <input type="number" id="fs-weight" placeholder="e.g. 5" min="0.1" step="0.5"/>
     </div>
     <div class="filter-btn-group">
-      <button class="btn-find" id="fs-btn" onclick="findSpace()">🚛 Find Trucks</button>
-      <button class="btn-refresh" onclick="fetchLoads()">🔄 Refresh</button>
+      <button class="btn-find" id="fs-btn" onclick="findSpace()">🔍 Find Loads</button>
+      <button class="btn-refresh" onclick="fetchLoads();fetchAdjLoads(activeAdjFilter)">🔄 Refresh</button>
       <button class="btn-clear" id="fs-clear-btn" onclick="clearFindSpace()" style="display:none">✕ Clear</button>
     </div>
   </div>
@@ -805,7 +835,7 @@
 <!-- MOBILE FILTER DRAWER -->
 <div class="mobile-filter-drawer" id="mobile-filter-drawer">
   <div class="drawer-handle"></div>
-  <div class="drawer-title">🚛 Find Trucks</div>
+  <div class="drawer-title">🔍 Find Loads</div>
 
   <div class="drawer-field">
     <label>My Origin</label>
@@ -837,86 +867,14 @@
   </div>
 
   <div class="drawer-btn-row">
-    <button class="drawer-btn-find" id="mob-fs-btn" onclick="findSpaceMobile()">🚛 Find Trucks</button>
-    <button class="drawer-btn-refresh" onclick="fetchLoads();closeMobileFilter()">🔄</button>
+    <button class="drawer-btn-find" id="mob-fs-btn" onclick="findSpaceMobile()">🔍 Find</button>
+    <button class="drawer-btn-refresh" onclick="fetchLoads();fetchAdjLoads(activeAdjFilter);closeMobileFilter()">🔄</button>
     <button class="drawer-btn-clear" id="mob-clear-btn" onclick="clearMobileFilter()" style="display:none">✕</button>
   </div>
   <div class="drawer-error"  id="mob-fs-error"></div>
   <div class="drawer-status" id="mob-fs-status"></div>
 </div>
 
-</div> <!-- /#filter-panel-truck -->
-
-<!-- ===================== SEARCH: ADJUSTMENT LOAD ===================== -->
-<div class="filter-panel" id="filter-panel-adj">
-
-  <!-- DESKTOP FILTER BAR (Adjustment Load) -->
-  <div class="filter-bar">
-    <div class="filter-bar-inner">
-      <div class="filter-field">
-        <label>Origin City</label>
-        <input type="text" id="adj-fs-origin" placeholder="e.g. Mumbai" autocomplete="off" style="height:40px;padding:0 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;width:170px;"/>
-      </div>
-      <div class="filter-field">
-        <label>Destination City</label>
-        <input type="text" id="adj-fs-dest" placeholder="e.g. Delhi" autocomplete="off" style="height:40px;padding:0 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;width:170px;"/>
-      </div>
-      <div class="filter-field">
-        <label>Cargo Weight (Kg)</label>
-        <input type="number" id="adj-fs-weight" placeholder="e.g. 500" min="1" step="10"/>
-      </div>
-      <div class="filter-btn-group">
-        <button class="btn-find" id="adj-fs-btn" onclick="findAdj()">📦 Find Adjustment Loads</button>
-        <button class="btn-refresh" onclick="fetchAdjLoads()">🔄 Refresh</button>
-        <button class="btn-clear" id="adj-fs-clear-btn" onclick="clearAdjFilter()" style="display:none">✕ Clear</button>
-      </div>
-    </div>
-    <div class="filter-status-row">
-      <span class="filter-error"  id="adj-fs-error"></span>
-      <span class="filter-status" id="adj-fs-status"></span>
-    </div>
-  </div>
-
-  <!-- MOBILE SEARCH BAR (Adjustment Load) -->
-  <div class="mobile-search-bar">
-    <div class="mobile-search-trigger" onclick="openMobileAdjFilter()">
-      <span class="mobile-search-icon">🔍</span>
-      <span class="mobile-search-text" id="mobile-adj-search-hint">Search adjustment loads by city &amp; weight…</span>
-      <span class="mobile-active-badge" id="mobile-adj-active-badge">Active</span>
-    </div>
-  </div>
-
-  <!-- MOBILE FILTER OVERLAY (Adjustment Load) -->
-  <div class="mobile-filter-overlay" id="mobile-adj-filter-overlay" onclick="closeMobileAdjFilter()"></div>
-
-  <!-- MOBILE FILTER DRAWER (Adjustment Load) -->
-  <div class="mobile-filter-drawer" id="mobile-adj-filter-drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-title">📦 Find Adjustment Loads</div>
-
-    <div class="drawer-field">
-      <label>Origin City</label>
-      <input type="text" id="mob-adj-origin" placeholder="e.g. Mumbai" autocomplete="off" style="height:48px;padding:0 14px;border:1.5px solid rgba(255,255,255,0.22);border-radius:12px;background:rgba(255,255,255,0.1);color:#fff;font-size:15px;font-family:'Inter',sans-serif;outline:none;width:100%;"/>
-    </div>
-    <div class="drawer-field">
-      <label>Destination City</label>
-      <input type="text" id="mob-adj-dest" placeholder="e.g. Delhi" autocomplete="off" style="height:48px;padding:0 14px;border:1.5px solid rgba(255,255,255,0.22);border-radius:12px;background:rgba(255,255,255,0.1);color:#fff;font-size:15px;font-family:'Inter',sans-serif;outline:none;width:100%;"/>
-    </div>
-    <div class="drawer-field">
-      <label>Cargo Weight (Kg)</label>
-      <input type="number" id="mob-adj-weight" placeholder="e.g. 500" min="1" step="10"/>
-    </div>
-
-    <div class="drawer-btn-row">
-      <button class="drawer-btn-find" id="mob-adj-fs-btn" onclick="findAdjMobile()">📦 Find</button>
-      <button class="drawer-btn-refresh" onclick="fetchAdjLoads();closeMobileAdjFilter()">🔄</button>
-      <button class="drawer-btn-clear" id="mob-adj-clear-btn" onclick="clearMobileAdjFilter()" style="display:none">✕</button>
-    </div>
-    <div class="drawer-error"  id="mob-adj-fs-error"></div>
-    <div class="drawer-status" id="mob-adj-fs-status"></div>
-  </div>
-
-</div> <!-- /#filter-panel-adj -->
 
 <!-- RESULTS BAR (unified) -->
 <div class="results-bar">
@@ -970,6 +928,15 @@
     if (!d) return '—';
     try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
     catch { return d; }
+  }
+  function formatDateShort(d) {
+    if (!d) return '—';
+    try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}); }
+    catch { return d; }
+  }
+  function formatDateBoth(d) {
+    if (!d) return '—';
+    return `<span class="td-date-full">${formatDate(d)}</span><span class="td-date-short">${formatDateShort(d)}</span>`;
   }
   function updateBadge(id, val) {
     const el = document.getElementById(id); if (!el) return;
@@ -1142,6 +1109,9 @@
     errorEl.textContent=''; statusEl.textContent='';
     if (!weightTons || weightTons<=0) { errorEl.textContent='⚠️ Enter cargo weight in tons'; return; }
 
+    const originText = document.getElementById(originId).value.trim();
+    const destText    = document.getElementById(destId).value.trim();
+
     const btn = document.getElementById(btnId);
     btn.disabled=true; btn.textContent='⏳ Searching…';
     statusEl.textContent='Resolving locations…';
@@ -1180,15 +1150,18 @@
       }
 
       survivors.sort((a,b)=>a.total-b.total);
-      activeFilter={
-        origin: document.getElementById(originId).value.trim(),
-        dest:   document.getElementById(destId).value.trim(),
-        weightTons, oc, dc
-      };
+      activeFilter={ origin: originText, dest: destText, weightTons, oc, dc };
 
-      const matchMsg=`${survivors.length} truck${survivors.length!==1?'s':''} matched`;
+      // Also search adjustment loads posted around the same origin/destination cities
+      activeAdjFilter = { originCity: originText, destCity: destText, weightKg: weightTons*1000 };
+      statusEl.textContent='Checking adjustment loads…';
+      await fetchAdjLoads(activeAdjFilter);
+
+      const truckMsg = `${survivors.length} truck${survivors.length!==1?'s':''}`;
+      const adjMsg    = `${allAdjLoads.length} adjustment load${allAdjLoads.length!==1?'s':''}`;
+      const matchMsg  = `${truckMsg} + ${adjMsg} matched`;
       document.getElementById('results-count').textContent=matchMsg;
-      statusEl.textContent=`✅ ${matchMsg} within 15 km of your route`;
+      statusEl.textContent=`✅ ${matchMsg} for ${originText} → ${destText}`;
 
       if (isMobile) {
         document.getElementById('mob-clear-btn').style.display='inline-flex';
@@ -1206,7 +1179,7 @@
       console.error(e);
       errorEl.textContent='⚠️ Something went wrong. Try again.';
     } finally {
-      btn.disabled=false; btn.textContent='🚛 Find Trucks';
+      btn.disabled=false; btn.textContent='🔍 Find Loads';
     }
   }
 
@@ -1214,26 +1187,28 @@
   function findSpaceMobile() { runFind('mob-origin','mob-dest','mob-weight',resolvedCoordsMob,'mob-origin','mob-dest','mob-fs-error','mob-fs-status','mob-fs-btn',true); }
 
   function clearFindSpace() {
-    activeFilter=null; distanceMap={}; filteredTruckLoads=null;
+    activeFilter=null; distanceMap={}; filteredTruckLoads=null; activeAdjFilter=null;
     resolvedCoords.origin=null; resolvedCoords.dest=null;
-    ['fs-origin','fs-dest'].forEach(id=>document.getElementById(id).value='');
+    ['fs-origin','fs-dest','fs-weight'].forEach(id=>document.getElementById(id).value='');
     ['origin-badge','dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
     document.getElementById('fs-clear-btn').style.display='none';
     document.getElementById('fs-error').textContent='';
     document.getElementById('fs-status').textContent='';
+    fetchAdjLoads(null);
     filterLoads();
   }
 
   function clearMobileFilter() {
-    activeFilter=null; distanceMap={}; filteredTruckLoads=null;
+    activeFilter=null; distanceMap={}; filteredTruckLoads=null; activeAdjFilter=null;
     resolvedCoordsMob['mob-origin']=null; resolvedCoordsMob['mob-dest']=null;
-    ['mob-origin','mob-dest'].forEach(id=>document.getElementById(id).value='');
+    ['mob-origin','mob-dest','mob-weight'].forEach(id=>document.getElementById(id).value='');
     ['mob-origin-badge','mob-dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
     document.getElementById('mob-clear-btn').style.display='none';
     document.getElementById('mob-fs-error').textContent='';
     document.getElementById('mob-fs-status').textContent='';
     document.getElementById('mobile-search-hint').textContent='Search by origin, destination & weight…';
     document.getElementById('mobile-active-badge').classList.remove('visible');
+    fetchAdjLoads(null);
     filterLoads(); closeMobileFilter();
   }
 
@@ -1298,72 +1273,6 @@
         );
     });
     renderMarket();
-  }
-
-  // ─── FILTER TABS (which search form is shown) ──────────────────────────────
-  function setFilterTab(which) {
-    document.getElementById('filter-panel-truck').classList.toggle('active', which==='truck');
-    document.getElementById('filter-panel-adj').classList.toggle('active', which==='adj');
-    document.getElementById('filter-tab-truck').className = 'filter-tab-btn' + (which==='truck' ? ' active-truck' : '');
-    document.getElementById('filter-tab-adj').className   = 'filter-tab-btn' + (which==='adj'   ? ' active-adj'   : '');
-  }
-
-  // ─── MOBILE DRAWER (Adjustment Load) ───────────────────────────────────────
-  function openMobileAdjFilter()  { document.getElementById('mobile-adj-filter-overlay').classList.add('open'); document.getElementById('mobile-adj-filter-drawer').classList.add('open'); }
-  function closeMobileAdjFilter() { document.getElementById('mobile-adj-filter-overlay').classList.remove('open'); document.getElementById('mobile-adj-filter-drawer').classList.remove('open'); }
-
-  function runFindAdj(originId, destId, weightId, errorId, statusId, btnId, isMobile) {
-    const originCity = document.getElementById(originId).value.trim();
-    const destCity    = document.getElementById(destId).value.trim();
-    const weightKg    = parseFloat(document.getElementById(weightId).value);
-    const errorEl = document.getElementById(errorId), statusEl = document.getElementById(statusId);
-    errorEl.textContent=''; statusEl.textContent='';
-
-    if (!originCity && !destCity && !weightKg) { errorEl.textContent='⚠️ Enter at least one search field'; return; }
-
-    const btn = document.getElementById(btnId);
-    btn.disabled = true; btn.textContent = '⏳ Searching…';
-    statusEl.textContent = 'Searching adjustment loads…';
-
-    activeAdjFilter = { originCity, destCity, weightKg: weightKg||undefined };
-
-    fetchAdjLoads(activeAdjFilter);
-    setTypeFilter('adjustment_load');
-
-    statusEl.textContent = `✅ Showing matches for ${originCity||'Any'} → ${destCity||'Any'}`;
-    if (isMobile) {
-      document.getElementById('mob-adj-clear-btn').style.display='inline-flex';
-      const hint=document.getElementById('mobile-adj-search-hint');
-      hint.textContent = `${originCity||'Any'} → ${destCity||'Any'}${weightKg?' · '+weightKg+'kg':''}`;
-      document.getElementById('mobile-adj-active-badge').classList.add('visible');
-      closeMobileAdjFilter();
-    } else {
-      document.getElementById('adj-fs-clear-btn').style.display='inline-flex';
-    }
-    btn.disabled=false; btn.textContent = isMobile ? '📦 Find' : '📦 Find Adjustment Loads';
-  }
-
-  function findAdj()       { runFindAdj('adj-fs-origin','adj-fs-dest','adj-fs-weight','adj-fs-error','adj-fs-status','adj-fs-btn',false); }
-  function findAdjMobile() { runFindAdj('mob-adj-origin','mob-adj-dest','mob-adj-weight','mob-adj-fs-error','mob-adj-fs-status','mob-adj-fs-btn',true); }
-
-  function clearAdjFilter() {
-    activeAdjFilter = null;
-    ['adj-fs-origin','adj-fs-dest','adj-fs-weight'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('adj-fs-clear-btn').style.display='none';
-    document.getElementById('adj-fs-error').textContent='';
-    document.getElementById('adj-fs-status').textContent='';
-    fetchAdjLoads(null);
-  }
-
-  function clearMobileAdjFilter() {
-    activeAdjFilter = null;
-    ['mob-adj-origin','mob-adj-dest','mob-adj-weight'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('mob-adj-clear-btn').style.display='none';
-    document.getElementById('mob-adj-fs-error').textContent='';
-    document.getElementById('mob-adj-fs-status').textContent='';
-    document.getElementById('mobile-adj-search-hint').textContent='Search adjustment loads by city & weight…';
-    document.getElementById('mobile-adj-active-badge').classList.remove('visible');
-    fetchAdjLoads(null); closeMobileAdjFilter();
   }
 
   // ─── UNIFIED MARKETPLACE TABLE ─────────────────────────────────────────────
@@ -1434,28 +1343,29 @@
     const oPin   = l.origin_pincode || '';
     const dArea  = l.destination_locality || l.destination_city || '—';
     const dPin   = l.destination_pincode || '';
-    return `<tr onclick="openDetail('truck_space','${escapeAttr(l.id)}')" title="Tap for full details">
-      <td class="col-type"><span class="type-badge type-badge-truck">🟦 Truck Space</span></td>
+    return `<tr class="row-truck-space" onclick="openDetail('truck_space','${escapeAttr(l.id)}')" title="Tap for full details">
+      <td class="col-type"><span class="type-badge type-badge-truck badge-in-table"><span class="badge-icon">🟦</span><span class="badge-label">Truck Space</span></span></td>
       <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(oArea)}</div>${oPin?`<div class="td-pin">${escapeHtml(oPin)}</div>`:''}${distHtml}</td>
       <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(dArea)}</div>${dPin?`<div class="td-pin">${escapeHtml(dPin)}</div>`:''}</td>
       <td class="col-truck"><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
       <td class="col-weight"><span class="td-weight-dyn">${l.weight_tons} Tons <span class="unit">Free</span></span></td>
-      <td class="col-date td-date">${formatDate(l.loading_date)}</td>
+      <td class="col-date td-date">${formatDateBoth(l.loading_date)}</td>
       <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('truck_space','${escapeAttr(l.id)}')">More Info ›</button></td>
     </tr>`;
   }
 
   function adjLoadRowHtml(g) {
-    const memberCount = (g.members||[]).length || (g.load_ids||[]).length || 1;
     const weightTons = ((g.total_weight_kg||0)/1000);
     const earliestDate = adjEarliestDate(g);
-    return `<tr onclick="openDetail('adjustment_load','${escapeAttr(g.id)}')" title="Tap for full details">
-      <td class="col-type"><span class="type-badge type-badge-adj">🟧 Adjustment Load</span></td>
+    const cargoTypes = (g.cargo_categories||[]).map(c=>c.startsWith('Others:')?c.slice(8).trim():c);
+    const cargoLabel = cargoTypes.length ? cargoTypes.join(', ') : '—';
+    return `<tr class="row-adjustment-load" onclick="openDetail('adjustment_load','${escapeAttr(g.id)}')" title="Tap for full details">
+      <td class="col-type"><span class="type-badge type-badge-adj badge-in-table"><span class="badge-icon">🟧</span><span class="badge-label">Adjustment Load</span></span></td>
       <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(g.origin_display||'—')}</div></td>
       <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(g.destination_display||'—')}</div></td>
-      <td class="col-truck"><span class="adj-members-count">👥 ${memberCount}</span> <span class="adj-status-pill adj-status-${escapeAttr(g.status||'FORMING')}" style="margin-left:4px">${escapeHtml(g.status||'FORMING')}</span></td>
+      <td class="col-truck"><span class="place-pill" style="background:#FFF4EE;color:var(--orange)">📦 ${escapeHtml(cargoLabel)}</span></td>
       <td class="col-weight"><span class="td-weight-dyn">${weightTons.toFixed(1)} Ton <span class="unit">Posted</span></span></td>
-      <td class="col-date td-date">${earliestDate?formatDate(earliestDate):'—'}</td>
+      <td class="col-date td-date">${earliestDate?formatDateBoth(earliestDate):'—'}</td>
       <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('adjustment_load','${escapeAttr(g.id)}')">More Info ›</button></td>
     </tr>`;
   }
@@ -1666,76 +1576,115 @@
     const fillPct = adjFillPct(group);
     const members = group.members || [];
     const shareUrl = adjSharePath(group.id);
-    const weightTons = ((group.total_weight_kg||0)/1000);
+    const weightTons     = ((group.total_weight_kg||0)/1000);
+    const capacityTons   = ((group.capacity_kg||0)/1000);
+    const remainingTons  = ((group.capacity_remaining_kg||0)/1000);
+    const earliestDate   = adjEarliestDate(group);
+    const cargoTypes = (group.cargo_categories||[]).map(c=>c.startsWith('Others:')?c.slice(8).trim():c);
 
-    document.getElementById('detail-header').innerHTML = `
+    // Same buildEndpoint/endpointHtml pattern used for Truck Space. Adjustment
+    // loads only carry a combined display string, so it's split into the same
+    // locality / state / pin lines used on the Truck Space detail page.
+    function buildEndpoint(pin, locality, city, state) {
+      const loc = (locality||'').trim();
+      const cty = (city||'').trim();
+      const st  = (state||'').trim();
+      const area = loc || cty || null;
+      const showState = st && st.toLowerCase() !== (area||'').toLowerCase() ? st : null;
+      return { pin: pin||null, area, state: showState };
+    }
+    function parseDisplay(display) {
+      const raw = (display||'').trim();
+      if (!raw) return { pin:null, locality:null, city:null, state:null };
+      const pinMatch = raw.match(/\b(\d{6})\b/);
+      const pin = pinMatch ? pinMatch[1] : null;
+      const rest = (pin ? raw.replace(pin,'') : raw).replace(/[-,\s]+$/,'').trim();
+      const parts = rest.split(',').map(s=>s.trim()).filter(Boolean);
+      return { pin, locality: parts[0]||null, city: null, state: parts.slice(1).join(', ')||null };
+    }
+    function endpointHtml(e) {
+      return `
+        <div class="detail-endpoint">
+          ${e.area  ? `<div class="detail-locality">${escapeHtml(e.area)}</div>` : ''}
+          ${e.state ? `<div class="detail-city-line">${escapeHtml(e.state)}</div>` : ''}
+          ${e.pin   ? `<div class="detail-pin" style="font-size:22px;margin-top:4px;color:rgba(255,255,255,0.7)">${escapeHtml(e.pin)}</div>` : ''}
+        </div>`;
+    }
+    const oParsed = parseDisplay(group.origin_display);
+    const dParsed = parseDisplay(group.destination_display);
+    const oE = buildEndpoint(group.origin_pincode||oParsed.pin, group.origin_locality||oParsed.locality, group.origin_city||oParsed.city, group.origin_state||oParsed.state);
+    const dE = buildEndpoint(group.destination_pincode||dParsed.pin, group.destination_locality||dParsed.locality, group.destination_city||dParsed.city, group.destination_state||dParsed.state);
+
+    document.getElementById('detail-header').innerHTML=`
       <div class="detail-route-header">
-        <div class="detail-truck-badge"><span class="type-badge type-badge-adj">🟧 Adjustment Load</span> · <span class="adj-status-pill adj-status-${escapeAttr(group.status||'FORMING')}" style="margin-left:4px">${escapeHtml(group.status||'FORMING')}</span></div>
-        <div class="adj-detail-corridor">${escapeHtml(group.corridor||'')}</div>
+        <div class="detail-truck-badge"><span class="type-badge type-badge-adj">🟧 Adjustment Load</span> · ${escapeHtml(group.status||'Forming')}</div>
         <div class="detail-route-stack">
-          <div class="detail-endpoint">
-            <div class="detail-locality">${escapeHtml(group.origin_display||'—')}</div>
-          </div>
+          ${endpointHtml(oE)}
           <div class="detail-route-divider">
             <div class="detail-route-divider-line"></div>
             <div class="detail-route-divider-icon">↓</div>
             <div class="detail-route-divider-line"></div>
           </div>
-          <div class="detail-endpoint">
-            <div class="detail-locality">${escapeHtml(group.destination_display||'—')}</div>
-          </div>
+          ${endpointHtml(dE)}
         </div>
       </div>
       <button class="detail-close" onclick="closeDetail()">✕</button>`;
 
-    const cargoChips = (group.cargo_categories||[]).map(c=>`<span class="adj-cargo-chip">${escapeHtml(c)}</span>`).join('') || '—';
+    // Photos — same building block as Truck Space's photo grid.
+    const photosHtml = (() => {
+      if (group.images && group.images.length > 0) {
+        return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${group.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div></div>`;
+      }
+      return '';
+    })();
 
-    const membersHtml = members.length ? members.map(m => {
-      const initial = (m.name||'?').trim().charAt(0).toUpperCase();
-      return `<div class="adj-member-row">
-        <div class="adj-avatar">${escapeHtml(initial)}</div>
-        <div style="min-width:0">
-          <div class="adj-member-name">${escapeHtml(m.name||'Shipper')}${m.company?` · ${escapeHtml(m.company)}`:''}</div>
-          <div class="adj-member-sub">${escapeHtml(m.origin_locality||m.origin_city||'')} → ${escapeHtml(m.destination_locality||m.destination_city||'')} · ${escapeHtml(m.cargo_type||'')}</div>
+    document.getElementById('detail-body').innerHTML=`
+      <div class="detail-kpi-row">
+        <div class="detail-kpi">
+          <div class="detail-kpi-value">${weightTons.toFixed(1)} Ton Posted</div>
+          <div class="detail-kpi-label">⚖️ Weight Posted</div>
         </div>
-        <div class="adj-member-weight">${((m.weight_kg||0)/1000).toFixed(1)}T</div>
-      </div>`;
-    }).join('') : '<p style="color:var(--muted);font-size:13px">No member details available yet.</p>';
-
-    document.getElementById('detail-body').innerHTML = `
-      <div class="adj-fill-card">
-        <div class="adj-fill-top">
-          <span class="adj-fill-value">${weightTons.toFixed(1)} Ton <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.6)">Posted / ${(group.capacity_kg/1000).toFixed(0)}T Capacity</span></span>
-          <span class="adj-fill-sub">${fillPct}% filled · ${((group.capacity_remaining_kg||0)/1000).toFixed(1)}T left</span>
+        <div class="detail-kpi">
+          <div class="detail-kpi-value detail-kpi-date">${earliestDate?formatDate(earliestDate):'—'}</div>
+          <div class="detail-kpi-label">📅 Loading Date</div>
         </div>
-        <div class="adj-fill-track"><div class="adj-fill-track-inner" style="width:${fillPct}%"></div></div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-section-title">📦 Cargo Types</div>
-        <div>${cargoChips}</div>
+        <div class="detail-section-title">Load Details</div>
+        ${cargoTypes.length ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📦</span>
+          <span class="detail-info-label">Cargo Type</span>
+          <span class="detail-info-value">${escapeHtml(cargoTypes.join(', '))}</span>
+        </div>` : ''}
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📦</span>
+          <span class="detail-info-label">Available Space</span>
+          <span class="detail-info-value">${remainingTons.toFixed(1)} Ton</span>
+        </div>
+        <div class="detail-info-row">
+          <span class="detail-info-icon">🚛</span>
+          <span class="detail-info-label">Truck Preference</span>
+          <span class="detail-info-value">${escapeHtml(group.truck_preference||'—')}</span>
+        </div>
+        <div class="detail-info-row">
+          <span class="detail-info-icon">🧱</span>
+          <span class="detail-info-label">Placement</span>
+          <span class="detail-info-value">${escapeHtml(group.cargo_placement||'—')}</span>
+        </div>
       </div>
 
-      <div class="detail-section">
-        <div class="detail-section-title">👥 Members (${members.length})</div>
-        ${membersHtml}
-      </div>
-
-      <div class="adj-share-row">
-        <a class="adj-share-link" href="${escapeAttr(shareUrl)}" target="_blank" rel="noopener">${escapeHtml(shareUrl)}</a>
-        <button class="adj-share-copy" onclick="copyAdjLink('${escapeAttr(group.id)}', this)">🔗 Copy Link</button>
-      </div>`;
+      ${photosHtml}`;
 
     const primary = members.find(m=>!m.is_me) || members[0];
-    document.getElementById('detail-footer').innerHTML = primary?.phone ? `
+    document.getElementById('detail-footer').innerHTML=`
       <div>
-        <div class="detail-poster-name">${escapeHtml(primary.name||'Shipper')}</div>
-        ${primary.company?`<div class="detail-poster-company">${escapeHtml(primary.company)}</div>`:''}
-        <div class="detail-poster-phone">+91 ${escapeHtml(primary.phone)}</div>
+        <div class="detail-poster-name">${escapeHtml(group.poster_name||primary?.name||'Shipper')}</div>
+        ${(group.poster_company||primary?.company)?`<div class="detail-poster-company">${escapeHtml(group.poster_company||primary.company)}</div>`:''}
+        <div class="detail-poster-phone">+91 ${escapeHtml(group.poster_phone||primary?.phone||'')}</div>
       </div>
-      <a href="tel:${escapeAttr(primary.phone)}" class="detail-call-btn">📞 Call</a>` : `
-      <div class="detail-poster-sub" style="color:var(--muted);font-size:13px">Contact details available in-app</div>
-      <a href="${escapeAttr(shareUrl)}" class="detail-call-btn" style="background:var(--navy)" target="_blank" rel="noopener">🔗 Open Link</a>`;
+      <a href="tel:${escapeAttr(group.poster_phone||primary?.phone||'')}" class="detail-call-btn">📞 Call</a>`;
 
     document.getElementById('detail-overlay').classList.add('open');
     document.getElementById('detail-panel').classList.add('open');
@@ -1757,7 +1706,7 @@
   // ─── LIGHTBOX ─────────────────────────────────────────────────────────────
   function openLightbox(src) { document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('active'); }
   function closeLightbox()   { document.getElementById('lightbox').classList.remove('active'); document.getElementById('lightbox-img').src=''; }
-  document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();closeMobileAdjFilter();} });
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
 
   // ─── DEEP LINK: auto-open detail panel from URL ────────────────────────────
   // Handles:
@@ -1832,8 +1781,6 @@
     setupLocationInput('mob-origin','mob-origin-suggestions','mob-origin-badge','mob-origin', resolvedCoordsMob);
     setupLocationInput('mob-dest',  'mob-dest-suggestions',  'mob-dest-badge',  'mob-dest',   resolvedCoordsMob);
     document.getElementById('mob-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpaceMobile(); });
-    document.getElementById('adj-fs-weight').addEventListener('keydown', e => { if(e.key==='Enter') findAdj(); });
-    document.getElementById('mob-adj-weight').addEventListener('keydown', e => { if(e.key==='Enter') findAdjMobile(); });
     handleDeepLink();
   });
 </script>
