@@ -552,32 +552,163 @@
     }
     footer a { color:var(--orange); text-decoration:none; }
 
+    /* ===== PAGE HEADING ===== */
+    .page-heading-bar {
+      background: linear-gradient(135deg,#1a0f3e,var(--navy));
+      padding:14px 24px; text-align:center;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      position:sticky; top:60px; z-index:160; flex-shrink:0;
+    }
+    .page-heading-text {
+      font-family:'Rajdhani',sans-serif; font-size:19px; font-weight:700;
+      color:#fff; letter-spacing:0.3px;
+    }
+    .page-heading-text .hl-truck { color:#8FB8FF; }
+    .page-heading-text .hl-sep   { color:rgba(255,255,255,0.35); margin:0 8px; }
+    .page-heading-text .hl-adj   { color:var(--orange); }
+
+    /* ===== TYPE SLIDER (Truck Space ← All → Adjustment Load) ===== */
+    .type-slider-wrap { display:flex; justify-content:center; margin-top:12px; }
+    .type-slider {
+      position:relative; display:flex; width:100%; max-width:460px;
+      background:rgba(255,255,255,0.08); border-radius:11px; padding:4px;
+    }
+    .type-slider-thumb {
+      position:absolute; top:4px; bottom:4px; left:4px;
+      width:calc(33.333% - 3px); border-radius:8px;
+      background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      transition:transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s;
+    }
+    .type-slider-thumb.pos-truck { transform:translateX(0%);   background:var(--navy); }
+    .type-slider-thumb.pos-all   { transform:translateX(100%); background:#fff; }
+    .type-slider-thumb.pos-adj   { transform:translateX(200%); background:var(--orange); }
+    .type-slider-opt {
+      position:relative; z-index:1; flex:1; text-align:center;
+      padding:9px 6px; border:none; background:transparent; cursor:pointer;
+      font-family:'Inter',sans-serif; font-size:12px; font-weight:700;
+      color:rgba(255,255,255,0.6); white-space:nowrap; transition:color 0.25s;
+    }
+    .type-slider-opt.is-active-truck { color:#fff; }
+    .type-slider-opt.is-active-all   { color:var(--navy); }
+    .type-slider-opt.is-active-adj   { color:#fff; }
+
+    /* ===== TYPE BADGE (marketplace table) ===== */
+    .type-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 10px; border-radius:100px;
+      font-size:10px; font-weight:700; letter-spacing:0.3px;
+      white-space:nowrap; text-transform:uppercase;
+    }
+    .type-badge-truck { background:#E0EAFF; color:#1D4ED8; }
+    .type-badge-adj   { background:#FFE9DA; color:#C2410C; }
+
+    /* ===== UNIFIED TABLE: separate origin/destination columns ===== */
+    .td-endpoint { min-width:0; }
+    .td-weight-dyn { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; color:var(--navy); white-space:nowrap; }
+    .td-weight-dyn .unit { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; margin-left:3px; }
+    .col-origin, .col-destination { max-width:140px; }
+
+    /* ===== ADJUSTMENT LOAD PILLS (formerly PTL) ===== */
+    .adj-status-pill {
+      display:inline-flex; align-items:center; padding:3px 10px;
+      border-radius:100px; font-size:10px; font-weight:700;
+      letter-spacing:0.4px; text-transform:uppercase; white-space:nowrap;
+    }
+    .adj-status-FORMING   { background:#E0E7FF; color:#3730A3; }
+    .adj-status-PAIRED    { background:#FEF3C7; color:#92400E; }
+    .adj-status-CONFIRMED { background:#DCFCE7; color:#15803D; }
+    .adj-status-FULL      { background:#DBEAFE; color:#1D4ED8; }
+    .adj-status-DISPATCHED{ background:#F3F4F6; color:#374151; }
+
+    .td-fill-wrap { min-width:120px; }
+    .td-fill-bar-bg { height:6px; background:#F3F4F6; border-radius:100px; overflow:hidden; margin-top:5px; }
+    .td-fill-bar-inner { height:100%; background:linear-gradient(90deg,var(--orange),#ff8a3d); border-radius:100px; }
+    .td-fill-label { font-size:11px; color:var(--muted); font-weight:600; }
+    .adj-cargo-chip {
+      display:inline-block; background:#EEF2FA; color:var(--navy);
+      border-radius:100px; padding:2px 8px; font-size:10px; font-weight:600;
+      margin:1px 2px 1px 0; white-space:nowrap;
+    }
+    .adj-members-count { display:inline-flex; align-items:center; gap:4px; color:var(--navy); font-size:12px; font-weight:600; }
+
+    /* ===== ADJUSTMENT LOAD DETAIL PANEL CONTENT ===== */
+    .adj-detail-corridor {
+      font-size:11px; font-weight:700; color:rgba(255,255,255,0.6);
+      letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;
+    }
+    .adj-fill-card { background:var(--navy); border-radius:14px; padding:16px; margin-bottom:16px; }
+    .adj-fill-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+    .adj-fill-value { font-family:'Rajdhani',sans-serif; font-size:24px; font-weight:700; color:#fff; }
+    .adj-fill-sub { font-size:11px; color:rgba(255,255,255,0.6); }
+    .adj-fill-track { height:8px; background:rgba(255,255,255,0.15); border-radius:100px; overflow:hidden; }
+    .adj-fill-track-inner { height:100%; background:var(--orange); border-radius:100px; }
+    .adj-member-row {
+      display:flex; align-items:center; gap:10px; padding:12px;
+      background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:8px;
+    }
+    .adj-avatar {
+      width:38px; height:38px; border-radius:50%; background:var(--navy);
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; flex-shrink:0;
+    }
+    .adj-member-name { font-size:13px; font-weight:700; color:var(--text); }
+    .adj-member-sub  { font-size:11px; color:var(--muted); margin-top:1px; }
+    .adj-member-weight { margin-left:auto; font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; color:var(--navy); white-space:nowrap; }
+    .adj-share-row {
+      display:flex; align-items:center; gap:8px; margin-top:14px;
+      background:#F8F9FA; border:1px dashed var(--border); border-radius:10px; padding:10px 12px;
+    }
+    .adj-share-link {
+      flex:1; font-size:12px; color:var(--navy); text-decoration:none;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;
+    }
+    .adj-share-copy {
+      flex-shrink:0; background:var(--navy); color:#fff; border:none; border-radius:8px;
+      padding:7px 12px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+    }
+    .adj-share-copy:hover { background:#1a0f3e; }
+
+    /* ===== FILTER BAR TABS (Search Truck Space / Search Adjustment Loads) ===== */
+    .filter-tabs { display:flex; gap:6px; max-width:1400px; margin:0 auto 8px; padding:0 24px; }
+    .filter-tab-btn {
+      padding:6px 14px; border-radius:100px; border:1.5px solid rgba(255,255,255,0.2);
+      background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7);
+      font-family:'Inter',sans-serif; font-size:12px; font-weight:700; cursor:pointer;
+      transition:all 0.2s;
+    }
+    .filter-tab-btn.active-truck { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .filter-tab-btn.active-adj   { background:var(--orange); border-color:var(--orange); color:#fff; }
+    .filter-panel { display:none; }
+    .filter-panel.active { display:block; }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width:768px) {
+      .page-heading-bar { top:60px; padding:10px 12px; }
+      .page-heading-text { font-size:15px; }
       .filter-bar { display:none; }
       .mobile-search-bar { display:block; }
       .results-bar { padding:8px 12px; }
       .main { padding:12px 8px 40px; }
 
-      /* FIX 3: On mobile show only Route · Truck · Weight in one line */
-      .col-placement, .col-date, .col-photos, .col-btn { display:none; }
-      table  { font-size:13px; min-width:0; }
-      thead th { padding:10px 10px; }
-      td     { padding:10px 10px; }
-      .td-pin  { font-size:14px; }
-      .td-city { max-width:60px; font-size:10px; }
-      .td-arrow{ font-size:11px; }
-      .truck-pill { font-size:10px; padding:2px 8px; }
-      .td-weight  { font-size:15px; }
+      /* Mobile columns: Type · Origin · Destination · Loading Date · View */
+      .col-truck, .col-weight { display:none; }
+      thead th.col-btn { font-size:0; }
+      thead th.col-btn::after { content:'View'; font-size:11px; }
+      td.col-btn .info-btn { font-size:11px; padding:6px 10px; }
+      table  { font-size:12px; min-width:0; }
+      thead th { padding:10px 8px; }
+      td     { padding:10px 8px; }
+      .td-area { max-width:64px; font-size:12px; }
+      .td-state, .td-pin { font-size:9px; }
+      .type-badge { font-size:9px; padding:3px 7px; }
 
       .detail-panel { width:100vw; }
       .header-right .download-btn { display:none; }
     }
 
     @media (max-width:420px) {
-      .td-city { max-width:48px; }
-      .td-pin  { font-size:13px; }
-      .truck-pill { padding:2px 6px; font-size:10px; }
+      .td-area { max-width:52px; }
+      .type-badge { padding:3px 6px; font-size:8px; }
     }
   </style>
 </head>
@@ -595,6 +726,28 @@
     </div>
   </div>
 </header>
+
+<!-- PAGE HEADING -->
+<div class="page-heading-bar">
+  <div class="page-heading-text"><span class="hl-truck">Find Truck Space</span><span class="hl-sep">•</span><span class="hl-adj">Find Adjustment Loads</span></div>
+  <div class="type-slider-wrap">
+    <div class="type-slider">
+      <div class="type-slider-thumb pos-all" id="type-slider-thumb"></div>
+      <button class="type-slider-opt is-active-all" id="type-opt-truck" onclick="setTypeFilter('truck_space')">Truck Space</button>
+      <button class="type-slider-opt is-active-all" id="type-opt-all" onclick="setTypeFilter('all')">All</button>
+      <button class="type-slider-opt is-active-all" id="type-opt-adj" onclick="setTypeFilter('adjustment_load')">Adjustment Load</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER TABS: switch which search form is shown -->
+<div class="filter-tabs">
+  <button class="filter-tab-btn active-truck" id="filter-tab-truck" onclick="setFilterTab('truck')">🚛 Search Truck Space</button>
+  <button class="filter-tab-btn" id="filter-tab-adj" onclick="setFilterTab('adj')">📦 Search Adjustment Loads</button>
+</div>
+
+<!-- ===================== SEARCH: TRUCK SPACE ===================== -->
+<div class="filter-panel active" id="filter-panel-truck">
 
 <!-- DESKTOP FILTER BAR -->
 <div class="filter-bar">
@@ -621,7 +774,6 @@
         <div class="loc-suggestions" id="dest-suggestions"></div>
       </div>
     </div>
-    <!-- FIX 6: label says Tons -->
     <div class="filter-field">
       <label>Cargo Weight (Tons)</label>
       <input type="number" id="fs-weight" placeholder="e.g. 5" min="0.1" step="0.5"/>
@@ -679,13 +831,11 @@
     </div>
   </div>
 
-  <!-- FIX 6: Tons -->
   <div class="drawer-field">
     <label>Cargo Weight (Tons)</label>
     <input type="number" id="mob-weight" placeholder="e.g. 5" min="0.1" step="0.5"/>
   </div>
 
-  <!-- FIX 5: centred -->
   <div class="drawer-btn-row">
     <button class="drawer-btn-find" id="mob-fs-btn" onclick="findSpaceMobile()">🚛 Find Trucks</button>
     <button class="drawer-btn-refresh" onclick="fetchLoads();closeMobileFilter()">🔄</button>
@@ -695,22 +845,95 @@
   <div class="drawer-status" id="mob-fs-status"></div>
 </div>
 
-<!-- RESULTS BAR -->
+</div> <!-- /#filter-panel-truck -->
+
+<!-- ===================== SEARCH: ADJUSTMENT LOAD ===================== -->
+<div class="filter-panel" id="filter-panel-adj">
+
+  <!-- DESKTOP FILTER BAR (Adjustment Load) -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+      <div class="filter-field">
+        <label>Origin City</label>
+        <input type="text" id="adj-fs-origin" placeholder="e.g. Mumbai" autocomplete="off" style="height:40px;padding:0 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;width:170px;"/>
+      </div>
+      <div class="filter-field">
+        <label>Destination City</label>
+        <input type="text" id="adj-fs-dest" placeholder="e.g. Delhi" autocomplete="off" style="height:40px;padding:0 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;width:170px;"/>
+      </div>
+      <div class="filter-field">
+        <label>Cargo Weight (Kg)</label>
+        <input type="number" id="adj-fs-weight" placeholder="e.g. 500" min="1" step="10"/>
+      </div>
+      <div class="filter-btn-group">
+        <button class="btn-find" id="adj-fs-btn" onclick="findAdj()">📦 Find Adjustment Loads</button>
+        <button class="btn-refresh" onclick="fetchAdjLoads()">🔄 Refresh</button>
+        <button class="btn-clear" id="adj-fs-clear-btn" onclick="clearAdjFilter()" style="display:none">✕ Clear</button>
+      </div>
+    </div>
+    <div class="filter-status-row">
+      <span class="filter-error"  id="adj-fs-error"></span>
+      <span class="filter-status" id="adj-fs-status"></span>
+    </div>
+  </div>
+
+  <!-- MOBILE SEARCH BAR (Adjustment Load) -->
+  <div class="mobile-search-bar">
+    <div class="mobile-search-trigger" onclick="openMobileAdjFilter()">
+      <span class="mobile-search-icon">🔍</span>
+      <span class="mobile-search-text" id="mobile-adj-search-hint">Search adjustment loads by city &amp; weight…</span>
+      <span class="mobile-active-badge" id="mobile-adj-active-badge">Active</span>
+    </div>
+  </div>
+
+  <!-- MOBILE FILTER OVERLAY (Adjustment Load) -->
+  <div class="mobile-filter-overlay" id="mobile-adj-filter-overlay" onclick="closeMobileAdjFilter()"></div>
+
+  <!-- MOBILE FILTER DRAWER (Adjustment Load) -->
+  <div class="mobile-filter-drawer" id="mobile-adj-filter-drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">📦 Find Adjustment Loads</div>
+
+    <div class="drawer-field">
+      <label>Origin City</label>
+      <input type="text" id="mob-adj-origin" placeholder="e.g. Mumbai" autocomplete="off" style="height:48px;padding:0 14px;border:1.5px solid rgba(255,255,255,0.22);border-radius:12px;background:rgba(255,255,255,0.1);color:#fff;font-size:15px;font-family:'Inter',sans-serif;outline:none;width:100%;"/>
+    </div>
+    <div class="drawer-field">
+      <label>Destination City</label>
+      <input type="text" id="mob-adj-dest" placeholder="e.g. Delhi" autocomplete="off" style="height:48px;padding:0 14px;border:1.5px solid rgba(255,255,255,0.22);border-radius:12px;background:rgba(255,255,255,0.1);color:#fff;font-size:15px;font-family:'Inter',sans-serif;outline:none;width:100%;"/>
+    </div>
+    <div class="drawer-field">
+      <label>Cargo Weight (Kg)</label>
+      <input type="number" id="mob-adj-weight" placeholder="e.g. 500" min="1" step="10"/>
+    </div>
+
+    <div class="drawer-btn-row">
+      <button class="drawer-btn-find" id="mob-adj-fs-btn" onclick="findAdjMobile()">📦 Find</button>
+      <button class="drawer-btn-refresh" onclick="fetchAdjLoads();closeMobileAdjFilter()">🔄</button>
+      <button class="drawer-btn-clear" id="mob-adj-clear-btn" onclick="clearMobileAdjFilter()" style="display:none">✕</button>
+    </div>
+    <div class="drawer-error"  id="mob-adj-fs-error"></div>
+    <div class="drawer-status" id="mob-adj-fs-status"></div>
+  </div>
+
+</div> <!-- /#filter-panel-adj -->
+
+<!-- RESULTS BAR (unified) -->
 <div class="results-bar">
   <div class="results-bar-inner">
     <span class="results-count" id="results-count">Loading…</span>
   </div>
 </div>
 
-<!-- MAIN -->
+<!-- MAIN: unified marketplace table -->
 <main class="main">
   <div id="error-container"></div>
   <div id="loads-container">
-    <div class="loading"><div class="spinner"></div><p>Loading live truck loads…</p></div>
+    <div class="loading"><div class="spinner"></div><p>Loading live marketplace…</p></div>
   </div>
 </main>
 
-<!-- DETAIL PANEL -->
+<!-- DETAIL PANEL (unified — renders Truck Space or Adjustment Load) -->
 <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
 <div class="detail-panel" id="detail-panel">
   <div class="detail-header" id="detail-header"></div>
@@ -734,6 +957,7 @@
 
   let allLoads     = [];
   let activeFilter = null;
+  let filteredTruckLoads = null;
   let distanceMap  = {};
   const geoCache   = {};
   const resolvedCoords    = { origin: null, dest: null };
@@ -976,7 +1200,8 @@
         document.getElementById('fs-clear-btn').style.display='inline-flex';
       }
 
-      renderTable(survivors.map(s=>s.load), true);
+      filteredTruckLoads = survivors.map(s=>s.load);
+      renderMarket();
     } catch(e) {
       console.error(e);
       errorEl.textContent='⚠️ Something went wrong. Try again.';
@@ -989,7 +1214,7 @@
   function findSpaceMobile() { runFind('mob-origin','mob-dest','mob-weight',resolvedCoordsMob,'mob-origin','mob-dest','mob-fs-error','mob-fs-status','mob-fs-btn',true); }
 
   function clearFindSpace() {
-    activeFilter=null; distanceMap={};
+    activeFilter=null; distanceMap={}; filteredTruckLoads=null;
     resolvedCoords.origin=null; resolvedCoords.dest=null;
     ['fs-origin','fs-dest'].forEach(id=>document.getElementById(id).value='');
     ['origin-badge','dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
@@ -1000,7 +1225,7 @@
   }
 
   function clearMobileFilter() {
-    activeFilter=null; distanceMap={};
+    activeFilter=null; distanceMap={}; filteredTruckLoads=null;
     resolvedCoordsMob['mob-origin']=null; resolvedCoordsMob['mob-dest']=null;
     ['mob-origin','mob-dest'].forEach(id=>document.getElementById(id).value='');
     ['mob-origin-badge','mob-dest-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.className='loc-type-badge';}});
@@ -1012,103 +1237,251 @@
     filterLoads(); closeMobileFilter();
   }
 
-  // ─── FETCH & RENDER ───────────────────────────────────────────────────────
+  // ─── FETCH: TRUCK SPACE ───────────────────────────────────────────────────
   async function fetchLoads() {
-    const container=document.getElementById('loads-container'), errorCont=document.getElementById('error-container');
-    errorCont.innerHTML='';
-    container.innerHTML='<div class="loading"><div class="spinner"></div><p>Loading live truck loads…</p></div>';
     try {
       const res=await fetch(`${API}/loads`); if(!res.ok) throw new Error();
-      allLoads=await res.json(); filterLoads();
+      allLoads=await res.json();
     } catch {
-      errorCont.innerHTML='<div class="error-banner">⚠️ Unable to load data. Please try refreshing.</div>';
-      container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><h3>Connection Error</h3><p>Could not connect to the server.</p></div>';
+      allLoads = allLoads || [];
+      renderMarketError();
+      return;
     }
+    renderMarket();
   }
 
-  function filterLoads() {
-    document.getElementById('results-count').textContent=`${allLoads.length} truck${allLoads.length!==1?'s':''} available`;
-    renderTable(allLoads,false);
+  function filterLoads() { renderMarket(); }
+
+  // ─── FETCH: ADJUSTMENT LOAD ───────────────────────────────────────────────
+  let allAdjLoads    = [];
+  let activeAdjFilter = null;
+
+  async function fetchAdjLoads(filter) {
+    const f = filter !== undefined ? filter : activeAdjFilter;
+    try {
+      const params = new URLSearchParams();
+      if (f?.originCity) params.set('origin_city', f.originCity);
+      if (f?.destCity)   params.set('dest_city', f.destCity);
+      if (f?.weightKg)   params.set('weight_kg', String(f.weightKg));
+      const qs = params.toString();
+      const res = await fetch(`${API}/ptl/groups${qs?'?'+qs:''}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const today = new Date(); today.setHours(0,0,0,0);
+      allAdjLoads = (Array.isArray(data)?data:[]).filter(g => {
+        const dates = (g.members||[]).map(m=>m.loading_date).filter(Boolean)
+          .map(d => { try { const dt=new Date(d); dt.setHours(0,0,0,0); return dt; } catch { return null; } })
+          .filter(Boolean);
+        if (!dates.length) return true;
+        return dates.some(d => d >= today);
+      });
+    } catch {
+      allAdjLoads = allAdjLoads || [];
+      renderMarketError();
+      return;
+    }
+    renderMarket();
   }
 
-  function renderTable(loads,isFiltered) {
-    const container=document.getElementById('loads-container');
-    if (!loads.length) {
-      container.innerHTML=`<div class="empty"><div class="empty-icon">🚛</div><h3>${isFiltered?'No matching trucks found':'No loads found'}</h3><p>${isFiltered?'Try adjusting your search.':'Check back later.'}</p></div>`;
+  // ─── TYPE SLIDER (Truck Space ← All → Adjustment Load) ────────────────────
+  let typeFilter = 'all';
+  function setTypeFilter(val) {
+    typeFilter = val;
+    const thumb = document.getElementById('type-slider-thumb');
+    thumb.className = 'type-slider-thumb pos-' + (val==='truck_space'?'truck':val==='adjustment_load'?'adj':'all');
+    ['truck','all','adj'].forEach(k => {
+      document.getElementById('type-opt-'+k).className =
+        'type-slider-opt' + (
+          (k==='truck' && val==='truck_space') ? ' is-active-truck' :
+          (k==='adj'   && val==='adjustment_load') ? ' is-active-adj' :
+          (k==='all'   && val==='all') ? ' is-active-all' : ''
+        );
+    });
+    renderMarket();
+  }
+
+  // ─── FILTER TABS (which search form is shown) ──────────────────────────────
+  function setFilterTab(which) {
+    document.getElementById('filter-panel-truck').classList.toggle('active', which==='truck');
+    document.getElementById('filter-panel-adj').classList.toggle('active', which==='adj');
+    document.getElementById('filter-tab-truck').className = 'filter-tab-btn' + (which==='truck' ? ' active-truck' : '');
+    document.getElementById('filter-tab-adj').className   = 'filter-tab-btn' + (which==='adj'   ? ' active-adj'   : '');
+  }
+
+  // ─── MOBILE DRAWER (Adjustment Load) ───────────────────────────────────────
+  function openMobileAdjFilter()  { document.getElementById('mobile-adj-filter-overlay').classList.add('open'); document.getElementById('mobile-adj-filter-drawer').classList.add('open'); }
+  function closeMobileAdjFilter() { document.getElementById('mobile-adj-filter-overlay').classList.remove('open'); document.getElementById('mobile-adj-filter-drawer').classList.remove('open'); }
+
+  function runFindAdj(originId, destId, weightId, errorId, statusId, btnId, isMobile) {
+    const originCity = document.getElementById(originId).value.trim();
+    const destCity    = document.getElementById(destId).value.trim();
+    const weightKg    = parseFloat(document.getElementById(weightId).value);
+    const errorEl = document.getElementById(errorId), statusEl = document.getElementById(statusId);
+    errorEl.textContent=''; statusEl.textContent='';
+
+    if (!originCity && !destCity && !weightKg) { errorEl.textContent='⚠️ Enter at least one search field'; return; }
+
+    const btn = document.getElementById(btnId);
+    btn.disabled = true; btn.textContent = '⏳ Searching…';
+    statusEl.textContent = 'Searching adjustment loads…';
+
+    activeAdjFilter = { originCity, destCity, weightKg: weightKg||undefined };
+
+    fetchAdjLoads(activeAdjFilter);
+    setTypeFilter('adjustment_load');
+
+    statusEl.textContent = `✅ Showing matches for ${originCity||'Any'} → ${destCity||'Any'}`;
+    if (isMobile) {
+      document.getElementById('mob-adj-clear-btn').style.display='inline-flex';
+      const hint=document.getElementById('mobile-adj-search-hint');
+      hint.textContent = `${originCity||'Any'} → ${destCity||'Any'}${weightKg?' · '+weightKg+'kg':''}`;
+      document.getElementById('mobile-adj-active-badge').classList.add('visible');
+      closeMobileAdjFilter();
+    } else {
+      document.getElementById('adj-fs-clear-btn').style.display='inline-flex';
+    }
+    btn.disabled=false; btn.textContent = isMobile ? '📦 Find' : '📦 Find Adjustment Loads';
+  }
+
+  function findAdj()       { runFindAdj('adj-fs-origin','adj-fs-dest','adj-fs-weight','adj-fs-error','adj-fs-status','adj-fs-btn',false); }
+  function findAdjMobile() { runFindAdj('mob-adj-origin','mob-adj-dest','mob-adj-weight','mob-adj-fs-error','mob-adj-fs-status','mob-adj-fs-btn',true); }
+
+  function clearAdjFilter() {
+    activeAdjFilter = null;
+    ['adj-fs-origin','adj-fs-dest','adj-fs-weight'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('adj-fs-clear-btn').style.display='none';
+    document.getElementById('adj-fs-error').textContent='';
+    document.getElementById('adj-fs-status').textContent='';
+    fetchAdjLoads(null);
+  }
+
+  function clearMobileAdjFilter() {
+    activeAdjFilter = null;
+    ['mob-adj-origin','mob-adj-dest','mob-adj-weight'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('mob-adj-clear-btn').style.display='none';
+    document.getElementById('mob-adj-fs-error').textContent='';
+    document.getElementById('mob-adj-fs-status').textContent='';
+    document.getElementById('mobile-adj-search-hint').textContent='Search adjustment loads by city & weight…';
+    document.getElementById('mobile-adj-active-badge').classList.remove('visible');
+    fetchAdjLoads(null); closeMobileAdjFilter();
+  }
+
+  // ─── UNIFIED MARKETPLACE TABLE ─────────────────────────────────────────────
+  function renderMarketError() {
+    document.getElementById('error-container').innerHTML =
+      '<div class="error-banner">⚠️ Unable to load some marketplace data. Please try refreshing.</div>';
+  }
+
+  function adjFillPct(g) {
+    return Math.min(100, Math.round((g.fill_pct!=null ? g.fill_pct : (g.total_weight_kg/g.capacity_kg*100)) || 0));
+  }
+  function adjEarliestDate(g) {
+    const dates=(g.members||[]).map(m=>m.loading_date).filter(Boolean);
+    return dates.length ? dates.sort()[0] : null;
+  }
+
+  function renderMarket() {
+    document.getElementById('error-container').innerHTML = '';
+    const container = document.getElementById('loads-container');
+
+    // Build unified, normalized row list
+    let rows = [];
+    if (typeFilter !== 'adjustment_load') {
+      const truckList = filteredTruckLoads || allLoads;
+      rows = rows.concat(truckList.map(l => ({ _type:'truck_space', _data:l })));
+    }
+    if (typeFilter !== 'truck_space') {
+      rows = rows.concat(allAdjLoads.map(g => ({ _type:'adjustment_load', _data:g })));
+    }
+
+    const isFiltered = !!activeFilter || !!activeAdjFilter;
+    const countLabel = `${rows.length} ${rows.length===1?'listing':'listings'}` +
+      (typeFilter==='truck_space' ? ' · Truck Space' : typeFilter==='adjustment_load' ? ' · Adjustment Load' : '');
+    document.getElementById('results-count').textContent = countLabel;
+
+    if (!rows.length) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">🚛</div><h3>${isFiltered?'No matching listings found':'No listings found'}</h3><p>${isFiltered?'Try adjusting your search.':'Check back later.'}</p></div>`;
       return;
     }
 
-    const rows=loads.map(l => {
-      // Route cells — area / state / pincode order (variables declared inside template below)
-      const dist=distanceMap[l.id];
-      const imageCount=l.image_count||(l.images?l.images.length:0);
-      const distHtml=dist?`<div style="margin-top:3px"><span class="dist-badge">📍${dist.origin.toFixed(1)}km</span> <span class="dist-badge">🏁${dist.dest.toFixed(1)}km</span></div>`:'';
+    const trs = rows.map(r => r._type==='truck_space' ? truckSpaceRowHtml(r._data) : adjLoadRowHtml(r._data)).join('');
 
-      const oArea  = l.origin_locality || l.origin_city || '';
-      const oState = l.origin_state || '';
-      const oPin   = l.origin_pincode || '';
-      const dArea  = l.destination_locality || l.destination_city || '';
-      const dState = l.destination_state || '';
-      const dPin   = l.destination_pincode || '';
-      return `<tr onclick="openDetail('${escapeAttr(l.id)}')" title="Tap for full details">
-        <td>
-          <div class="td-route">
-            <div class="route-endpoint">
-              ${oArea  ? `<div class="td-area">${escapeHtml(oArea)}</div>`  : ''}
-              ${oState ? `<div class="td-state">${escapeHtml(oState)}</div>` : ''}
-              ${oPin   ? `<div class="td-pin">${escapeHtml(oPin)}</div>`    : ''}
-            </div>
-            <span class="td-arrow">➤</span>
-            <div class="route-endpoint">
-              ${dArea  ? `<div class="td-area">${escapeHtml(dArea)}</div>`  : ''}
-              ${dState ? `<div class="td-state">${escapeHtml(dState)}</div>` : ''}
-              ${dPin   ? `<div class="td-pin">${escapeHtml(dPin)}</div>`    : ''}
-            </div>
-          </div>
-          ${distHtml}
-        </td>
-        <td><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
-        <td><span class="td-weight">${l.weight_tons}T</span></td>
-        <td class="col-placement">${l.cargo_placement?`<span class="place-pill">${escapeHtml(l.cargo_placement)}</span>`:''}${(l.cargo_types&&l.cargo_types.length)?l.cargo_types.map(c=>`<span class="place-pill" style="background:#F0F4FF;color:var(--navy);margin-left:3px">${escapeHtml(c.startsWith('Others:')?c.slice(8).trim():c)}</span>`).join(''):''}${!l.cargo_placement&&!(l.cargo_types&&l.cargo_types.length)?'—':''}</td>
-        <td class="col-date td-date">${formatDate(l.loading_date)}</td>
-        <td class="col-photos">${imageCount>0?`<span class="photo-count">📸 ${imageCount}</span>`:'<span style="color:var(--subtle)">—</span>'}</td>
-        <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('${escapeAttr(l.id)}')">More Info ›</button></td>
-      </tr>`;
-    }).join('');
-
-    container.innerHTML=`
+    container.innerHTML = `
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Route</th><th>Truck</th><th>Weight</th>
-              <th class="col-placement">Placement</th>
+              <th class="col-type">Type</th>
+              <th class="col-origin">Origin</th>
+              <th class="col-destination">Destination</th>
+              <th class="col-truck">Truck/Cargo</th>
+              <th class="col-weight">Weight</th>
               <th class="col-date">Loading Date</th>
-              <th class="col-photos">Photos</th>
-              <th class="col-btn"></th>
+              <th class="col-btn">Details</th>
             </tr>
           </thead>
-          <tbody>${rows}</tbody>
+          <tbody>${trs}</tbody>
         </table>
       </div>
-      ${isFiltered?'<p style="text-align:center;color:var(--subtle);font-size:11px;margin-top:12px">* Distances are approximate (straight-line)</p>':''}
+      ${activeFilter ? '<p style="text-align:center;color:var(--subtle);font-size:11px;margin-top:12px">* Distances are approximate (straight-line)</p>' : ''}
     `;
   }
 
-  // ─── DETAIL PANEL ─────────────────────────────────────────────────────────
-  function openDetail(loadId) {
+  function truckSpaceRowHtml(l) {
+    const dist = distanceMap[l.id];
+    const distHtml = dist ? `<div style="margin-top:3px"><span class="dist-badge">📍${dist.origin.toFixed(1)}km</span> <span class="dist-badge">🏁${dist.dest.toFixed(1)}km</span></div>` : '';
+    const oArea  = l.origin_locality || l.origin_city || '—';
+    const oPin   = l.origin_pincode || '';
+    const dArea  = l.destination_locality || l.destination_city || '—';
+    const dPin   = l.destination_pincode || '';
+    return `<tr onclick="openDetail('truck_space','${escapeAttr(l.id)}')" title="Tap for full details">
+      <td class="col-type"><span class="type-badge type-badge-truck">🟦 Truck Space</span></td>
+      <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(oArea)}</div>${oPin?`<div class="td-pin">${escapeHtml(oPin)}</div>`:''}${distHtml}</td>
+      <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(dArea)}</div>${dPin?`<div class="td-pin">${escapeHtml(dPin)}</div>`:''}</td>
+      <td class="col-truck"><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
+      <td class="col-weight"><span class="td-weight-dyn">${l.weight_tons} Tons <span class="unit">Free</span></span></td>
+      <td class="col-date td-date">${formatDate(l.loading_date)}</td>
+      <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('truck_space','${escapeAttr(l.id)}')">More Info ›</button></td>
+    </tr>`;
+  }
+
+  function adjLoadRowHtml(g) {
+    const memberCount = (g.members||[]).length || (g.load_ids||[]).length || 1;
+    const weightTons = ((g.total_weight_kg||0)/1000);
+    const earliestDate = adjEarliestDate(g);
+    return `<tr onclick="openDetail('adjustment_load','${escapeAttr(g.id)}')" title="Tap for full details">
+      <td class="col-type"><span class="type-badge type-badge-adj">🟧 Adjustment Load</span></td>
+      <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(g.origin_display||'—')}</div></td>
+      <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(g.destination_display||'—')}</div></td>
+      <td class="col-truck"><span class="adj-members-count">👥 ${memberCount}</span> <span class="adj-status-pill adj-status-${escapeAttr(g.status||'FORMING')}" style="margin-left:4px">${escapeHtml(g.status||'FORMING')}</span></td>
+      <td class="col-weight"><span class="td-weight-dyn">${weightTons.toFixed(1)} Ton <span class="unit">Posted</span></span></td>
+      <td class="col-date td-date">${earliestDate?formatDate(earliestDate):'—'}</td>
+      <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('adjustment_load','${escapeAttr(g.id)}')">More Info ›</button></td>
+    </tr>`;
+  }
+
+  // ─── UNIFIED DETAIL PANEL ───────────────────────────────────────────────────
+  function openDetail(type, id) {
+    if (type === 'adjustment_load') openAdjDetail(id);
+    else openTruckSpaceDetail(id);
+  }
+
+  function highlightRow(id) {
+    document.querySelectorAll('tbody tr').forEach(r =>
+      r.classList.toggle('highlighted', r.getAttribute('onclick')?.includes(`'${id}'`))
+    );
+  }
+
+  function openTruckSpaceDetail(loadId) {
     const load=allLoads.find(l=>l.id===loadId); if(!load) return;
     const imageCount=load.image_count||(load.images?load.images.length:0);
     const dist=distanceMap[load.id];
 
-    // Build endpoint — order: Area (locality/city) → State → Pincode
     function buildEndpoint(pin, locality, city, state) {
       const loc = (locality||'').trim();
       const cty = (city||'').trim();
       const st  = (state||'').trim();
-      // Area: prefer locality, fall back to city
       const area = loc || cty || null;
-      // State: show only if different from area
       const showState = st && st.toLowerCase() !== (area||'').toLowerCase() ? st : null;
       return { pin: pin||null, area, state: showState };
     }
@@ -1127,7 +1500,7 @@
 
     document.getElementById('detail-header').innerHTML=`
       <div class="detail-route-header">
-        <div class="detail-truck-badge">🚛 ${escapeHtml(load.truck_type||'Truck')}</div>
+        <div class="detail-truck-badge"><span class="type-badge type-badge-truck">🟦 Truck Space</span> · 🚛 ${escapeHtml(load.truck_type||'Truck')}</div>
         <div class="detail-route-stack">
           ${endpointHtml(oE)}
           <div class="detail-route-divider">
@@ -1146,7 +1519,6 @@
         <span class="detail-dist-chip ${dist.offRoute?'off':''}">🏁 Dest ${dist.dest.toFixed(1)} km ${dist.offRoute?'off-route':'away'}</span>
       </div>` : '';
 
-    // Photos — only if they exist
     const photosHtml = (() => {
       if (load.images && load.images.length > 0) {
         return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${load.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div></div>`;
@@ -1157,7 +1529,6 @@
       return '';
     })();
 
-    // Dimensions helpers
     const dimParts = [
       load.length_ft ? `${load.length_ft}L` : null,
       load.width_ft  ? `${load.width_ft}W`  : null,
@@ -1166,7 +1537,6 @@
     const dimStr = dimParts.length ? dimParts.join(' × ') + ' ft' : null;
     const volStr = load.space_cuft ? `${load.space_cuft} cu.ft` : null;
 
-    // Price helpers
     const priceStr = load.price_per_ton
       ? `₹${Number(load.price_per_ton).toLocaleString('en-IN')}/T`
       : load.total_price
@@ -1178,7 +1548,7 @@
 
       <div class="detail-kpi-row">
         <div class="detail-kpi">
-          <div class="detail-kpi-value">${load.weight_tons}T</div>
+          <div class="detail-kpi-value">${load.weight_tons} Tons Free</div>
           <div class="detail-kpi-label">⚖️ Weight Capacity</div>
         </div>
         <div class="detail-kpi">
@@ -1268,17 +1638,118 @@
 
     document.getElementById('detail-overlay').classList.add('open');
     document.getElementById('detail-panel').classList.add('open');
-    document.querySelectorAll('tbody tr').forEach(r =>
-      r.classList.toggle('highlighted', r.getAttribute('onclick')?.includes(loadId))
-    );
+    highlightRow(loadId);
+    if (!window.location.search.includes(`load=${loadId}`)) {
+      window.history.replaceState({}, '', `?load=${loadId}`);
+    }
+  }
+
+  // ─── ADJUSTMENT LOAD SHARE LINK ─────────────────────────────────────────────
+  function adjSharePath(groupId) { return `${window.location.origin}/a/${groupId}`; }
+  function copyAdjLink(groupId, btnEl) {
+    const url = adjSharePath(groupId);
+    navigator.clipboard?.writeText(url).then(() => {
+      const original = btnEl.textContent;
+      btnEl.textContent = '✓ Copied';
+      setTimeout(()=>{ btnEl.textContent = original; }, 1500);
+    }).catch(() => { prompt('Copy this link:', url); });
+  }
+
+  async function openAdjDetail(groupId) {
+    let group = allAdjLoads.find(g => g.id === groupId);
+    try {
+      const res = await fetch(`${API}/ptl/groups/${encodeURIComponent(groupId)}`);
+      if (res.ok) { const full = await res.json(); if (full) group = full; }
+    } catch (e) { console.warn('Adjustment-load detail fetch failed', e); }
+    if (!group) return;
+
+    const fillPct = adjFillPct(group);
+    const members = group.members || [];
+    const shareUrl = adjSharePath(group.id);
+    const weightTons = ((group.total_weight_kg||0)/1000);
+
+    document.getElementById('detail-header').innerHTML = `
+      <div class="detail-route-header">
+        <div class="detail-truck-badge"><span class="type-badge type-badge-adj">🟧 Adjustment Load</span> · <span class="adj-status-pill adj-status-${escapeAttr(group.status||'FORMING')}" style="margin-left:4px">${escapeHtml(group.status||'FORMING')}</span></div>
+        <div class="adj-detail-corridor">${escapeHtml(group.corridor||'')}</div>
+        <div class="detail-route-stack">
+          <div class="detail-endpoint">
+            <div class="detail-locality">${escapeHtml(group.origin_display||'—')}</div>
+          </div>
+          <div class="detail-route-divider">
+            <div class="detail-route-divider-line"></div>
+            <div class="detail-route-divider-icon">↓</div>
+            <div class="detail-route-divider-line"></div>
+          </div>
+          <div class="detail-endpoint">
+            <div class="detail-locality">${escapeHtml(group.destination_display||'—')}</div>
+          </div>
+        </div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>`;
+
+    const cargoChips = (group.cargo_categories||[]).map(c=>`<span class="adj-cargo-chip">${escapeHtml(c)}</span>`).join('') || '—';
+
+    const membersHtml = members.length ? members.map(m => {
+      const initial = (m.name||'?').trim().charAt(0).toUpperCase();
+      return `<div class="adj-member-row">
+        <div class="adj-avatar">${escapeHtml(initial)}</div>
+        <div style="min-width:0">
+          <div class="adj-member-name">${escapeHtml(m.name||'Shipper')}${m.company?` · ${escapeHtml(m.company)}`:''}</div>
+          <div class="adj-member-sub">${escapeHtml(m.origin_locality||m.origin_city||'')} → ${escapeHtml(m.destination_locality||m.destination_city||'')} · ${escapeHtml(m.cargo_type||'')}</div>
+        </div>
+        <div class="adj-member-weight">${((m.weight_kg||0)/1000).toFixed(1)}T</div>
+      </div>`;
+    }).join('') : '<p style="color:var(--muted);font-size:13px">No member details available yet.</p>';
+
+    document.getElementById('detail-body').innerHTML = `
+      <div class="adj-fill-card">
+        <div class="adj-fill-top">
+          <span class="adj-fill-value">${weightTons.toFixed(1)} Ton <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.6)">Posted / ${(group.capacity_kg/1000).toFixed(0)}T Capacity</span></span>
+          <span class="adj-fill-sub">${fillPct}% filled · ${((group.capacity_remaining_kg||0)/1000).toFixed(1)}T left</span>
+        </div>
+        <div class="adj-fill-track"><div class="adj-fill-track-inner" style="width:${fillPct}%"></div></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">📦 Cargo Types</div>
+        <div>${cargoChips}</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">👥 Members (${members.length})</div>
+        ${membersHtml}
+      </div>
+
+      <div class="adj-share-row">
+        <a class="adj-share-link" href="${escapeAttr(shareUrl)}" target="_blank" rel="noopener">${escapeHtml(shareUrl)}</a>
+        <button class="adj-share-copy" onclick="copyAdjLink('${escapeAttr(group.id)}', this)">🔗 Copy Link</button>
+      </div>`;
+
+    const primary = members.find(m=>!m.is_me) || members[0];
+    document.getElementById('detail-footer').innerHTML = primary?.phone ? `
+      <div>
+        <div class="detail-poster-name">${escapeHtml(primary.name||'Shipper')}</div>
+        ${primary.company?`<div class="detail-poster-company">${escapeHtml(primary.company)}</div>`:''}
+        <div class="detail-poster-phone">+91 ${escapeHtml(primary.phone)}</div>
+      </div>
+      <a href="tel:${escapeAttr(primary.phone)}" class="detail-call-btn">📞 Call</a>` : `
+      <div class="detail-poster-sub" style="color:var(--muted);font-size:13px">Contact details available in-app</div>
+      <a href="${escapeAttr(shareUrl)}" class="detail-call-btn" style="background:var(--navy)" target="_blank" rel="noopener">🔗 Open Link</a>`;
+
+    document.getElementById('detail-overlay').classList.add('open');
+    document.getElementById('detail-panel').classList.add('open');
+    highlightRow(groupId);
+    if (!window.location.search.includes(`adj=${groupId}`)) {
+      window.history.replaceState({}, '', `?adj=${groupId}`);
+    }
   }
 
   function closeDetail() {
     document.getElementById('detail-overlay').classList.remove('open');
     document.getElementById('detail-panel').classList.remove('open');
     document.querySelectorAll('tbody tr').forEach(r=>r.classList.remove('highlighted'));
-    // Remove ?load= from URL when panel is closed
-    if (window.location.search.includes('load=')) {
+    if (/[?&](load|adj|ptl)=/.test(window.location.search)) {
       window.history.replaceState({}, '', window.location.pathname);
     }
   }
@@ -1286,62 +1757,73 @@
   // ─── LIGHTBOX ─────────────────────────────────────────────────────────────
   function openLightbox(src) { document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('active'); }
   function closeLightbox()   { document.getElementById('lightbox').classList.remove('active'); document.getElementById('lightbox-img').src=''; }
-  document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();} });
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeDetail();closeMobileFilter();closeMobileAdjFilter();} });
 
-  // ─── DEEP LINK: auto-open detail panel from URL ───────────────────────────
-  // Handles three URL formats:
-  //   /l/{short_id}   → short link from WhatsApp (e.g. /l/a3f9b2)
-  //   /load/{uuid}    → legacy long path
-  //   ?load={uuid}    → query-param form used internally
+  // ─── DEEP LINK: auto-open detail panel from URL ────────────────────────────
+  // Handles:
+  //   /l/{short_id}    → truck-space short link
+  //   /load/{uuid}     → truck-space legacy long path
+  //   ?load={uuid}     → truck-space query-param form
+  //   /a/{group_id}    → adjustment-load short link
+  //   /p/{group_id}    → adjustment-load legacy path (was "partial load")
+  //   ?adj={group_id}  → adjustment-load query-param form
+  //   ?ptl={group_id}  → legacy query-param form (was "partial load")
   async function handleDeepLink() {
-    const params    = new URLSearchParams(window.location.search);
-    const path      = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+    const path   = window.location.pathname;
+
+    const adjPathMatch = path.match(/^\/(?:a|p)\/([^/?#]+)/);
+    const adjId = params.get('adj') || params.get('ptl') || (adjPathMatch ? adjPathMatch[1] : null);
+    if (adjId) {
+      setTypeFilter('all');
+      let waited = 0;
+      while (allAdjLoads.length === 0 && waited < 5000) {
+        await new Promise(r => setTimeout(r, 200));
+        waited += 200;
+      }
+      await openAdjDetail(adjId);
+      return;
+    }
+
     const shortMatch = path.match(/^\/l\/([a-z0-9]+)$/i);
     const pathMatch  = path.match(/^\/load\/([^/?#]+)/);
     const queryId    = params.get('load');
 
-    let load = null;
-
     if (shortMatch) {
-      // ── Short link: resolve via /api/loads/s/{short_id} ──
       const shortId = shortMatch[1].toLowerCase();
       try {
         const res = await fetch(`${API}/loads/s/${encodeURIComponent(shortId)}`);
         if (res.ok) {
-          load = await res.json();
-          if (load) allLoads.push(load);
+          const load = await res.json();
+          if (load) { allLoads.push(load); renderMarket(); openTruckSpaceDetail(load.id); }
         }
       } catch (e) { console.warn('Short-link fetch failed', e); }
-
-    } else {
-      // ── Long form: UUID from query param or /load/ path ──
-      const loadId = queryId || (pathMatch ? pathMatch[1] : null);
-      if (!loadId) return;
-
-      // Wait up to 5 s for the initial load list
-      let waited = 0;
-      while (allLoads.length === 0 && waited < 5000) {
-        await new Promise(r => setTimeout(r, 200));
-        waited += 200;
-      }
-      load = allLoads.find(l => l.id === loadId) || null;
-      if (!load) {
-        try {
-          const res = await fetch(`${API}/loads/${encodeURIComponent(loadId)}`);
-          if (res.ok) { load = await res.json(); if (load) allLoads.push(load); }
-        } catch (e) { console.warn('Long-link fetch failed', e); }
-      }
+      return;
     }
 
-    if (load) {
-      openDetail(load.id);
-      window.history.replaceState({}, '', `?load=${load.id}`);
+    const loadId = queryId || (pathMatch ? pathMatch[1] : null);
+    if (!loadId) return;
+
+    let waited = 0;
+    while (allLoads.length === 0 && waited < 5000) {
+      await new Promise(r => setTimeout(r, 200));
+      waited += 200;
     }
+    let load = allLoads.find(l => l.id === loadId) || null;
+    if (!load) {
+      try {
+        const res = await fetch(`${API}/loads/${encodeURIComponent(loadId)}`);
+        if (res.ok) { load = await res.json(); if (load) { allLoads.push(load); renderMarket(); } }
+      } catch (e) { console.warn('Load fetch failed', e); }
+    }
+    if (load) openTruckSpaceDetail(load.id);
   }
 
   // ─── INIT ─────────────────────────────────────────────────────────────────
   fetchLoads();
+  fetchAdjLoads();
   setInterval(fetchLoads, 120_000);
+  setInterval(() => fetchAdjLoads(activeAdjFilter), 120_000);
 
   document.addEventListener('DOMContentLoaded', () => {
     setupLocationInput('fs-origin','origin-suggestions','origin-badge','origin', resolvedCoords);
@@ -1350,6 +1832,8 @@
     setupLocationInput('mob-origin','mob-origin-suggestions','mob-origin-badge','mob-origin', resolvedCoordsMob);
     setupLocationInput('mob-dest',  'mob-dest-suggestions',  'mob-dest-badge',  'mob-dest',   resolvedCoordsMob);
     document.getElementById('mob-weight').addEventListener('keydown', e => { if(e.key==='Enter') findSpaceMobile(); });
+    document.getElementById('adj-fs-weight').addEventListener('keydown', e => { if(e.key==='Enter') findAdj(); });
+    document.getElementById('mob-adj-weight').addEventListener('keydown', e => { if(e.key==='Enter') findAdjMobile(); });
     handleDeepLink();
   });
 </script>
