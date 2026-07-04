@@ -940,6 +940,56 @@
   // ─── HELPERS ──────────────────────────────────────────────────────────────
   const escapeHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const escapeAttr = s => String(s||'').replace(/"/g,'&quot;');
+
+  // Indian state/UT name → 2-letter abbreviation (used in the two-line
+  // "Locality, ST" / "Pincode" address format on table rows and detail panel)
+  const IN_STATE_ABBR = {
+    "andhra pradesh":"AP","arunachal pradesh":"AR","assam":"AS","bihar":"BR",
+    "chhattisgarh":"CG","chattisgarh":"CG","goa":"GA","gujarat":"GJ","haryana":"HR",
+    "himachal pradesh":"HP","jharkhand":"JH","karnataka":"KA","kerala":"KL",
+    "madhya pradesh":"MP","maharashtra":"MH","manipur":"MN","meghalaya":"ML",
+    "mizoram":"MZ","nagaland":"NL","odisha":"OD","orissa":"OD","punjab":"PB",
+    "rajasthan":"RJ","sikkim":"SK","tamil nadu":"TN","telangana":"TS","tripura":"TR",
+    "uttar pradesh":"UP","uttarakhand":"UK","uttaranchal":"UK","west bengal":"WB",
+    "andaman and nicobar islands":"AN","andaman & nicobar islands":"AN","chandigarh":"CH",
+    "dadra and nagar haveli and daman and diu":"DN","dadra and nagar haveli":"DN",
+    "daman and diu":"DD","delhi":"DL","nct of delhi":"DL","jammu and kashmir":"JK",
+    "jammu & kashmir":"JK","ladakh":"LA","lakshadweep":"LD","puducherry":"PY","pondicherry":"PY"
+  };
+  function stateAbbr(state) {
+    const s = (state||'').trim().toLowerCase();
+    if (!s) return '';
+    return IN_STATE_ABBR[s] || (state||'').trim().slice(0,2).toUpperCase();
+  }
+  // Shared endpoint builder: returns { area, stateAb, pin } for the
+  // two-line "Area, ST" / "Pincode" address format used on table rows
+  // and the detail panel.
+  function buildRowEndpoint(pin, locality, city, state) {
+    const loc = (locality||'').trim();
+    const cty = (city||'').trim();
+    const area = loc || cty || null;
+    const ab = stateAbbr(state);
+    return { area, stateAb: ab || null, pin: pin || null };
+  }
+  // Adjustment-load groups only carry a combined display string
+  // ("Locality, State - 123456") at the group level; split it into the
+  // same locality/state/pin parts used elsewhere when structured fields
+  // aren't present.
+  function parseDisplayString(display) {
+    const raw = (display||'').trim();
+    if (!raw) return { pin:null, locality:null, city:null, state:null };
+    const pinMatch = raw.match(/\b(\d{6})\b/);
+    const pin = pinMatch ? pinMatch[1] : null;
+    const rest = (pin ? raw.replace(pin,'') : raw).replace(/[-,\s]+$/,'').trim();
+    const parts = rest.split(',').map(s=>s.trim()).filter(Boolean);
+    return { pin, locality: parts[0]||null, city: null, state: parts.slice(1).join(', ')||null };
+  }
+  // Renders the two-line address block: "Area, ST" then "Pincode" below.
+  function rowEndpointHtml(e) {
+    const line1 = [e.area, e.stateAb].filter(Boolean).join(', ');
+    return `<div class="td-area">${escapeHtml(line1||'—')}</div>${e.pin?`<div class="td-pin">${escapeHtml(e.pin)}</div>`:''}`;
+  }
+
   function formatDate(d) {
     if (!d) return '—';
     try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
@@ -1355,14 +1405,12 @@
   function truckSpaceRowHtml(l) {
     const dist = distanceMap[l.id];
     const distHtml = dist ? `<div style="margin-top:3px"><span class="dist-badge">📍${dist.origin.toFixed(1)}km</span> <span class="dist-badge">🏁${dist.dest.toFixed(1)}km</span></div>` : '';
-    const oArea  = l.origin_locality || l.origin_city || '—';
-    const oPin   = l.origin_pincode || '';
-    const dArea  = l.destination_locality || l.destination_city || '—';
-    const dPin   = l.destination_pincode || '';
+    const oE = buildRowEndpoint(l.origin_pincode, l.origin_locality, l.origin_city, l.origin_state);
+    const dE = buildRowEndpoint(l.destination_pincode, l.destination_locality, l.destination_city, l.destination_state);
     return `<tr class="row-truck-space" onclick="openDetail('truck_space','${escapeAttr(l.id)}')" title="Tap for full details">
       <td class="col-type"><span class="type-badge type-badge-truck badge-in-table"><span class="badge-icon">🟦</span><span class="badge-label">Truck Space</span></span></td>
-      <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(oArea)}</div>${oPin?`<div class="td-pin">${escapeHtml(oPin)}</div>`:''}${distHtml}</td>
-      <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(dArea)}</div>${dPin?`<div class="td-pin">${escapeHtml(dPin)}</div>`:''}</td>
+      <td class="col-origin td-endpoint">${rowEndpointHtml(oE)}${distHtml}</td>
+      <td class="col-destination td-endpoint">${rowEndpointHtml(dE)}</td>
       <td class="col-truck"><span class="truck-pill">🚛 ${escapeHtml(l.truck_type||'—')}</span></td>
       <td class="col-weight"><span class="td-weight-dyn">${l.weight_tons} Tons <span class="unit">Free</span></span></td>
       <td class="col-date td-date">${formatDateBoth(l.loading_date)}</td>
@@ -1375,10 +1423,26 @@
     const earliestDate = adjEarliestDate(g);
     const cargoTypes = (g.cargo_categories||[]).map(c=>c.startsWith('Others:')?c.slice(8).trim():c);
     const cargoLabel = cargoTypes.length ? cargoTypes.join(', ') : '—';
+    const members = g.members || [];
+    const primary = members.find(m=>!m.is_me) || members[0];
+    const oParsed = parseDisplayString(g.origin_display);
+    const dParsed = parseDisplayString(g.destination_display);
+    const oE = buildRowEndpoint(
+      primary?.origin_pincode  || g.origin_pincode  || oParsed.pin,
+      primary?.origin_locality || g.origin_locality || oParsed.locality,
+      primary?.origin_city     || g.origin_city      || oParsed.city,
+      primary?.origin_state    || g.origin_state     || oParsed.state
+    );
+    const dE = buildRowEndpoint(
+      primary?.destination_pincode  || g.destination_pincode  || dParsed.pin,
+      primary?.destination_locality || g.destination_locality || dParsed.locality,
+      primary?.destination_city     || g.destination_city      || dParsed.city,
+      primary?.destination_state    || g.destination_state     || dParsed.state
+    );
     return `<tr class="row-adjustment-load" onclick="openDetail('adjustment_load','${escapeAttr(g.id)}')" title="Tap for full details">
       <td class="col-type"><span class="type-badge type-badge-adj badge-in-table"><span class="badge-icon">🟧</span><span class="badge-label">Adjustment Load</span></span></td>
-      <td class="col-origin td-endpoint"><div class="td-area">${escapeHtml(g.origin_display||'—')}</div></td>
-      <td class="col-destination td-endpoint"><div class="td-area">${escapeHtml(g.destination_display||'—')}</div></td>
+      <td class="col-origin td-endpoint">${rowEndpointHtml(oE)}</td>
+      <td class="col-destination td-endpoint">${rowEndpointHtml(dE)}</td>
       <td class="col-truck"><span class="place-pill" style="background:#FFF4EE;color:var(--orange)">📦 ${escapeHtml(cargoLabel)}</span></td>
       <td class="col-weight"><span class="td-weight-dyn">${weightTons.toFixed(1)} Ton <span class="unit">Posted</span></span></td>
       <td class="col-date td-date">${earliestDate?formatDateBoth(earliestDate):'—'}</td>
