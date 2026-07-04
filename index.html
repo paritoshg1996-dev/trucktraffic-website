@@ -637,7 +637,14 @@
     .td-endpoint { min-width:0; }
     .td-weight-dyn { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; color:var(--navy); white-space:nowrap; }
     .td-weight-dyn .unit { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; margin-left:3px; }
-    .col-origin, .col-destination { max-width:140px; }
+    /* Origin/Destination get the largest share so full addresses fit; other columns stay compact */
+    thead th.col-type,  td.col-type  { width:9%; }
+    thead th.col-origin, td.col-origin,
+    thead th.col-destination, td.col-destination { width:24%; max-width:none; }
+    thead th.col-truck, td.col-truck { width:15%; }
+    thead th.col-weight, td.col-weight { width:10%; }
+    thead th.col-date,  td.col-date  { width:11%; }
+    thead th.col-btn,   td.col-btn   { width:7%; }
 
     /* ===== ADJUSTMENT LOAD PILLS (formerly PTL) ===== */
     .adj-status-pill {
@@ -1595,6 +1602,7 @@
 
     const fillPct = adjFillPct(group);
     const members = group.members || [];
+    const primary = members.find(m=>!m.is_me) || members[0];
     const shareUrl = adjSharePath(group.id);
     const weightTons     = ((group.total_weight_kg||0)/1000);
     const capacityTons   = ((group.capacity_kg||0)/1000);
@@ -1632,8 +1640,18 @@
     }
     const oParsed = parseDisplay(group.origin_display);
     const dParsed = parseDisplay(group.destination_display);
-    const oE = buildEndpoint(group.origin_pincode||oParsed.pin, group.origin_locality||oParsed.locality, group.origin_city||oParsed.city, group.origin_state||oParsed.state);
-    const dE = buildEndpoint(group.destination_pincode||dParsed.pin, group.destination_locality||dParsed.locality, group.destination_city||dParsed.city, group.destination_state||dParsed.state);
+    const oE = buildEndpoint(
+      primary?.origin_pincode  || group.origin_pincode  || oParsed.pin,
+      primary?.origin_locality || group.origin_locality || oParsed.locality,
+      primary?.origin_city     || group.origin_city      || oParsed.city,
+      primary?.origin_state    || group.origin_state     || oParsed.state
+    );
+    const dE = buildEndpoint(
+      primary?.destination_pincode  || group.destination_pincode  || dParsed.pin,
+      primary?.destination_locality || group.destination_locality || dParsed.locality,
+      primary?.destination_city     || group.destination_city      || dParsed.city,
+      primary?.destination_state    || group.destination_state     || dParsed.state
+    );
 
     document.getElementById('detail-header').innerHTML=`
       <div class="detail-route-header">
@@ -1697,7 +1715,6 @@
 
       ${photosHtml}`;
 
-    const primary = members.find(m=>!m.is_me) || members[0];
     const adjPhone = resolvePhone(group, primary);
     document.getElementById('detail-footer').innerHTML=`
       <div>
