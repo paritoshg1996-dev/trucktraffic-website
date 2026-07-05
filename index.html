@@ -1546,10 +1546,15 @@
       return '';
     })();
 
+    // Dimensions — backend returns `dimension_length/breadth/height` (ft).
+    // Older payloads used `length_ft/width_ft/height_ft`; both are supported.
+    const dimL = load.dimension_length ?? load.length_ft;
+    const dimB = load.dimension_breadth ?? load.width_ft;
+    const dimH = load.dimension_height  ?? load.height_ft;
     const dimParts = [
-      load.length_ft ? `${load.length_ft}L` : null,
-      load.width_ft  ? `${load.width_ft}W`  : null,
-      load.height_ft ? `${load.height_ft}H` : null,
+      dimL ? `${dimL}L` : null,
+      dimB ? `${dimB}B` : null,
+      dimH ? `${dimH}H` : null,
     ].filter(Boolean);
     const dimStr = dimParts.length ? dimParts.join(' × ') + ' ft' : null;
     const volStr = load.space_cuft ? `${load.space_cuft} cu.ft` : null;
@@ -1612,11 +1617,11 @@
           <span class="detail-info-label">Cargo Type</span>
           <span class="detail-info-value">${escapeHtml(load.cargo_types.map(c => c.startsWith('Others:') ? c.slice(8).trim() : c).join(', '))}</span>
         </div>` : ''}
-        ${load.length_ft || load.width_ft || load.height_ft ? `
+        ${dimStr ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">📐</span>
           <span class="detail-info-label">Dimensions</span>
-          <span class="detail-info-value">${escapeHtml(dimStr||'—')}</span>
+          <span class="detail-info-value">${escapeHtml(dimStr)}</span>
         </div>` : ''}
         ${load.space_cuft ? `
         <div class="detail-info-row">
@@ -1737,13 +1742,35 @@
       </div>
       <button class="detail-close" onclick="closeDetail()">✕</button>`;
 
-    // Photos — same building block as Truck Space's photo grid.
+    // Photos — same building block as Truck Space's photo grid. Photos are
+    // uploaded per-load, so we prefer `primary.images` (the load doc) and
+    // fall back to `group.images` for older payloads.
+    const adjImages = (primary && primary.images && primary.images.length)
+      ? primary.images
+      : (group.images || []);
     const photosHtml = (() => {
-      if (group.images && group.images.length > 0) {
-        return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${group.images.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div></div>`;
+      if (adjImages && adjImages.length > 0) {
+        return `<div class="detail-section"><div class="detail-section-title">📸 Photos</div><div class="detail-photos-grid">${adjImages.slice(0,6).map(src=>`<img src="${escapeAttr(src)}" onclick="openLightbox('${escapeAttr(src)}')" onerror="this.style.display='none'"/>`).join('')}</div></div>`;
       }
       return '';
     })();
+
+    // Load-detail field values — sourced from `primary` (the underlying load
+    // doc) so the detail rectangle mirrors exactly what the poster entered
+    // on the Partial Load form: Cargo Type, Truck Type, Dimensions (L×B×H)
+    // and Cargo Placement.
+    const adjCargoLabel = (primary?.cargo_type && !primary.cargo_type.startsWith('Others:'))
+      ? primary.cargo_type
+      : (primary?.cargo_type ? primary.cargo_type.slice(8).trim() : '')
+        || cargoTypes.join(', ');
+    const adjTruckType  = primary?.truck_type || group.truck_preference || '';
+    const adjPlacement  = primary?.cargo_placement || group.cargo_placement || '';
+    const adjDimParts = [
+      primary?.dimension_length  ? `${primary.dimension_length}L`  : null,
+      primary?.dimension_breadth ? `${primary.dimension_breadth}B` : null,
+      primary?.dimension_height  ? `${primary.dimension_height}H`  : null,
+    ].filter(Boolean);
+    const adjDimStr = adjDimParts.length ? adjDimParts.join(' × ') + ' ft' : '';
 
     document.getElementById('detail-body').innerHTML=`
       <div class="detail-kpi-row">
@@ -1759,26 +1786,27 @@
 
       <div class="detail-section">
         <div class="detail-section-title">Load Details</div>
-        ${cargoTypes.length ? `
+        ${adjCargoLabel ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">📦</span>
           <span class="detail-info-label">Cargo Type</span>
-          <span class="detail-info-value">${escapeHtml(cargoTypes.join(', '))}</span>
+          <span class="detail-info-value">${escapeHtml(adjCargoLabel)}</span>
         </div>` : ''}
         <div class="detail-info-row">
-          <span class="detail-info-icon">📦</span>
-          <span class="detail-info-label">Available Space</span>
-          <span class="detail-info-value">${remainingTons.toFixed(1)} Ton</span>
-        </div>
-        <div class="detail-info-row">
           <span class="detail-info-icon">🚛</span>
-          <span class="detail-info-label">Truck Preference</span>
-          <span class="detail-info-value">${escapeHtml(group.truck_preference||'—')}</span>
+          <span class="detail-info-label">Truck Type</span>
+          <span class="detail-info-value">${escapeHtml(adjTruckType||'—')}</span>
         </div>
+        ${adjDimStr ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📐</span>
+          <span class="detail-info-label">Dimensions</span>
+          <span class="detail-info-value">${escapeHtml(adjDimStr)}</span>
+        </div>` : ''}
         <div class="detail-info-row">
           <span class="detail-info-icon">🧱</span>
-          <span class="detail-info-label">Placement</span>
-          <span class="detail-info-value">${escapeHtml(group.cargo_placement||'—')}</span>
+          <span class="detail-info-label">Cargo Placement</span>
+          <span class="detail-info-value">${escapeHtml(adjPlacement||'—')}</span>
         </div>
       </div>
 
@@ -1891,5 +1919,6 @@
     handleDeepLink();
   });
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7f7b0fd8732c4326aae4b9d58d5c514a","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
