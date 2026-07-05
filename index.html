@@ -1551,12 +1551,10 @@
     const dimL = load.dimension_length ?? load.length_ft;
     const dimB = load.dimension_breadth ?? load.width_ft;
     const dimH = load.dimension_height  ?? load.height_ft;
-    const dimParts = [
-      dimL ? `${dimL}L` : null,
-      dimB ? `${dimB}B` : null,
-      dimH ? `${dimH}H` : null,
-    ].filter(Boolean);
-    const dimStr = dimParts.length ? dimParts.join(' × ') + ' ft' : null;
+    const hasAnyDim = [dimL, dimB, dimH].some(v => v !== undefined && v !== null && v !== '');
+    const dimStr = hasAnyDim
+      ? [dimL, dimB, dimH].map(v => (v !== undefined && v !== null && v !== '') ? v : '-').join('*') + ' ft'
+      : null;
     const volStr = load.space_cuft ? `${load.space_cuft} cu.ft` : null;
 
     const priceStr = load.price_per_ton
@@ -1579,19 +1577,6 @@
         </div>
       </div>
 
-      ${dimStr || volStr ? `
-      <div class="detail-kpi-row-4">
-        ${dimStr ? `
-        <div class="detail-kpi-sm">
-          <div class="detail-kpi-sm-value" style="font-size:15px">${escapeHtml(dimStr)}</div>
-          <div class="detail-kpi-sm-label">📐 Dimensions</div>
-        </div>` : ''}
-        ${volStr ? `
-        <div class="detail-kpi-sm">
-          <div class="detail-kpi-sm-value">${escapeHtml(volStr)}</div>
-          <div class="detail-kpi-sm-label">📦 Volume</div>
-        </div>` : ''}
-      </div>` : ''}
 
       <div class="detail-section">
         <div class="detail-section-title">Cargo Details</div>
@@ -1620,7 +1605,7 @@
         ${dimStr ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">📐</span>
-          <span class="detail-info-label">Dimensions</span>
+          <span class="detail-info-label">Dimension (L*B*H)</span>
           <span class="detail-info-value">${escapeHtml(dimStr)}</span>
         </div>` : ''}
         ${load.space_cuft ? `
@@ -1765,12 +1750,11 @@
         || cargoTypes.join(', ');
     const adjTruckType  = primary?.truck_type || group.truck_preference || '';
     const adjPlacement  = primary?.cargo_placement || group.cargo_placement || '';
-    const adjDimParts = [
-      primary?.dimension_length  ? `${primary.dimension_length}L`  : null,
-      primary?.dimension_breadth ? `${primary.dimension_breadth}B` : null,
-      primary?.dimension_height  ? `${primary.dimension_height}H`  : null,
-    ].filter(Boolean);
-    const adjDimStr = adjDimParts.length ? adjDimParts.join(' × ') + ' ft' : '';
+    const adjDimVals = [primary?.dimension_length, primary?.dimension_breadth, primary?.dimension_height];
+    const adjHasAnyDim = adjDimVals.some(v => v !== undefined && v !== null && v !== '');
+    const adjDimStr = adjHasAnyDim
+      ? adjDimVals.map(v => (v !== undefined && v !== null && v !== '') ? v : '-').join('*') + ' ft'
+      : '';
 
     document.getElementById('detail-body').innerHTML=`
       <div class="detail-kpi-row">
@@ -1800,7 +1784,7 @@
         ${adjDimStr ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">📐</span>
-          <span class="detail-info-label">Dimensions</span>
+          <span class="detail-info-label">Dimension (L*B*H)</span>
           <span class="detail-info-value">${escapeHtml(adjDimStr)}</span>
         </div>` : ''}
         <div class="detail-info-row">
