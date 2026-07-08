@@ -1186,8 +1186,8 @@
   }
 
   // Lazily injects the Mappls Interactive Map JS SDK <script> tag once,
-  // fetching the (domain-restricted) key from our own backend rather than
-  // hardcoding it in the page source.
+  // fetching the key from our own backend rather than hardcoding it in the
+  // page source.
   let mapplsSdkPromise = null;
   function loadMapplsSdk() {
     if (window.mappls) return Promise.resolve();
@@ -1195,9 +1195,9 @@
     mapplsSdkPromise = fetch(`${API}/mapkey`)
       .then(r => { if (!r.ok) throw new Error('mapkey fetch failed'); return r.json(); })
       .then(({ key }) => new Promise((resolve, reject) => {
-        window.__mapplsSdkReady = resolve;
         const s = document.createElement('script');
-        s.src = `https://apis.mappls.com/advancedmaps/api/${key}/map_sdk?v=3.0&layer=vector&callback=__mapplsSdkReady`;
+        s.src = `https://sdk.mappls.com/map/sdk/web?v=3.0&access_token=${encodeURIComponent(key)}`;
+        s.onload = () => resolve();
         s.onerror = reject;
         document.head.appendChild(s);
       }));
