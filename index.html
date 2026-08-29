@@ -1297,8 +1297,8 @@
               <th class="col-type">Type</th>
               <th class="col-origin">Origin</th>
               <th class="col-destination">Destination</th>
-              <th class="col-truck">Container/Cargo</th>
-              <th class="col-weight">Weight</th>
+              <th class="col-truck">Container Type</th>
+              <th class="col-weight">Capacity</th>
               <th class="col-date">Cutoff Date</th>
               <th class="col-btn">Details</th>
             </tr>
@@ -1317,7 +1317,7 @@
       <td class="col-origin td-endpoint">${rowEndpointHtml(oE)}</td>
       <td class="col-destination td-endpoint">${rowEndpointHtml(dE)}</td>
       <td class="col-truck"><span class="truck-pill">🚢 ${escapeHtml(l.truck_type||'—')}</span></td>
-      <td class="col-weight"><span class="td-weight-dyn">${l.weight_tons} Tons <span class="unit">Free</span></span></td>
+      <td class="col-weight"><span class="td-weight-dyn">${l.space_cbm ?? '—'} <span class="unit">cbm</span></span></td>
       <td class="col-date td-date">${formatDateBoth(l.loading_date)}</td>
       <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('truck_space','${escapeAttr(l.id)}')">More Info ›</button></td>
     </tr>`;
@@ -1326,10 +1326,10 @@
   function adjLoadRowHtml(g) {
     const weightTons = ((g.total_weight_kg||0)/1000);
     const earliestDate = adjEarliestDate(g);
-    const cargoTypes = (g.cargo_categories||[]).map(c=>c.startsWith('Others:')?c.slice(8).trim():c);
-    const cargoLabel = cargoTypes.length ? cargoTypes.join(', ') : '—';
     const members = g.members || [];
     const primary = members.find(m=>!m.is_me) || members[0];
+    const truckType = primary?.truck_type || g.truck_preference || '—';
+    const spaceCbm = primary?.space_cbm ?? g.space_cbm ?? null;
     const oParsed = parseDisplayString(g.origin_display);
     const dParsed = parseDisplayString(g.destination_display);
     const oE = buildRowEndpoint(
@@ -1348,8 +1348,8 @@
       <td class="col-type"><span class="type-badge type-badge-adj badge-in-table"><span class="badge-icon">🟧</span><span class="badge-label">LCL</span></span></td>
       <td class="col-origin td-endpoint">${rowEndpointHtml(oE)}</td>
       <td class="col-destination td-endpoint">${rowEndpointHtml(dE)}</td>
-      <td class="col-truck"><span class="place-pill" style="background:#FFF4EE;color:var(--orange)">📦 ${escapeHtml(cargoLabel)}</span></td>
-      <td class="col-weight"><span class="td-weight-dyn">${weightTons.toFixed(1)} Ton <span class="unit">Posted</span></span></td>
+      <td class="col-truck"><span class="truck-pill">🚢 ${escapeHtml(truckType)}</span></td>
+      <td class="col-weight"><span class="td-weight-dyn">${weightTons.toFixed(1)}T <span class="unit">·</span> ${spaceCbm ?? '—'} <span class="unit">cbm</span></span></td>
       <td class="col-date td-date">${earliestDate?formatDateBoth(earliestDate):'—'}</td>
       <td class="col-btn"><button class="info-btn" onclick="event.stopPropagation();openDetail('adjustment_load','${escapeAttr(g.id)}')">More Info ›</button></td>
     </tr>`;
@@ -1451,8 +1451,6 @@
     const dimStr = hasAnyDim
       ? [dimL, dimB, dimH].map(v => (v !== undefined && v !== null && v !== '') ? v : '-').join('*') + ' ft'
       : null;
-    const volStr = load.space_cuft ? `${load.space_cuft} cu.ft` : (load.space_cbm ? `${load.space_cbm} CBM` : null);
-
     const priceStr = load.price_per_ton
       ? `₹${Number(load.price_per_ton).toLocaleString('en-IN')}/T`
       : load.total_price
@@ -1462,8 +1460,8 @@
     document.getElementById('detail-body').innerHTML=`
       <div class="detail-kpi-row">
         <div class="detail-kpi">
-          <div class="detail-kpi-value">${load.weight_tons} Tons Free</div>
-          <div class="detail-kpi-label">⚖️ Weight Capacity</div>
+          <div class="detail-kpi-value">${load.space_cbm ?? '—'} CBM</div>
+          <div class="detail-kpi-label">📦 Available Space</div>
         </div>
         <div class="detail-kpi">
           <div class="detail-kpi-value detail-kpi-date">${formatDate(load.loading_date)}</div>
@@ -1500,6 +1498,12 @@
           <span class="detail-info-label">Container Type</span>
           <span class="detail-info-value">${escapeHtml(load.truck_type||'—')}</span>
         </div>
+        ${load.weight_tons ? `
+        <div class="detail-info-row">
+          <span class="detail-info-icon">⚖️</span>
+          <span class="detail-info-label">Available Load Capacity</span>
+          <span class="detail-info-value">${escapeHtml(String(load.weight_tons))} Tons</span>
+        </div>` : ''}
         ${priceStr ? `
         <div class="detail-info-row">
           <span class="detail-info-icon">💰</span>
@@ -1517,12 +1521,6 @@
           <span class="detail-info-icon">📐</span>
           <span class="detail-info-label">Dimension (L*B*H)</span>
           <span class="detail-info-value">${escapeHtml(dimStr)}</span>
-        </div>` : ''}
-        ${(load.space_cuft || load.space_cbm) ? `
-        <div class="detail-info-row">
-          <span class="detail-info-icon">📦</span>
-          <span class="detail-info-label">Available Space</span>
-          <span class="detail-info-value">${escapeHtml(volStr||'—')}</span>
         </div>` : ''}
         ${load.notes ? `
         <div class="detail-info-row">
@@ -1659,6 +1657,7 @@
       : (primary?.cargo_type ? primary.cargo_type.slice(8).trim() : '')
         || cargoTypes.join(', ');
     const adjTruckType  = primary?.truck_type || group.truck_preference || '';
+    const adjSpaceCbm   = primary?.space_cbm ?? group.space_cbm ?? null;
     const adjPlacement  = primary?.cargo_placement || group.cargo_placement || '';
     const adjDimVals = [primary?.dimension_length, primary?.dimension_breadth, primary?.dimension_height];
     const adjHasAnyDim = adjDimVals.some(v => v !== undefined && v !== null && v !== '');
@@ -1682,14 +1681,19 @@
         <div class="detail-section-title">Load Details</div>
         ${adjCargoLabel ? `
         <div class="detail-info-row">
-          <span class="detail-info-icon">📦</span>
-          <span class="detail-info-label">Cargo Type</span>
+          <span class="detail-info-icon">🔖</span>
+          <span class="detail-info-label">HSN Code</span>
           <span class="detail-info-value">${escapeHtml(adjCargoLabel)}</span>
         </div>` : ''}
         <div class="detail-info-row">
           <span class="detail-info-icon">🚢</span>
           <span class="detail-info-label">Container Type</span>
           <span class="detail-info-value">${escapeHtml(adjTruckType||'—')}</span>
+        </div>
+        <div class="detail-info-row">
+          <span class="detail-info-icon">📦</span>
+          <span class="detail-info-label">Available Space</span>
+          <span class="detail-info-value">${adjSpaceCbm != null ? escapeHtml(String(adjSpaceCbm)) + ' CBM' : '—'}</span>
         </div>
         ${adjDimStr ? `
         <div class="detail-info-row">
