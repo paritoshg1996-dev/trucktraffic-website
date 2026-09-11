@@ -280,6 +280,15 @@ function todayIST(){
   return new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kolkata"}).format(new Date());
 }
 
+// report_date comes back from the API as a plain "YYYY-MM-DD" for some
+// fields but a full "YYYY-MM-DDTHH:MM:SS" timestamp for others (Mongo/BSON
+// has no bare-date type, so a date-only field round-trips through it as
+// midnight) -- strip any time component before comparing so "today" isn't
+// mistaken for "stale" just because of that formatting difference.
+function dateOnly(s){
+  return s ? String(s).slice(0, 10) : s;
+}
+
 function fmtDateTime(d){
   const dt = new Date(d);
   const datePart = dt.toLocaleDateString("en-GB", {day:"2-digit", month:"short", timeZone:"Asia/Kolkata"});
@@ -327,7 +336,7 @@ function statusOf(run){
   if(run.status === "failed") return {cls:"red", label:"Not reachable"};
   if(run.status !== "success") return {cls:"grey", label:run.status};
   if(!run.report_date) return {cls:"amber", label:"Date unknown"};
-  if(run.report_date === todayIST()) return {cls:"green", label:"Fresh · today"};
+  if(dateOnly(run.report_date) === todayIST()) return {cls:"green", label:"Fresh · today"};
   return {cls:"amber", label:"Stale"};
 }
 
@@ -359,7 +368,7 @@ function renderStatusStrip(){
 
   const master = byCode["JNPT_MASTER"];
   asOf.textContent = master && master.report_date
-    ? `Master report as of ${master.report_date}`
+    ? `Master report as of ${dateOnly(master.report_date)}`
     : "";
 }
 
@@ -377,9 +386,9 @@ function renderFreshnessBanner(){
   const failedCount = (DATA.run_status || []).filter(r => r.status === "failed").length;
 
   let html = "";
-  if(master && master.report_date && master.report_date !== todayIST()){
+  if(master && master.report_date && dateOnly(master.report_date) !== todayIST()){
     html += `<div class="banner warn"><span>⚠</span><span><b>Master report is not from today.</b>
-      It's dated ${master.report_date}; today is ${todayIST()}. The on-berth list below may be
+      It's dated ${dateOnly(master.report_date)}; today is ${todayIST()}. The on-berth list below may be
       a day behind until the next successful pull.</span></div>`;
   }
   if(failedCount > 0){
@@ -478,7 +487,7 @@ function renderSourceList(){
     const run = byCode[code];
     const st = statusOf(run);
     const detail = run
-      ? (run.status === "failed" ? (run.error_message || "Failed") : `${run.rows_found} rows · report dated ${run.report_date || "unknown"}`)
+      ? (run.status === "failed" ? (run.error_message || "Failed") : `${run.rows_found} rows · report dated ${dateOnly(run.report_date) || "unknown"}`)
       : "No run recorded";
     return `<li><span class="dot dot-${st.cls}"></span><span><b>${TERMINAL_LABELS[code]}</b> — ${detail}</span></li>`;
   }).join("");
