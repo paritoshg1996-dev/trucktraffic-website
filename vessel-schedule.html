@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JNPT Vessel Schedule – Container Traffic</title>
-<meta name="description" content="Live container-vessel berthing schedule for JNPT (Nhava Sheva) -- expected arrivals, ETA, gate cut-off, and vessels currently on berth across all 5 container terminals."/>
+<title>Vessel Schedule – Container Traffic</title>
+<meta name="description" content="Live container-vessel berthing schedule for JNPT (Nhava Sheva) and Mundra -- expected arrivals, ETA, gate cut-off, and vessels currently on berth across every tracked terminal."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -68,6 +68,12 @@
   .chip:hover{background:rgba(255,255,255,.09);}
   .chip.active{border-color:var(--amber); background:rgba(226,146,26,.14);}
   .chip .dot{width:8px; height:8px; border-radius:50%; flex:none;}
+  .port-switch{display:flex; gap:2px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:2px;}
+  .port-btn{
+    background:none; border:none; color:#B9C7CC; padding:6px 14px; border-radius:6px;
+    font-family:var(--font-sans); font-size:.82rem; font-weight:500; cursor:pointer;
+  }
+  .port-btn.active{background:var(--white); color:var(--ink);}
   .dot-green{background:var(--green); box-shadow:0 0 0 3px rgba(30,122,95,.25);}
   .dot-amber{background:var(--amber); box-shadow:0 0 0 3px rgba(226,146,26,.25);}
   .dot-red{background:var(--red); box-shadow:0 0 0 3px rgba(179,63,50,.25);}
@@ -160,11 +166,14 @@
       <rect x="1" y="23" width="24" height="2" fill="#6B7C84"/>
     </svg>
     <div>
-      <div class="brand-text"><b>JNPT</b> Vessel Schedule</div>
-      <div class="brand-sub">Container berthing &amp; expected-arrival tracker</div>
+      <div class="brand-text" id="brandText"><b>JNPT</b> Vessel Schedule</div>
+      <div class="brand-sub" id="brandSub">Container berthing &amp; expected-arrival tracker</div>
     </div>
   </div>
   <div class="header-right">
+    <div class="port-switch" id="portSwitch" role="tablist" aria-label="Port">
+      <!-- buttons injected by JS -->
+    </div>
     <a href="/" style="color:inherit; font-size:.82rem; text-decoration:underline;">← Container Traffic</a>
     <span id="clock" class="clock">--:--:-- IST</span>
     <button class="refresh-btn" id="refreshBtn" type="button">Refresh</button>
@@ -221,13 +230,7 @@
 <footer>
   <details>
     <summary>Data sources &amp; how this works</summary>
-    <p style="margin-top:12px;">
-      Vessels currently on berth and expected-arrival data (voyage, service, line,
-      ETA, gate cut-off) are both pulled directly from each of the 5 container
-      terminals' own PDF reports. JNPA's port-wide daily berthing report is used
-      separately to discover each terminal's current report link and to confirm
-      today's data has actually been published.
-    </p>
+    <p style="margin-top:12px;" id="aboutText"></p>
     <ul class="source-list" id="sourceList"></ul>
     <p style="margin-top:14px;">
       Rows marked <span class="sample-tag">SAMPLE</span> are placeholder data for
@@ -244,12 +247,51 @@
 // (github.com/paritoshg1996-dev/container_traffic, add-vessel-schedule-api).
 const API = "https://ptl-market.onrender.com/api";
 
-const TERMINAL_ORDER = ["JNPT_MASTER","NSFT","NSICT","NSIGT","APMT","BMCT"];
-const TERMINAL_LABELS = {
-  JNPT_MASTER:"Master report", NSFT:"NSFT", NSICT:"NSICT", NSIGT:"NSIGT", APMT:"APMT", BMCT:"BMCT"
+// Two ports, two very differently-shaped sources feeding them (see
+// github.com/paritoshg1996-dev/vessel_schedule's own docs): JNPT has one
+// port-wide aggregator page (JNPT_MASTER) whose job is discovering each
+// terminal's own daily-changing PDF link, so a stale master page is a
+// real signal that the terminals below it might be stale too. Mundra has
+// no equivalent -- Adani's 4 terminals and DP World's MICT are each
+// fetched independently, with no link-discovery dependency chain -- so
+// "MUNDRA_ADANI" here is just a bookkeeping label for one shared fetch
+// (Adani's single combined PDF covers all 4 of its own terminals), not a
+// page whose own staleness says anything about the others. Neither
+// dispatch code (JNPT_MASTER/MUNDRA_ADANI) is ever a real vessel row's
+// own terminal_code -- clicking that chip is expected to show an empty
+// table, same as it always has for JNPT_MASTER.
+const PORT_CONFIG = {
+  JNPT: {
+    label: "JNPT",
+    sub: "Nhava Sheva · container berthing &amp; expected-arrival tracker",
+    terminals: ["JNPT_MASTER","NSFT","NSICT","NSIGT","APMT","BMCT"],
+    labels: {JNPT_MASTER:"Master report", NSFT:"NSFT", NSICT:"NSICT", NSIGT:"NSIGT", APMT:"APMT", BMCT:"BMCT"},
+    masterCode: "JNPT_MASTER",
+    containerTerminalCount: 5,
+    aboutHtml: `Vessels currently on berth and expected-arrival data (voyage, service, line,
+      ETA, gate cut-off) are both pulled directly from each of the 5 container
+      terminals' own PDF reports. JNPA's port-wide daily berthing report is used
+      separately to discover each terminal's current report link and to confirm
+      today's data has actually been published.`,
+  },
+  MUNDRA: {
+    label: "Mundra",
+    sub: "Adani + DP World MICT · container berthing &amp; expected-arrival tracker",
+    terminals: ["MUNDRA_ADANI","AMCT","T2","AICTPL","ACMTPL","MICT"],
+    labels: {MUNDRA_ADANI:"Adani combined report", AMCT:"AMCT", T2:"T2", AICTPL:"AICTPL", ACMTPL:"ACMTPL", MICT:"MICT"},
+    masterCode: null,
+    containerTerminalCount: 5,
+    aboutHtml: `Expected-arrival data (voyage, service, line, ETA, gate cut-off) is pulled
+      directly from each source's own report: Adani publishes all four of its
+      own terminals (AMCT, T2, AICTPL, ACMTPL) in one combined PDF; DP World's
+      MICT is fetched separately. Vessels-on-berth is currently only available
+      for MICT -- Adani's own "vessels on berth" report renders with corrupted
+      vessel names at the source and isn't scraped until that's fixed upstream.`,
+  },
 };
 
 let DATA = null;
+let activePort = "JNPT";
 let activeTerminal = null;
 let activeStatus = "all";
 let searchText = "";
@@ -340,7 +382,27 @@ function statusOf(run){
   return {cls:"amber", label:"Stale"};
 }
 
+function renderPortSwitch(){
+  const el = document.getElementById("portSwitch");
+  el.innerHTML = Object.keys(PORT_CONFIG).map(port => `
+    <button class="port-btn${port === activePort ? ' active' : ''}" type="button"
+      role="tab" aria-selected="${port === activePort}" data-port="${port}">${PORT_CONFIG[port].label}</button>
+  `).join("");
+  el.querySelectorAll(".port-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(activePort === btn.dataset.port) return;
+      activePort = btn.dataset.port;
+      activeTerminal = null;  // a terminal selected in the other port never matches here
+      render();
+    });
+  });
+  const cfg = PORT_CONFIG[activePort];
+  document.getElementById("brandText").innerHTML = `<b>${cfg.label}</b> Vessel Schedule`;
+  document.getElementById("brandSub").innerHTML = cfg.sub;
+}
+
 function renderStatusStrip(){
+  const cfg = PORT_CONFIG[activePort];
   const strip = document.getElementById("statusStrip");
   const asOf = document.getElementById("asOf");
   strip.querySelectorAll(".chip").forEach(c => c.remove());
@@ -348,16 +410,16 @@ function renderStatusStrip(){
   const byCode = {};
   (DATA.run_status || []).forEach(r => byCode[r.terminal_code] = r);
 
-  TERMINAL_ORDER.forEach(code => {
+  cfg.terminals.forEach(code => {
     const run = byCode[code];
     const st = statusOf(run);
     const chip = document.createElement("button");
     chip.className = "chip" + (activeTerminal === code ? " active" : "");
     chip.type = "button";
-    chip.innerHTML = `<span class="dot dot-${st.cls}" aria-hidden="true"></span>${TERMINAL_LABELS[code]}`;
+    chip.innerHTML = `<span class="dot dot-${st.cls}" aria-hidden="true"></span>${cfg.labels[code]}`;
     const detail = run ? (run.error_message || st.label) : "No data yet";
     chip.title = detail;
-    chip.setAttribute("aria-label", `${TERMINAL_LABELS[code]}: ${st.label}. ${detail}`);
+    chip.setAttribute("aria-label", `${cfg.labels[code]}: ${st.label}. ${detail}`);
     chip.setAttribute("aria-pressed", activeTerminal === code ? "true" : "false");
     chip.addEventListener("click", () => {
       activeTerminal = activeTerminal === code ? null : code;
@@ -366,13 +428,14 @@ function renderStatusStrip(){
     strip.insertBefore(chip, asOf);
   });
 
-  const master = byCode["JNPT_MASTER"];
+  const master = cfg.masterCode ? byCode[cfg.masterCode] : null;
   asOf.textContent = master && master.report_date
     ? `Master report as of ${dateOnly(master.report_date)}`
     : "";
 }
 
 function renderFreshnessBanner(){
+  const cfg = PORT_CONFIG[activePort];
   const el = document.getElementById("freshnessBanner");
   if(loadError){
     el.innerHTML = `<div class="banner"><span>⚠</span><span><b>Couldn't load the vessel schedule right now.</b>
@@ -382,8 +445,11 @@ function renderFreshnessBanner(){
   }
   const byCode = {};
   (DATA.run_status || []).forEach(r => byCode[r.terminal_code] = r);
-  const master = byCode["JNPT_MASTER"];
-  const failedCount = (DATA.run_status || []).filter(r => r.status === "failed").length;
+  const master = cfg.masterCode ? byCode[cfg.masterCode] : null;
+  // Only this port's own sources count toward "N could not be reached" --
+  // a JNPT outage shouldn't scare a viewer looking at Mundra, or vice versa.
+  const portRuns = (DATA.run_status || []).filter(r => cfg.terminals.includes(r.terminal_code));
+  const failedCount = portRuns.filter(r => r.status === "failed").length;
 
   let html = "";
   if(master && master.report_date && dateOnly(master.report_date) !== todayIST()){
@@ -392,7 +458,7 @@ function renderFreshnessBanner(){
       a day behind until the next successful pull.</span></div>`;
   }
   if(failedCount > 0){
-    html += `<div class="banner"><span>⚠</span><span><b>${failedCount} of ${(DATA.run_status||[]).length}
+    html += `<div class="banner"><span>⚠</span><span><b>${failedCount} of ${portRuns.length}
       sources could not be reached on the last run.</b> Click a red chip above for the error.
       Expected-arrival detail for those terminals is showing sample data only until this clears.</span></div>`;
   }
@@ -400,17 +466,20 @@ function renderFreshnessBanner(){
 }
 
 function renderStats(){
-  const vessels = DATA.vessels || [];
+  const cfg = PORT_CONFIG[activePort];
+  const inPort = v => cfg.terminals.includes(v.terminal_code);
+  const vessels = (DATA.vessels || []).filter(inPort);
   // berthed_vessels is scraped per-terminal, straight from each terminal's
-  // own PDF -- currently only the 5 container terminals have a parser, so
-  // this is that scope, not every JNPT terminal port-wide.
-  const onBerth = (DATA.berthed_vessels || []).length;
+  // own PDF -- not every terminal has a parser for it yet, so this is that
+  // scope (see each port's aboutHtml), not every terminal port-wide.
+  const onBerth = (DATA.berthed_vessels || []).filter(inPort).length;
   const expected = vessels.filter(v => v.status === "expected").length;
-  const liveSources = (DATA.run_status || []).filter(r => r.status === "success").length;
-  const totalSources = (DATA.run_status || []).length;
+  const portRuns = (DATA.run_status || []).filter(r => cfg.terminals.includes(r.terminal_code));
+  const liveSources = portRuns.filter(r => r.status === "success").length;
+  const totalSources = portRuns.length;
 
   const stats = [
-    [onBerth, "Vessels on berth, 5 container terminals"],
+    [onBerth, `Vessels on berth, ${cfg.containerTerminalCount} container terminals`],
     [expected, "Expected arrivals listed"],
     [`${liveSources}/${totalSources}`, "Sources reachable this run"],
   ];
@@ -420,6 +489,7 @@ function renderStats(){
 }
 
 function matchesFilters(v){
+  if(!PORT_CONFIG[activePort].terminals.includes(v.terminal_code)) return false;
   if(activeTerminal && v.terminal_code !== activeTerminal) return false;
   if(activeStatus !== "all" && v.status !== activeStatus) return false;
   if(searchText){
@@ -460,7 +530,7 @@ function renderTable(){
       <td>${v.service || '<span class="muted">—</span>'}</td>
       <td>${v.shipping_line || '<span class="muted">—</span>'}</td>
       <td class="hide-mobile">${v.agent || '<span class="muted">—</span>'}</td>
-      <td>${TERMINAL_LABELS[v.terminal_code] || v.terminal_code}</td>
+      <td>${PORT_CONFIG[activePort].labels[v.terminal_code] || v.terminal_code}</td>
       <td class="hide-mobile code">${v.berth_no || "—"}</td>
       <td><span class="status-pill status-${v.status}">${v.status}</span></td>
       <td class="code">${fmtWhen(v)}</td>
@@ -469,7 +539,7 @@ function renderTable(){
 }
 
 function renderTabs(){
-  const vessels = allRows();
+  const vessels = allRows().filter(v => PORT_CONFIG[activePort].terminals.includes(v.terminal_code));
   const labels = {all:"All", berthed:"On berth", expected:"Expected", sailed:"Sailed"};
   document.querySelectorAll("#statusTabs .tab").forEach(tab => {
     const status = tab.dataset.status;
@@ -481,19 +551,22 @@ function renderTabs(){
 }
 
 function renderSourceList(){
+  const cfg = PORT_CONFIG[activePort];
   const byCode = {};
   (DATA.run_status || []).forEach(r => byCode[r.terminal_code] = r);
-  document.getElementById("sourceList").innerHTML = TERMINAL_ORDER.map(code => {
+  document.getElementById("aboutText").innerHTML = cfg.aboutHtml;
+  document.getElementById("sourceList").innerHTML = cfg.terminals.map(code => {
     const run = byCode[code];
     const st = statusOf(run);
     const detail = run
       ? (run.status === "failed" ? (run.error_message || "Failed") : `${run.rows_found} rows · report dated ${dateOnly(run.report_date) || "unknown"}`)
       : "No run recorded";
-    return `<li><span class="dot dot-${st.cls}"></span><span><b>${TERMINAL_LABELS[code]}</b> — ${detail}</span></li>`;
+    return `<li><span class="dot dot-${st.cls}"></span><span><b>${cfg.labels[code]}</b> — ${detail}</span></li>`;
   }).join("");
 }
 
 function render(){
+  renderPortSwitch();
   renderStatusStrip();
   renderFreshnessBanner();
   renderStats();
