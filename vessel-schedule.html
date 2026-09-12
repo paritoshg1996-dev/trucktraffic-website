@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vessel Schedule – Container Traffic</title>
-<meta name="description" content="Live container-vessel berthing schedule for JNPT (Nhava Sheva) and Mundra -- expected arrivals, ETA, gate cut-off, and vessels currently on berth across every tracked terminal."/>
+<meta name="description" content="Live container-vessel berthing schedule for JNPT (Nhava Sheva), Mundra, Cochin, and Chennai -- expected arrivals, ETA, gate cut-off, and vessels currently on berth across every tracked terminal."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -287,6 +287,34 @@ const PORT_CONFIG = {
       MICT is fetched separately. Vessels-on-berth is currently only available
       for MICT -- Adani's own "vessels on berth" report renders with corrupted
       vessel names at the source and isn't scraped until that's fixed upstream.`,
+  },
+  COCHIN: {
+    label: "Cochin",
+    sub: "India Gateway Terminal (IGTPL) · container berthing &amp; expected-arrival tracker",
+    terminals: ["IGTPL"],
+    labels: {IGTPL:"IGTPL"},
+    masterCode: null,
+    containerTerminalCount: 1,
+    aboutHtml: `Cochin has one container terminal -- DP World's India Gateway Terminal
+      (IGTPL) at Vallarpadam. Unlike every other source here, this one isn't a
+      PDF report at all: it's pulled straight from the terminal's own live
+      webpage, which lists both expected and currently-berthed vessels in a
+      single rolling table (status is inferred from which timestamps are filled
+      in) rather than separate report sections.`,
+  },
+  CHENNAI: {
+    label: "Chennai",
+    sub: "Global PSA + DP World CCT · container berthing &amp; expected-arrival tracker",
+    terminals: ["CIT","CCT"],
+    labels: {CIT:"CIT (Global PSA)", CCT:"CCT (DP World)"},
+    masterCode: null,
+    containerTerminalCount: 2,
+    aboutHtml: `Chennai's two container terminals are independently operated and
+      independently fetched, with no port-wide master page: Global PSA's
+      Chennai International Terminal (CIT) and DP World's Chennai Container
+      Terminal (CCT). Vessels-on-berth is currently only available for CCT --
+      CIT's own on-berth panel hasn't been validated against a real occupied
+      berth yet (every berth was vacant on the report checked so far).`,
   },
 };
 
