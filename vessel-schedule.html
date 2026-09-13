@@ -277,7 +277,20 @@ const PORT_CONFIG = {
   MUNDRA: {
     label: "Mundra",
     sub: "Adani + DP World MICT · container berthing &amp; expected-arrival tracker",
-    terminals: ["MUNDRA_ADANI","AMCT","T2","AICTPL","ACMTPL","MICT"],
+    // `terminals`: every terminal_code that can actually appear on a
+    // vessel row (used for filtering/counting). `statusChips`: codes
+    // that have their OWN health record to show a chip for -- these are
+    // NOT the same list here, unlike every other port. AMCT/T2/AICTPL/
+    // ACMTPL never get their own ingestion_runs row at all (Adani's one
+    // combined-PDF fetch is dispatched, and reported on, under
+    // "MUNDRA_ADANI" alone -- see mundra_adani.py's own module
+    // docstring) even though their vessels are perfectly real. Giving
+    // them their own status-strip chips (as `terminals` alone would,
+    // the way every other port's list doing double duty works) left all
+    // four permanently grey/"No data yet" despite genuinely fresh data
+    // sitting right there in the table -- caught live 2026-09-13.
+    terminals: ["AMCT","T2","AICTPL","ACMTPL","MICT"],
+    statusChips: ["MUNDRA_ADANI","MICT"],
     labels: {MUNDRA_ADANI:"Adani combined report", AMCT:"AMCT", T2:"T2", AICTPL:"AICTPL", ACMTPL:"ACMTPL", MICT:"MICT"},
     masterCode: null,
     containerTerminalCount: 5,
@@ -438,7 +451,7 @@ function renderStatusStrip(){
   const byCode = {};
   (DATA.run_status || []).forEach(r => byCode[r.terminal_code] = r);
 
-  cfg.terminals.forEach(code => {
+  (cfg.statusChips || cfg.terminals).forEach(code => {
     const run = byCode[code];
     const st = statusOf(run);
     const chip = document.createElement("button");
@@ -476,7 +489,7 @@ function renderFreshnessBanner(){
   const master = cfg.masterCode ? byCode[cfg.masterCode] : null;
   // Only this port's own sources count toward "N could not be reached" --
   // a JNPT outage shouldn't scare a viewer looking at Mundra, or vice versa.
-  const portRuns = (DATA.run_status || []).filter(r => cfg.terminals.includes(r.terminal_code));
+  const portRuns = (DATA.run_status || []).filter(r => (cfg.statusChips || cfg.terminals).includes(r.terminal_code));
   const failedCount = portRuns.filter(r => r.status === "failed").length;
 
   let html = "";
@@ -502,7 +515,7 @@ function renderStats(){
   // scope (see each port's aboutHtml), not every terminal port-wide.
   const onBerth = (DATA.berthed_vessels || []).filter(inPort).length;
   const expected = vessels.filter(v => v.status === "expected").length;
-  const portRuns = (DATA.run_status || []).filter(r => cfg.terminals.includes(r.terminal_code));
+  const portRuns = (DATA.run_status || []).filter(r => (cfg.statusChips || cfg.terminals).includes(r.terminal_code));
   const liveSources = portRuns.filter(r => r.status === "success").length;
   const totalSources = portRuns.length;
 
@@ -583,7 +596,7 @@ function renderSourceList(){
   const byCode = {};
   (DATA.run_status || []).forEach(r => byCode[r.terminal_code] = r);
   document.getElementById("aboutText").innerHTML = cfg.aboutHtml;
-  document.getElementById("sourceList").innerHTML = cfg.terminals.map(code => {
+  document.getElementById("sourceList").innerHTML = (cfg.statusChips || cfg.terminals).map(code => {
     const run = byCode[code];
     const st = statusOf(run);
     const detail = run
