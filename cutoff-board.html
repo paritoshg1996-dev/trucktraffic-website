@@ -144,6 +144,7 @@
   .badge.line{background:var(--teal-tint); color:var(--teal-deep);}
   .badge.service{background:var(--paper-sunken); color:var(--ink-soft); font-family:var(--font-mono); font-weight:500;}
   .badge.status-berthed{background:var(--good-tint); color:var(--good);}
+  .badge.delayed{background:var(--warn-tint); color:var(--warn);}
   .term-pill{font-size:.78rem; color:var(--ink-soft);}
   .term-pill b{color:var(--ink); font-weight:600;}
   .route-hint{
@@ -373,6 +374,12 @@ function cardHtml(r, now){
 
   const lineName = fmtLine(r.sl);
   const isBerthed = r.st === "berthed";
+  // ETA has come and gone but the gate cutoff hasn't -- the vessel is
+  // running behind her own estimate, but there's still a real window to
+  // book cargo before it closes. Worth flagging distinctly from cutoff
+  // urgency (that's a countdown to the deadline; this is a state of the
+  // vessel itself) rather than folding it into the same red/amber/green.
+  const isDelayed = !isBerthed && r._eta && r._eta < now && r._cutoff && r._cutoff > now;
 
   return `
     <div class="card" data-id="${r._id}">
@@ -385,6 +392,7 @@ function cardHtml(r, now){
           </div>
           <div class="meta-row">
             ${isBerthed ? '<span class="badge status-berthed">On berth now</span>' : ''}
+            ${isDelayed ? `<span class="badge delayed" title="ETA was ${relTime(r._eta, now)}, but the gate cutoff is still ahead">Running late &middot; ETA ${relTime(r._eta, now)}</span>` : ''}
             ${lineName ? `<span class="badge line">${lineName}</span>` : ''}
             ${r.sv ? `<span class="badge service">${r.sv}</span>` : ''}
             <span class="term-pill"><b>${r.t}</b> &middot; ${PORT_NAMES[r.p] || r.p}</span>
@@ -393,7 +401,7 @@ function cardHtml(r, now){
         </div>
         <div class="card-eta">
           <span class="eta-lbl">ETA</span>
-          <span class="eta-val">${r._eta ? fmtDateTime(r._eta) : "&mdash;"}</span>
+          <span class="eta-val" ${isDelayed ? 'style="color:var(--warn);"' : ''}>${r._eta ? fmtDateTime(r._eta) : "&mdash;"}</span>
           <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
