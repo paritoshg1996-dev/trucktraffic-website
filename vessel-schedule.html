@@ -194,6 +194,7 @@
 
   <div class="controls">
     <input class="search" id="searchInput" type="text" placeholder="Search vessel, voyage or line…" aria-label="Search vessels">
+    <input class="search" id="destinationInput" type="text" placeholder="Filter by destination port…" aria-label="Filter by destination port">
     <div class="tabs" id="statusTabs" role="tablist" aria-label="Vessel status">
       <button class="tab" role="tab" data-status="all">All</button>
       <button class="tab" role="tab" data-status="berthed">On berth</button>
@@ -201,6 +202,11 @@
       <button class="tab" role="tab" data-status="sailed">Sailed</button>
     </div>
   </div>
+  <p class="muted" style="font-size:.82em; margin:-6px 0 14px;" id="destinationHint" hidden>
+    Only shows vessels whose carrier service has a researched onward route on file — a real
+    match can be missing here if that route hasn't been looked up yet, not because the vessel
+    isn't actually going there.
+  </p>
 
   <div class="table-scroll">
     <table id="vesselTable">
@@ -337,7 +343,26 @@ let activePort = "JNPT";
 let activeTerminal = null;
 let activeStatus = "all";
 let searchText = "";
+let destinationText = "";
 let loadError = false;
+
+// Kept in sync BY HAND with vessel_schedule's own pipeline/ports.py
+// (_SPELLING_VARIANTS) and container_traffic's server.py
+// (_DESTINATION_SPELLING_VARIANTS) -- all three need the same collapsing
+// so typing "Port Kelang" here matches a vessel whose next_ports_normalized
+// (computed upstream, already lowercased) recorded the equally-real
+// "port klang" spelling instead. Small and stable enough that duplicating
+// it across a Python pipeline, a Python API and this static page beats
+// standing up a shared package for one three-entry table.
+const DESTINATION_SPELLING_VARIANTS = {
+  "port kelang": "port klang",
+  "khorfakkan": "khor fakkan",
+  "ad dammam": "dammam",
+};
+function normalizeDestinationQuery(s){
+  const n = (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  return DESTINATION_SPELLING_VARIANTS[n] || n;
+}
 
 async function loadData(){
   try{
@@ -408,6 +433,9 @@ function berthedVesselToRow(b){
     shipping_line: b.shipping_line, agent: null, terminal_code: b.terminal_code,
     terminal_name: b.terminal_name, berth_no: b.berth_no, status: "berthed",
     is_sample: false, _alongside_at: b.alongside_at, _source: "berthed_vessels",
+    // Carried through so a berthed vessel (about to depart onward) can
+    // still be found by the destination filter, not just expected ones.
+    next_ports_normalized: b.next_ports_normalized || [],
   };
 }
 
@@ -538,6 +566,16 @@ function matchesFilters(v){
     const hay = [v.vessel_name, v.via_no, v.shipping_line, v.service].join(" ").toLowerCase();
     if(!hay.includes(searchText.toLowerCase())) return false;
   }
+  if(destinationText){
+    // Substring match, same as the search box above and the same
+    // matching container_traffic's own /vessels/expected `destination`
+    // param does server-side -- a vessel with no researched rotation on
+    // file has an empty next_ports_normalized and so never matches
+    // anything here, rather than matching everything or erroring.
+    const needle = normalizeDestinationQuery(destinationText);
+    const hits = v.next_ports_normalized || [];
+    if(!hits.some(p => p.includes(needle))) return false;
+  }
   return true;
 }
 
@@ -554,6 +592,9 @@ function renderTable(){
     if(activeStatus === "sailed"){
       heading.textContent = "No sailed-vessel data yet";
       para.textContent = "This view populates once the pipeline captures a terminal's own \"vessels sailed\" panel — not part of the initial JNPT rollout.";
+    } else if(destinationText.trim()){
+      heading.textContent = "No vessels with that destination on file";
+      para.textContent = "Either no vessel here is actually headed there right now, or it is and we just haven't researched that carrier service's route yet — try clearing the destination filter to check.";
     } else if(activeStatus === "expected" && vessels.length === 0){
       heading.textContent = "No expected-arrival rows match this filter";
       para.textContent = "Try clearing the search box or selecting a different terminal above.";
@@ -619,6 +660,11 @@ function render(){
 
 document.getElementById("searchInput").addEventListener("input", (e) => {
   searchText = e.target.value;
+  renderTable();
+});
+document.getElementById("destinationInput").addEventListener("input", (e) => {
+  destinationText = e.target.value;
+  document.getElementById("destinationHint").hidden = !destinationText.trim();
   renderTable();
 });
 document.querySelectorAll("#statusTabs .tab").forEach(tab => {
